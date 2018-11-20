@@ -17,7 +17,7 @@
  *
  * @param < in > Pointer on a structure which allows to update the states of the keys, buttons and so on in function of the events
  */
-void updateEvents(Input* in)
+void update_events(Input* in)
 {
     SDL_Event event;
 
@@ -62,7 +62,7 @@ void updateEvents(Input* in)
  *
  * @param < in > Pointer on a structure which allows to initialise the states of the keys, buttons and so on
  */
-void initialiseEvents(Input* in)
+void initialise_events(Input* in)
 {
     int i = 0;
 

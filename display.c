@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-//#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "constantes.h"
 #include "display.h"
@@ -141,30 +141,68 @@ SDL_Texture* load_image(const char* fileName, SDL_Renderer* screen)
     return texture;
 }
 
-/*SDL_Texture* charger_texte(const char* message, SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, int* w, int* h)
+/**
+ * @brief Load the text made up of a message with a color and a font
+ *
+ * @param < message > the message which has to be printed
+ * @param < screen > Pointer on a SDL_Renderer type object
+ * @param < font > the font that is applied on the text
+ * @param < color > Color of the text
+ * @param < w > Width of the surface related to the text
+ * @param < h > Height of the surface related to the text
+ * @return < SDL_Texture* > Return a pointer on a SDL_Texture type object related to the text to display
+ */
+SDL_Texture* load_text(const char* message, SDL_Renderer* screen, TTF_Font* font, SDL_Color color, int* w, int* h)
 {
-    SDL_Surface *texte = NULL;
+    SDL_Surface *text = NULL;
     SDL_Texture *texture = NULL;
 
-    // Ecrit le texte sur une surface SDL
-    texte = TTF_RenderText_Solid(font, message, color);
-    if(texte = NULL)
+    // Write the text on a SDL surface with a chosen font
+    text = TTF_RenderText_Blended(font, message, color);
+    if(text == NULL)
     {
-        fprintf(stderr, "Erreur création de la surface qui contient le texte : %s", TTF_GetError());
+        fprintf(stderr, "Error : Apply the font and the color on the text : %s", TTF_GetError());
         exit(EXIT_FAILURE);
     }
 
-    *w = texte->w;
-    *h = texte->h;
+    *w = text->w;
+    *h = text->h;
 
-    texture = SDL_CreateTextureFromSurface(renderer, texte);
+    texture = SDL_CreateTextureFromSurface(screen, text);
     if(texture == NULL)
     {
-        fprintf(stderr, "Erreur chargement du texte dans la texture : %s", SDL_GetError());
+        fprintf(stderr, "Error : Loading text in the texture : %s", SDL_GetError());
     }
 
-    SDL_FreeSurface(texte);
+    SDL_FreeSurface(text);
 
     return texture;
-}*/
+}
+
+
+/**
+ * @brief Set a color to the background, all the renderer will be painted
+ *
+ * @param < renderer > Pointer on a SDL_Renderer type object which will be colored
+ * @param < red, green, blue, alpha > Correspond to the primary colors which make up the background color, alpha is the transparency parameter
+ */
+void set_color_background(SDL_Renderer *screen, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha)
+{
+    SDL_Rect background;
+
+    if(SDL_SetRenderDrawColor(screen, red, green, blue, alpha) != 0)
+    {
+        fprintf(stderr, "Error : Setting color in the background : %s\n", SDL_GetError());
+    }
+
+    background.x = 0;
+    background.y = 0;
+    background.w = WINDOW_WIDTH;
+    background.h = WINDOW_HEIGHT;
+
+    if(SDL_RenderFillRect(screen, &background) != 0)
+    {
+        fprintf(stderr, "Error : Painting background : %s\n", SDL_GetError());
+    }
+}
 

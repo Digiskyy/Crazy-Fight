@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
-//#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
 #include "constantes.h"
@@ -34,8 +34,16 @@ int main(int argc, char* argv[])
     Map *map = NULL;
     char pathLevelDesignMap[] = "ressources/level_design_map.txt"; // ressources/level_design_map.txt
     Input in;
+    SDL_bool menu = SDL_TRUE;
+    int choice;
 
     /* ========== INITIALISATION ========== */
+
+    if(TTF_Init() == -1)
+    {
+        fprintf(stderr, "Error : Initialisation of SDL_ttf (TTF_Init) : %s\n", TTF_GetError());
+        exit(EXIT_FAILURE);
+    }
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER) != 0)
     {
@@ -56,7 +64,7 @@ int main(int argc, char* argv[])
 
     printf("window and screen created\n");
 
-    initialiseEvents(&in);
+    initialise_events(&in);
 
     map = load_map(pathLevelDesignMap); // OK
 
@@ -79,11 +87,15 @@ int main(int argc, char* argv[])
 
 
     /* BOUCLE PRINCIPALE => Tant que quit est faux */
-        /* BOUCLE JEU => Tant que jouer est vrai (appui sur échap, met pause ou revient au menu, à voir)*/
+        /* SI MENU ACTIF (menu = 1) -> BOUCLE MENU */
+            /* GESTION EVENEMENTS */
+            /* AFFICHAGE */
+        /* SI CHOIX = 1 -> BOUCLE JEU => Tant que jouer est vrai (appui sur échap, met pause ou revient au menu, à voir)*/
             /* GESTION EVENEMENTS */
             /* CODE DU JEU */
             /* AFFICHAGE */
-        /* BOUCLE EDITEUR DE NIVEAU => Tant que editeur est vrai (= Tant qu'on appuie pas sur échap)*/
+
+        /* SI CHOIX = 2 -> BOUCLE EDITEUR DE NIVEAU => Tant que editeur est vrai (= Tant qu'on appuie pas sur échap)*/
             /* GESTION EVENEMENTS */
             /* CODE EDITEUR ??? -> il n'y en a peut-être pas */
             /* AFFICHAGE */
@@ -93,21 +105,38 @@ int main(int argc, char* argv[])
 
     while(!in.quit)
     {
+        /* ========== MENU ========== */
+        if(menu)
+        {
+            /* ===== HANDLE EVENTS ===== */
+            update_events(&in);
+
+            /* ===== DISPLAY MENU ===== */
+            SDL_RenderClear(screen);
+            display_menu(screen);
+            SDL_RenderPresent(screen);
+
+            //si position souris sur le texte "éditeur de niveaux" + clic droit => choix = 2 // position souris sur le texte = changement de couleur si pas trop compliqué ??
+            //si position souris sur le texte "jouer" + clic droit => choix = 1
+            //si position souris sur le texte "quitter" + clic droit => a voir, p-e dès qu'on srot d'une boucle jeu ou éditeur mettre choix à 0 comme ca on revient au menu principale avant de quitter
+        }
+
+
         /* ========== HANDLE EVENTS ========== */
-        updateEvents(&in);
+        //update_events(&in);
 
         /* ========== DISPLAY ========== */
-        SDL_RenderClear(screen);
+        //SDL_RenderClear(screen);
 
-        set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
+        //set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
 
         //printf("map colored\n");
 
-        print_map(map, screen);
+        //print_map(map, screen);
 
         //printf("map printed\n");
 
-        SDL_RenderPresent(screen);
+        //SDL_RenderPresent(screen);
 
         //printf("map displayed");
 
@@ -120,6 +149,7 @@ int main(int argc, char* argv[])
     free_map(map);
     SDL_DestroyRenderer(screen);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 

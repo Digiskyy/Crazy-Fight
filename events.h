@@ -20,13 +20,13 @@ typedef struct Input
  *
  * @param < pathLevel > Path of the file for the level design that allows to know how the map will be designed
  */
-void updateEvents(Input* in);
+void update_events(Input* in);
 
 /**
  * @brief Initialise the structure Input
  *
  * @param < in > Pointer on a structure which allows to initialise the states of the keys, buttons and so on
  */
-void initialiseEvents(Input* in);
+void initialise_events(Input* in);
 
 #endif // EVENTS_H_INCLUDED

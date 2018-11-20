@@ -60,14 +60,6 @@ void load_map_level(FILE* file, Map* map);
 void print_map(Map *map, SDL_Renderer *screen);
 
 /**
- * @brief Set a color to the background, all the renderer will be painted
- *
- * @param < renderer > Pointer on a SDL_Renderer type object which will be colored
- * @param < red, green, blue, alpha > Correspond to the primary colors which make up the background color, alpha is the transparency parameter
- */
-void set_color_background(SDL_Renderer *screen, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-
-/**
  * @brief Free the memory that was allocated to the map
  *
  * @param < map > Structure which represents the level design of the map, how the map should be printed

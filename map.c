@@ -286,33 +286,6 @@ void print_map(Map *map, SDL_Renderer *screen)
 
 
 /**
- * @brief Set a color to the background, all the renderer will be painted
- *
- * @param < renderer > Pointer on a SDL_Renderer type object which will be colored
- * @param < red, green, blue, alpha > Correspond to the primary colors which make up the background color, alpha is the transparency parameter
- */
-void set_color_background(SDL_Renderer *screen, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha)
-{
-    SDL_Rect background;
-
-    if(SDL_SetRenderDrawColor(screen, red, green, blue, alpha) != 0)
-    {
-        fprintf(stderr, "Error : Setting color in the background : %s\n", SDL_GetError());
-    }
-
-    background.x = 0;
-    background.y = 0;
-    background.w = WINDOW_WIDTH;
-    background.h = WINDOW_HEIGHT;
-
-    if(SDL_RenderFillRect(screen, &background) != 0)
-    {
-        fprintf(stderr, "Error : Painting background : %s\n", SDL_GetError());
-    }
-}
-
-
-/**
  * @brief Free the memory that was allocated to the map
  *
  * @param < map > Structure which represents the level design of the map, how the map should be printed
