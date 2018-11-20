@@ -1,13 +1,15 @@
 # depslib dependency file v1.0
-1542587676 source:d:\programmation\sdl\crazy fight\main.c
+1542737504 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
+	<SDL2/SDL_ttf.h>
 	<SDL2/SDL_image.h>
 	"constantes.h"
 	"display.h"
 	"map.h"
 	"events.h"
+	"menu.h"
 
 1519922211 c:\program files (x86)\codeblocks\sdl-2.0.8\i686-w64-mingw32\include\sdl2\sdl.h
 	"SDL_main.h"
@@ -356,17 +358,18 @@
 	"begin_code.h"
 	"close_code.h"
 
-1542583995 d:\programmation\sdl\crazy fight\display.h
+1542666627 d:\programmation\sdl\crazy fight\display.h
 
-1542583993 source:d:\programmation\sdl\crazy fight\display.c
+1542668268 source:d:\programmation\sdl\crazy fight\display.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
+	<SDL2/SDL_ttf.h>
 	"constantes.h"
 	"display.h"
 
-1542577980 source:d:\programmation\sdl\crazy fight\map.c
+1542663478 source:d:\programmation\sdl\crazy fight\map.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -375,13 +378,26 @@
 	"map.h"
 	"constantes.h"
 
-1542569802 d:\programmation\sdl\crazy fight\map.h
+1542663478 d:\programmation\sdl\crazy fight\map.h
 
-1542583505 d:\programmation\sdl\crazy fight\events.h
+1542733973 d:\programmation\sdl\crazy fight\events.h
 
-1542583487 source:d:\programmation\sdl\crazy fight\events.c
+1542663185 source:d:\programmation\sdl\crazy fight\events.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
 	"events.h"
+
+1542736841 source:d:\programmation\sdl\crazy fight\menu.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_ttf.h>
+	"display.h"
+	"constantes.h"
+	"events.h"
+	"menu.h"
+
+1542736670 d:\programmation\sdl\crazy fight\menu.h
 

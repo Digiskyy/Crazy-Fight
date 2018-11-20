@@ -9,7 +9,7 @@
 typedef struct Input
 {
     SDL_bool key[SDL_NUM_SCANCODES];
-    SDL_bool mouseButtons[5];
+    SDL_bool mouseButtons[6]; //{SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE, SDL_BUTTON_RIGHT, ...} 6 blocks in the array because the first index starts at 1 and there are 5 supported buttons
     int mouseX, mouseY, mouseXrel, mouseYrel; // Placement and movement of the mouse
     SDL_bool quit;
 }Input;

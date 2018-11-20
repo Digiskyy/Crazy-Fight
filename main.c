@@ -20,6 +20,7 @@
 #include "display.h"
 #include "map.h"
 #include "events.h"
+#include "menu.h"
 
 
 /**
@@ -34,8 +35,7 @@ int main(int argc, char* argv[])
     Map *map = NULL;
     char pathLevelDesignMap[] = "ressources/level_design_map.txt"; // ressources/level_design_map.txt
     Input in;
-    SDL_bool menu = SDL_TRUE;
-    int choice;
+    int choice = 0;
 
     /* ========== INITIALISATION ========== */
 
@@ -56,94 +56,93 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Error : Initialisation of SDL_Image : %s\n", SDL_GetError());
     }
 
-    createWindowAndScreen(&window, &screen); // OK
+    createWindowAndScreen(&window, &screen);
 
     //window == NULL ? printf("1 window NULL\n") : printf("1 window non NULL\n");
 
     //screen == NULL ? printf("2 screen NULL\n") : printf("2 screen non NULL\n");
 
-    printf("window and screen created\n");
+    //printf("window and screen created\n");
 
     initialise_events(&in);
 
-    map = load_map(pathLevelDesignMap); // OK
+    map = load_map(pathLevelDesignMap);
 
     printf("map loaded\n");
-
 
     /* ==> Pour l'instant ne pas mettre de scroll (automatique) en hauteur, faire déjà les persos et qu'on puisse jouer à deux avec une arme etc
     car peut-être pas le temps de gérer un scroll automatique + zoom car si un joueur est tout en haut de la map eet lautre tout en bas, il faut dézoomer
     A FAIRE :
-        - faire un menu (à faire peut-être avec l'éditeur)
         - éditeur de niveaux (avec enregistrement map perso),
         - afficher les sprites des persos,
         - gérer les déplacements et les sauts et la gravité et les collisions avec la map des deux persos en même temps et gérer leurs animations (saut, mort, se baisser ?, ...),
         - afficher sprites armes (si pas trop compliqué faire en sorte qu'on puisse viser dans toutes les directions),
         - tirer avec l'arme (animation perso et (arme) et gestion des balles) et gestion de la vie des persos
         - Améliorations :
+            * possibilité quand on a lancé le choix "Play" de pouvoir choisir la dernière map perso ou la map de base
             * scroll et zoom,
             * plusieurs armes (différents types :  fusil mitrailleur, pistolet, sniper, fusil à pompe, grenade, ...),
-            * possibilités de construire des murs comme territory wars */
+            * possibilité de construire des murs comme territory wars */
 
 
     /* BOUCLE PRINCIPALE => Tant que quit est faux */
-        /* SI MENU ACTIF (menu = 1) -> BOUCLE MENU */
+        /* BOUCLE MENU => Tant que quit est faux ET choix = 0 */
             /* GESTION EVENEMENTS */
             /* AFFICHAGE */
-        /* SI CHOIX = 1 -> BOUCLE JEU => Tant que jouer est vrai (appui sur échap, met pause ou revient au menu, à voir)*/
+        /* BOUCLE JEU => Tant que quit est faux ET choix = 1 (appui sur échap, met pause ou revient au menu, à voir)*/
             /* GESTION EVENEMENTS */
             /* CODE DU JEU */
             /* AFFICHAGE */
 
-        /* SI CHOIX = 2 -> BOUCLE EDITEUR DE NIVEAU => Tant que editeur est vrai (= Tant qu'on appuie pas sur échap)*/
+        /* BOUCLE EDITEUR DE NIVEAU => Tant que quit est faux ET choix = 2 (appui sur échap, sauvegarde la map et revient au menu, à voir)*/
             /* GESTION EVENEMENTS */
             /* CODE EDITEUR ??? -> il n'y en a peut-être pas */
             /* AFFICHAGE */
 
 
     /* ========== MAIN LOOP ========== */
-
     while(!in.quit)
     {
-        /* ========== MENU ========== */
-        if(menu)
+        /* ========== MENU LOOP ========== */
+        while(!choice && !in.quit)
         {
-            /* ===== HANDLE EVENTS ===== */
+            /* Handle events */
             update_events(&in);
 
-            /* ===== DISPLAY MENU ===== */
+            /* Display menu */
             SDL_RenderClear(screen);
-            display_menu(screen);
+            choice = launch_menu(screen, &in);
             SDL_RenderPresent(screen);
 
-            //si position souris sur le texte "éditeur de niveaux" + clic droit => choix = 2 // position souris sur le texte = changement de couleur si pas trop compliqué ??
-            //si position souris sur le texte "jouer" + clic droit => choix = 1
-            //si position souris sur le texte "quitter" + clic droit => a voir, p-e dès qu'on srot d'une boucle jeu ou éditeur mettre choix à 0 comme ca on revient au menu principale avant de quitter
+            SDL_Delay(20); // A voir si je le laisse
         }
 
+        /* ========== GAME LOOP ========== */
+        while(choice == 1 && !in.quit)
+        {
+            /* Handle events */
+            update_events(&in);  // FAIRE QUE SI ON APPUIE SUR ECHAP CA DEMANDE SI ON EST SUR DE QUITTER LA PARTIE EN COURS ET CA REVIENT AU MENU PRINCIPAL donc choix = 0
 
-        /* ========== HANDLE EVENTS ========== */
-        //update_events(&in);
+            /* Game code */
 
-        /* ========== DISPLAY ========== */
-        //SDL_RenderClear(screen);
+            /* Display */
+            SDL_RenderClear(screen);
+            set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
+            print_map(map, screen);
+            SDL_RenderPresent(screen);
 
-        //set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
+            SDL_Delay(20); // A voir si je le laisse
+        }
 
-        //printf("map colored\n");
+        /* ========== LEVEL EDITOR LOOP ========== */
+        while(choice == 2 && !in.quit)
+        {
+            /* Handle events */
+            update_events(&in);  // FAIRE QUE SI ON APPUIE SUR ECHAP, CA SAUVEGARDE LA MAP ACTUELLE ET REVIENNE AU MENU donc choix = 0
 
-        //print_map(map, screen);
-
-        //printf("map printed\n");
-
-        //SDL_RenderPresent(screen);
-
-        //printf("map displayed");
-
-        SDL_Delay(20);
+            SDL_Delay(20); // A voir si je le laisse
+        }
     }
-
-    //map->tileset == NULL ? printf("1 map->tileset NULL : %x\n", map->tileset) : printf("1 map-> tileset non NULL : %x\n", map->tileset);
 
     /* ========== FREE MEMORY ========== */
     free_map(map);
