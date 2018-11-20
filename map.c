@@ -20,7 +20,7 @@
 
 
 /**
- * @brief Loads the map in function of the read file
+ * @brief Loads the map in function of the read and formatted file
  *
  * @param < pathLevel > Path of the file for the level design that allows to know how the map will be designed
  * @return < map > Return a pointer on a Map type object
@@ -62,7 +62,7 @@ Map* load_map(const char* pathLevel)
         if(strncmp(buffer, "#level", 6) == 0)
         {
             printf("test load_map_level\n");
-            load_map_level(fileLevel, map); // OK, la fonction load_map_level affecte les bonnes valeurs au tableau 'tabMap' de 'Map'
+            load_map_level(fileLevel, map); // OK, la fonction load_map_level affecte les bonnes valeurs au tableau 'tabMap' de 'Map'd
         }
     }while(strstr(buffer, "#end") == NULL);
 
@@ -95,7 +95,7 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
 
     if(map->tileset == NULL)
     {
-        fprintf(stderr, "Error : Can't load the file \"%s\" : %s\n", buffer1, SDL_GetError()); // ERROR ICI CAR PAS BONNE CHAINE DE CARCATERE
+        fprintf(stderr, "Error : Can't load the file \"%s\" : %s\n", buffer1, SDL_GetError());
         IMG_Quit();
         SDL_Quit();
         exit(EXIT_FAILURE);

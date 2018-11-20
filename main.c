@@ -21,6 +21,7 @@
 #include "map.h"
 #include "events.h"
 #include "menu.h"
+#include "editor.h"
 
 
 /**
@@ -32,10 +33,13 @@ int main(int argc, char* argv[])
 
     SDL_Window **window = NULL; // Pointer of pointer because I initialise it in another function and not in the main
     SDL_Renderer **screen = NULL;
-    Map *map = NULL;
-    char pathLevelDesignMap[] = "ressources/level_design_map.txt"; // ressources/level_design_map.txt
+    WindowTileset tilesetWindow;
+    Map *map = NULL, *mapEditor = NULL;
+    char pathLevelDesignMap[] = "ressources/level_design_map.txt";
+    char pathLevelDesignEditor[] = "ressources/level_design_map_editor.txt";
     Input in;
     int choice = 0;
+    SDL_bool windowTilesetCreated = SDL_FALSE;
 
     /* ========== INITIALISATION ========== */
 
@@ -67,6 +71,7 @@ int main(int argc, char* argv[])
     initialise_events(&in);
 
     map = load_map(pathLevelDesignMap);
+    mapEditor = load_map(pathLevelDesignEditor);
 
     printf("map loaded\n");
 
@@ -80,6 +85,8 @@ int main(int argc, char* argv[])
         - tirer avec l'arme (animation perso et (arme) et gestion des balles) et gestion de la vie des persos
         - Améliorations :
             * possibilité quand on a lancé le choix "Play" de pouvoir choisir la dernière map perso ou la map de base
+            * dans l'éditeur, quand on a des objets qui prennent plusieurs tiles dans le tileset, les mettre complet dans la map au lieu de changer tuile par tuile, ex : un arbre, un pont, nuage, ...
+            * possibilité quand on est sur l'éditeur de pouvoir choisir si on charge la map de base, la dernière map perso ou une map vierge pour pouvoir la modifier
             * scroll et zoom,
             * plusieurs armes (différents types :  fusil mitrailleur, pistolet, sniper, fusil à pompe, grenade, ...),
             * possibilité de construire des murs comme territory wars */
@@ -106,7 +113,7 @@ int main(int argc, char* argv[])
         /* ========== MENU LOOP ========== */
         while(!choice && !in.quit)
         {
-            /* Handle events */
+            /* Update events */
             update_events(&in);
 
             /* Display menu */
@@ -120,7 +127,7 @@ int main(int argc, char* argv[])
         /* ========== GAME LOOP ========== */
         while(choice == 1 && !in.quit)
         {
-            /* Handle events */
+            /* Update events */
             update_events(&in);  // FAIRE QUE SI ON APPUIE SUR ECHAP CA DEMANDE SI ON EST SUR DE QUITTER LA PARTIE EN COURS ET CA REVIENT AU MENU PRINCIPAL donc choix = 0
 
             /* Game code */
@@ -137,8 +144,31 @@ int main(int argc, char* argv[])
         /* ========== LEVEL EDITOR LOOP ========== */
         while(choice == 2 && !in.quit)
         {
-            /* Handle events */
+            /* Update events */
             update_events(&in);  // FAIRE QUE SI ON APPUIE SUR ECHAP, CA SAUVEGARDE LA MAP ACTUELLE ET REVIENNE AU MENU donc choix = 0
+
+            /* Level Editor code */
+            //launch_editor(screen, &in);
+
+
+            /* Display on the main window */
+            SDL_RenderClear(screen);
+            set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
+            print_map(mapEditor, screen); // map which corresponds to the map editor file
+            SDL_RenderPresent(screen);
+
+            /* On peut afficher un quadrillage qui représente les limites de chaque tuiles, si pas trop long */
+
+            /* Initialisation tileset window */
+            if(!windowTilesetCreated)
+            {
+                window_tileset(&tilesetWindow);
+                windowTilesetCreated = SDL_TRUE;
+            }
+
+            /* Handle events for the tileset window */
+            window_tileset_events(&tilesetWindow, &in);
+
 
             SDL_Delay(20); // A voir si je le laisse
         }

@@ -19,10 +19,10 @@ typedef struct MenuText
 
 
 /**
- * @brief Displays the menu
+ * @brief Displays the menu on the renderer
  *
  * @param < screen > Renderer that allows to display on the window to which screen belongs
- * @param
+ * @param < MenuText ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  */
 void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit);
 

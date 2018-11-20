@@ -23,6 +23,8 @@ void update_events(Input* in)
 
     while(SDL_PollEvent(&event))
     {
+        in->windowID = event.window.windowID; // Set the ID of the window in the attribute windowID
+
         switch(event.type)
         {
         case SDL_QUIT :
@@ -50,6 +52,22 @@ void update_events(Input* in)
             in->mouseY = event.motion.y;
             in->mouseXrel = event.motion.xrel;
             in->mouseYrel = event.motion.yrel;
+            break;
+
+        case SDL_WINDOWEVENT :
+            switch(event.window.event)
+            {
+                case SDL_WINDOWEVENT_CLOSE : // window gonna be closed
+                    in->windowClosed = SDL_TRUE;
+                    break;
+
+                case SDL_WINDOWEVENT_ENTER : // the window has gained the focus of the mouse
+                    in->focusMouse = SDL_TRUE;
+                    break;
+                case SDL_WINDOWEVENT_LEAVE : // the window has lost the focus of the mouse
+                    in->focusMouse = SDL_FALSE;
+                    break;
+            }
             break;
         }
     }
@@ -79,4 +97,7 @@ void initialise_events(Input* in)
     {
         in->mouseButtons[i] = SDL_FALSE;
     }
+
+    in->windowClosed = SDL_FALSE;
+    in->focusMouse = SDL_FALSE;
 }

@@ -28,7 +28,7 @@ typedef struct Map
 
 
 /**
- * @brief Loads the map in function of the read file
+ * @brief Loads the map in function of the read and formatted file
  *
  * @param < pathLevel > Path of the file for the level design that allows to know how the map will be designed
  * @return < map > Return a pointer on a Map type object

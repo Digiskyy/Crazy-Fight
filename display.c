@@ -30,6 +30,7 @@ void createWindowAndScreen(SDL_Window **window, SDL_Renderer **screen)
     if(*window == NULL)
     {
         fprintf(stderr, "Error : Creation of the window : %s\n", SDL_GetError());
+        SDL_Quit();
         exit(EXIT_FAILURE);
     }
 
