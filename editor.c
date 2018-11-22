@@ -41,7 +41,7 @@ AMELIORATIONS :
  * @param < *numTypeTile > Design of the selected tile
  * @param < *choice > Choice in order to know which part of the program running
  */
-void launch_editor(WindowTileset *tileset, Input *in, Map *mapEditor, int *numTypeTile, int *choice)
+void launch_editor(WindowTileset *tileset, Input *in, Map *mapEditor, int *numTypeTile, int *choice) // TILESET INUTILE DANS LA FONCTION
 {
     int tileX, tileY;
 

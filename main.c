@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     WindowTileset tilesetWindow;
     Map *map = NULL, *mapEditor = NULL;
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
-    char pathLevelDesignEditor[] = "ressources/level_design_map_editor.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso
+    char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
     Input in;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE;
@@ -120,14 +120,17 @@ int main(int argc, char* argv[])
             choice = launch_menu(screen, &in);
             SDL_RenderPresent(screen);
 
-            SDL_Delay(20); // A voir si je le laisse
+            SDL_Delay(20);
+
+            /*
+            SI choice != 0 ALORS libérer la mémoire, détruire tout le menu dont les textures que je ne détruis pas */
         }
 
         /* ========== GAME LOOP ========== */
         while(choice == 1 && !in.quit)
         {
             /* Update events */
-            update_events(&in);  // FAIRE QUE SI ON APPUIE SUR ECHAP CA DEMANDE SI ON EST SUR DE QUITTER LA PARTIE EN COURS ET CA REVIENT AU MENU PRINCIPAL donc choix = 0
+            update_events(&in);
 
             /* Game code */
 

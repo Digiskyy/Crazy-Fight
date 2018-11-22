@@ -45,19 +45,44 @@ void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame,
 int launch_menu(SDL_Renderer *screen, Input *in)
 {
     MenuText textTitle, textGame, textEditor, textQuit;
+    TTF_Font *fontMenu = NULL;
+    int choice = 0;
+
+    /* INITIALISATION */
+    init_menu(screen, &textTitle, &textGame, &textEditor, &textQuit, fontMenu);
+
+    /* HANDLE EVENTS */
+    choice = events_menu(in, screen, &textGame, &textEditor, &textQuit);
+
+    /* DISPLAY */
+    display_menu(screen, &textTitle, &textGame, &textEditor, &textQuit);
+
+    /* FREE THE MEMORY */
+    free_menu(&textTitle, &textGame, &textEditor, &textQuit, fontMenu);
+
+    return choice;
+}
+
+
+/**
+ * @brief Initialises the MenuText structures which make up the menu
+ *
+ * @param < screen > Renderer that allows to display on the window to which screen belongs
+ * @param < MenuText ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
+ * @param < *fontMenu > represents the font used by the elements of the menu except the title
+ */
+void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit, TTF_Font *fontMenu)
+{
     char messageTitle[] = "CRAZY FIGHT";
     char messageGame[] = "Play";
     char messageEditor[] = "Level Editor";
     char messageQuit[] = "Quit";
     int nbCharTitle, nbCharGame, nbCharEditor, nbCharQuit;
-    TTF_Font *fontMenu = NULL;
-    int choice;
 
-
-    /* ========== INITIALISATION ========== */
-    /* FONTS */
-    textTitle.font = TTF_OpenFont("ressources/funhouse.ttf", 100);
-    if(textTitle.font == NULL)
+    /* INITIALISATION */
+    /* Fonts */
+    textTitle->font = TTF_OpenFont("ressources/funhouse.ttf", 100);
+    if(textTitle->font == NULL)
     {
         fprintf(stderr, "Error : Loading the font for the title : %s", TTF_GetError());
     }
@@ -67,64 +92,72 @@ int launch_menu(SDL_Renderer *screen, Input *in)
         fprintf(stderr, "Error : Loading the font for the menu : %s", TTF_GetError());
     }
 
-    /* TITLE */
+    /* Title */
     nbCharTitle = (int)strlen(messageTitle) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
-    textTitle.text = malloc(nbCharTitle * sizeof(char));
-    textTitle.text = messageTitle;
-    textTitle.color.r = 255; textTitle.color.g = 200; textTitle.color.b = 20; textTitle.color.a = 255; // Yellow  slightly orange
-    textTitle.texture = load_text(textTitle.text, screen, textTitle.font, textTitle.color, &(textTitle.placement.w), &(textTitle.placement.h));
-    textTitle.placement.x = (WINDOW_WIDTH / 2) - (textTitle.placement.w / 2); // center on the X-axis, placementTitle.w
-    textTitle.placement.y = (WINDOW_HEIGHT / 6) - (textTitle.placement.h / 2); // 1/5 from the origin on the Y-axis, placementTitle.h
+    textTitle->text = malloc(nbCharTitle * sizeof(char));
+    /* Use of strcpy() to copy 'messageTitle' into 'textTitle->text' because it is no longer an initialisation of 'textTitle->text'
+    since we use a function to intialise so 'textTitle->text' has already an value, it's considered as a change */
+    strcpy(textTitle->text, messageTitle);
+    textTitle->color.r = 255; textTitle->color.g = 200; textTitle->color.b = 20; textTitle->color.a = 255; // Yellow  slightly orange
+    textTitle->texture = load_text(textTitle->text, screen, textTitle->font, textTitle->color, &(textTitle->placement.w), &(textTitle->placement.h));
+    textTitle->placement.x = (WINDOW_WIDTH / 2) - (textTitle->placement.w / 2); // center on the X-axis, placementTitle.w
+    textTitle->placement.y = (WINDOW_HEIGHT / 6) - (textTitle->placement.h / 2); // 1/5 from the origin on the Y-axis, placementTitle.h
 
-    /* GAME */
+    /* Game */
     nbCharGame = (int)strlen(messageGame) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
-    textGame.text = malloc(nbCharGame * sizeof(char));
-    textGame.text = messageGame;
-    textGame.font = fontMenu;
-    textGame.color.r = 242; textGame.color.g = 238; textGame.color.b = 240; textGame.color.a = 255;
-    textGame.texture = load_text(textGame.text, screen, textGame.font, textGame.color, &(textGame.placement.w), &(textGame.placement.h));
-    textGame.placement.x = (WINDOW_WIDTH / 2) - (textGame.placement.w / 2);
-    textGame.placement.y = (2 * WINDOW_HEIGHT / 5) - (textGame.placement.h / 2);
+    textGame->text = malloc(nbCharGame * sizeof(char));
+    strcpy(textGame->text, messageGame);
+    textGame->font = fontMenu;
+    textGame->color.r = 242; textGame->color.g = 238; textGame->color.b = 240; textGame->color.a = 255;
+    textGame->texture = load_text(textGame->text, screen, textGame->font, textGame->color, &(textGame->placement.w), &(textGame->placement.h));
+    textGame->placement.x = (WINDOW_WIDTH / 2) - (textGame->placement.w / 2);
+    textGame->placement.y = (2 * WINDOW_HEIGHT / 5) - (textGame->placement.h / 2);
 
-    /* EDITOR */
+    /* Editor */
     nbCharEditor = (int)strlen(messageEditor) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
-    textEditor.text = malloc(nbCharEditor * sizeof(char));
-    textEditor.text = messageEditor;
-    textEditor.font = fontMenu;
-    textEditor.color.r = 242; textEditor.color.g = 238; textEditor.color.b = 240; textEditor.color.a = 255;
-    textEditor.texture = load_text(textEditor.text, screen, textEditor.font, textEditor.color, &(textEditor.placement.w), &(textEditor.placement.h));
-    textEditor.placement.x = (WINDOW_WIDTH / 2) - (textEditor.placement.w / 2);
-    textEditor.placement.y = (3 * WINDOW_HEIGHT / 5) - (textEditor.placement.h / 2);
+    textEditor->text = malloc(nbCharEditor * sizeof(char));
+    strcpy(textEditor->text, messageEditor);
+    textEditor->font = fontMenu;
+    textEditor->color.r = 242; textEditor->color.g = 238; textEditor->color.b = 240; textEditor->color.a = 255;
+    textEditor->texture = load_text(textEditor->text, screen, textEditor->font, textEditor->color, &(textEditor->placement.w), &(textEditor->placement.h));
+    textEditor->placement.x = (WINDOW_WIDTH / 2) - (textEditor->placement.w / 2);
+    textEditor->placement.y = (3 * WINDOW_HEIGHT / 5) - (textEditor->placement.h / 2);
 
-    /* QUIT */
+    /* Quit */
     nbCharQuit = (int)strlen(messageQuit)  + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
-    textQuit.text = malloc(nbCharQuit * sizeof(char));
-    textQuit.text = messageQuit;
-    textQuit.font = fontMenu;
-    textQuit.color.r = 242; textQuit.color.g = 238; textQuit.color.b = 240; textQuit.color.a = 255;
-    textQuit.texture = load_text(textQuit.text, screen, textQuit.font, textQuit.color, &(textQuit.placement.w), &(textQuit.placement.h));
-    textQuit.placement.x = (WINDOW_WIDTH / 2) - (textQuit.placement.w / 2);
-    textQuit.placement.y = (4 * WINDOW_HEIGHT / 5) - (textQuit.placement.h / 2);
+    textQuit->text = malloc(nbCharQuit * sizeof(char));
+    strcpy(textQuit->text, messageQuit);
+    textQuit->font = fontMenu;
+    textQuit->color.r = 242; textQuit->color.g = 238; textQuit->color.b = 240; textQuit->color.a = 255;
+    textQuit->texture = load_text(textQuit->text, screen, textQuit->font, textQuit->color, &(textQuit->placement.w), &(textQuit->placement.h));
+    textQuit->placement.x = (WINDOW_WIDTH / 2) - (textQuit->placement.w / 2);
+    textQuit->placement.y = (4 * WINDOW_HEIGHT / 5) - (textQuit->placement.h / 2);
+}
 
 
-    /* ========== HANDLE EVENTS ========== */
-    choice = events_menu(in, screen, &textGame, &textEditor, &textQuit);
-
-    /* ========== DISPLAY ========== */
-    display_menu(screen, &textTitle, &textGame, &textEditor, &textQuit);
-
-
-    /* ========== CLOSE THE FONTS ========== */
-    TTF_CloseFont(textTitle.font);
+/**
+ * @brief Free the memory allocated for some attributes of the structure MenuText
+ *
+ * @param < MenuText* ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
+ * @param < *fontMenu > represents the font used by the elements of the menu except the title
+ */
+void free_menu(MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit, TTF_Font *fontMenu)
+{
+    /* CLOSE THE FONTS */
+    TTF_CloseFont(textTitle->font);
     TTF_CloseFont(fontMenu);
 
-    /* ========== FREE THE MESSAGE ========== */
-    free(textTitle.text);
-    free(textGame.text);
-    free(textEditor.text);
-    free(textQuit.text);
+    /* FREE THE POINTERS ON THE STRINGS */
+    free(textTitle->text);
+    free(textGame->text);
+    free(textEditor->text);
+    free(textQuit->text);
 
-    return choice;
+    /* FREE THE TEXTURES */
+    SDL_DestroyTexture(textTitle->texture);
+    SDL_DestroyTexture(textGame->texture);
+    SDL_DestroyTexture(textEditor->texture);
+    SDL_DestroyTexture(textQuit->texture);
 }
 
 
