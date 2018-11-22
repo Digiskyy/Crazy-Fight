@@ -22,7 +22,7 @@
  * @brief Displays the menu on the renderer
  *
  * @param < screen > Renderer that allows to display on the window to which screen belongs
- * @param < MenuText ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
+ * @param < MenuText *... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  */
 void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit)
 {
@@ -39,7 +39,7 @@ void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame,
  * @brief Main function for the menu. Launch the menu
  *
  * @param  < screen > Renderer that allows to display on the window to which screen belongs
- * @param < in > Pointer on a structure which run the proper code in function of the events
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @return < int > Returns the value of the choice that the player does when he's clicking on an element of the menu
  */
 int launch_menu(SDL_Renderer *screen, Input *in)
@@ -50,43 +50,47 @@ int launch_menu(SDL_Renderer *screen, Input *in)
     char messageEditor[] = "Level Editor";
     char messageQuit[] = "Quit";
     int nbCharTitle, nbCharGame, nbCharEditor, nbCharQuit;
+    TTF_Font *fontMenu = NULL;
     int choice;
 
 
     /* ========== INITIALISATION ========== */
-    /* TITLE */
-    nbCharTitle = (int)strlen(messageTitle)  + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
-    textTitle.text = malloc(nbCharTitle * sizeof(char));
-    textTitle.text = messageTitle;
+    /* FONTS */
     textTitle.font = TTF_OpenFont("ressources/funhouse.ttf", 100);
     if(textTitle.font == NULL)
     {
         fprintf(stderr, "Error : Loading the font for the title : %s", TTF_GetError());
     }
+    fontMenu = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 75);
+    if(fontMenu == NULL)
+    {
+        fprintf(stderr, "Error : Loading the font for the menu : %s", TTF_GetError());
+    }
+
+    /* TITLE */
+    nbCharTitle = (int)strlen(messageTitle) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
+    textTitle.text = malloc(nbCharTitle * sizeof(char));
+    textTitle.text = messageTitle;
     textTitle.color.r = 255; textTitle.color.g = 200; textTitle.color.b = 20; textTitle.color.a = 255; // Yellow  slightly orange
     textTitle.texture = load_text(textTitle.text, screen, textTitle.font, textTitle.color, &(textTitle.placement.w), &(textTitle.placement.h));
     textTitle.placement.x = (WINDOW_WIDTH / 2) - (textTitle.placement.w / 2); // center on the X-axis, placementTitle.w
     textTitle.placement.y = (WINDOW_HEIGHT / 6) - (textTitle.placement.h / 2); // 1/5 from the origin on the Y-axis, placementTitle.h
 
     /* GAME */
-    nbCharGame = (int)strlen(messageGame)  + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
+    nbCharGame = (int)strlen(messageGame) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textGame.text = malloc(nbCharGame * sizeof(char));
     textGame.text = messageGame;
-    textGame.font = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 75);
-    if(textGame.font == NULL)
-    {
-        fprintf(stderr, "Error : Loading the font for the menu : %s", TTF_GetError());
-    }
+    textGame.font = fontMenu;
     textGame.color.r = 242; textGame.color.g = 238; textGame.color.b = 240; textGame.color.a = 255;
     textGame.texture = load_text(textGame.text, screen, textGame.font, textGame.color, &(textGame.placement.w), &(textGame.placement.h));
     textGame.placement.x = (WINDOW_WIDTH / 2) - (textGame.placement.w / 2);
     textGame.placement.y = (2 * WINDOW_HEIGHT / 5) - (textGame.placement.h / 2);
 
     /* EDITOR */
-    nbCharEditor = (int)strlen(messageEditor)  + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
+    nbCharEditor = (int)strlen(messageEditor) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textEditor.text = malloc(nbCharEditor * sizeof(char));
     textEditor.text = messageEditor;
-    textEditor.font = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 75);
+    textEditor.font = fontMenu;
     textEditor.color.r = 242; textEditor.color.g = 238; textEditor.color.b = 240; textEditor.color.a = 255;
     textEditor.texture = load_text(textEditor.text, screen, textEditor.font, textEditor.color, &(textEditor.placement.w), &(textEditor.placement.h));
     textEditor.placement.x = (WINDOW_WIDTH / 2) - (textEditor.placement.w / 2);
@@ -96,7 +100,7 @@ int launch_menu(SDL_Renderer *screen, Input *in)
     nbCharQuit = (int)strlen(messageQuit)  + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textQuit.text = malloc(nbCharQuit * sizeof(char));
     textQuit.text = messageQuit;
-    textQuit.font = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 75);
+    textQuit.font = fontMenu;
     textQuit.color.r = 242; textQuit.color.g = 238; textQuit.color.b = 240; textQuit.color.a = 255;
     textQuit.texture = load_text(textQuit.text, screen, textQuit.font, textQuit.color, &(textQuit.placement.w), &(textQuit.placement.h));
     textQuit.placement.x = (WINDOW_WIDTH / 2) - (textQuit.placement.w / 2);
@@ -112,9 +116,7 @@ int launch_menu(SDL_Renderer *screen, Input *in)
 
     /* ========== CLOSE THE FONTS ========== */
     TTF_CloseFont(textTitle.font);
-    TTF_CloseFont(textGame.font);
-    TTF_CloseFont(textEditor.font);
-    TTF_CloseFont(textQuit.font);
+    TTF_CloseFont(fontMenu);
 
     /* ========== FREE THE MESSAGE ========== */
     free(textTitle.text);
@@ -129,7 +131,7 @@ int launch_menu(SDL_Renderer *screen, Input *in)
 /**
  * @brief Handle the events related to the menu
  *
- * @param < in > Pointer on a structure which run the proper code in function of the events
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param  < screen > Renderer that allows to display on the window to which screen belongs
  * @param < MenuText ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  * @return < int > Returns the value of the choice that the player does when he's clicking on an element of the menu
@@ -187,7 +189,6 @@ int events_menu(Input *in, SDL_Renderer *screen, MenuText *textGame, MenuText *t
 
     return choice;
 }
-
 
 
 

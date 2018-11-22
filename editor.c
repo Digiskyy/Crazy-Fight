@@ -12,78 +12,77 @@
 
 #include "events.h"
 #include "map.h"
+//#include "display.h" Why shouldn't I include this file because I use load_image() from it ?
 #include "constantes.h"
-//#include "display.h"
 #include "editor.h"
 
-/* PRINCIPE DE FONCTIONNEMENT
-- on charge dans la fenêtre principale une map vierge => une map remplie de tile transparent => un fichier avec un tableau de 30*40 rempli de 9
-- ouvrir une 2eme fenêtre avec l'image du tileset avec les lignes dedans
-- faire en sorte qu'on puisse cliquer dedans chacune des tiles du tileset, cela va sélectionner une type de tile
-- quand on revient sur la fenêtre principale avec le clic droit, on clique n'importe sur la map et on crée un bloc du type sélectionné
-- avec le clic droit on l'efface (c'est-à-dire on met un bloc blanc car c'est transparent donc tile = 9)
-- on sauvegarde la map en appuyant sur 's' => écriture de fichier
-- en appuyant sur echap voir main.c
 
-CHOSES A FAIRE DANS L'ORDRE :
-- charge dans la fenêtre principale, le fichier qui représente la map vierge
-    => le lire comme dans map.c et charger la map qu'il y a (à la place du tableau, écrire un tableau remplie de 9)
-- ouvrir la 2eme fenetre et faire en sorte qu'on puisse cliquer sur les cases
-- faire en sorte que quand on revient sur la fenêtre principale de sauvegarder le choix du tile
-- dans cette fenêtre, faire en sorte qu'on puisse cliquer et que cela change le tile par le tile sélectionner
-- sauvegarder la map
-- faire le bouton échap
-- dessiner un quadrillage qui représente les tiles dans la fenêtre principale
+/* PRINCIPE DE FONCTIONNEMENT :
+- On charge dans la fenêtre principale une map vierge (map remplie de tuile transparentes => un fichier avec un tableau de 30*40 rempli de 9)
+- Ouvre une 2ème fenêtre avec l'image du tileset avec les lignes dedans
+- Le clic droit sur une tuile du tileset sélectionne son type (son design)
+- Quand on revient sur la fenêtre principale avec le clic droit, on clique n'importe où sur la map et on peut créer une tuile du type sélectionné
+- Le clic droit efface la tuile sélectionnée (c'est-à-dire on met une tuile blanche car elle sont transparentes donc tile = 9)
+- On peut sauvegarder la map dans un fichier en appuyant sur 's'
+- On ferme la fenêtre avec le tileset et on revient au menu principal en appuyant sur echap
+
+AMELIORATIONS :
+- PROBLEME QUAND ON VEUT QUITTER AVEC LA CROIX ROUGE OU AVEC L'OPTION QUIT DU MENU sauf si on quitte après être rentré dans l'éditeur et l'avoir refermer
+- dessiner un quadrillage qui représente les tiles dans la fenêtre principale ?? Est-ce nécessaire
 */
 
-/* A VOIR CE QUE FAIT CETTE FONCTION, SUREMENT BESOIN POUR UNE FOCNTION PRINCIPALE QUI REGROUPERA LES DIFFERENTES FONCTIONS DE L'EDITEUR */
+
 /**
- * @brief
+ * @brief Handles events in order to change the tile on the main window by the selected tile in the tileset window and to save the map and to close the editor
  *
- * @param < screen > Renderer that allows to display on the window to which screen belongs
- * @param < in > Pointer on a structure which run the proper code in function of the events
+ * @param < *tileset > Structure which represents the tileset window
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
+ * @param < *mapEditor > Structure which represents the design of the edited map
+ * @param < *numTypeTile > Design of the selected tile
+ * @param < *choice > Choice in order to know which part of the program running
  */
-void launch_editor(SDL_Renderer *screen, Input *in)
+void launch_editor(WindowTileset *tileset, Input *in, Map *mapEditor, int *numTypeTile, int *choice)
 {
-    /*mapEditor = load_map(pathLevelDesignEditor);
-    if(mapEditor == NULL)
+    int tileX, tileY;
+
+    if(in->focusMouse && in->windowID == 1) // If the mouse is over the main window ID
     {
-        fprintf(stderr, "Error : Loading the file for the level design map editor");
-    }*/
+        tileX = in->mouseX / mapEditor->widthTile;
+        tileY = in->mouseY / mapEditor->heightTile;
 
-    /* Display */
-    /*print_map(mapEditor, screen);*/
+        if(in->mouseButtons[SDL_BUTTON_LEFT]) // Left click to change the design of a tile
+        {
+            mapEditor->tabMap[tileY][tileX] = *numTypeTile; // Changes the old tile by the new one
+        }
+        if(in->mouseButtons[SDL_BUTTON_RIGHT]) // Right click to "delete" the design of a tile (Change for a transparent tile)
+        {
+            mapEditor->tabMap[tileY][tileX] = 9; // Changes the old tile by a transparent tile
+        }
+    }
 
-    printf("affichage map editor\n");
+    if(in->key[SDLK_s]) // Click on the 's' key to save
+    {
+        in->key[SDLK_s] = SDL_FALSE;
+        save_mapEditor(mapEditor); // Writes on a file which saves the current tabMap
+        printf("Sauvegarde de la map ...\n");
+    }
+
+    if(in->key[SDLK_ESCAPE]) // Click on the 'escape' key to quit the editor and close the tileset window and get back to the menu
+    {
+        in->key[SDLK_ESCAPE] = SDL_FALSE;
+        in->windowClosed = SDL_TRUE;
+        *choice = 0; // To create again the window the next time in the editor and exit the editor loop and go into the menu one
+    }
 }
 
 
 /**
- * @brief
+ * @brief Initialises the structure WindowTileset to open a  new window which will display the tileset image
  *
+ * @param < *tilesetWindow > Structure which represents the tileset window
  */
-void window_tileset(WindowTileset *tilesetWindow)
+void init_window_tileset(WindowTileset *tilesetWindow)
 {
-    /*SDL_Window *windowTileset = NULL;
-    SDL_Renderer *screenTileset = NULL;
-
-    windowTileset = SDL_CreateWindow("Tileset", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_TILESET_WIDTH, WINDOW_TILESET_HEIGHT, SDL_WINDOW_SHOWN);
-    if(windowTileset == NULL)
-    {
-        fprintf(stderr, "Error : Creation of the tileset window : %s\n", SDL_GetError());
-    }
-
-    screenTileset = SDL_CreateRenderer(windowTileset, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if(screenTileset == NULL)
-    {
-        fprintf(stderr, "Error : Creation of SDL_Renderer for the tileset : %s\n", SDL_GetError());
-        SDL_DestroyWindow(windowTileset);
-    }
-
-    printf("Window et screen tileset created\n");*/
-
-
-
     tilesetWindow->width = WINDOW_TILESET_WIDTH;
     tilesetWindow->height = WINDOW_TILESET_HEIGHT;
     tilesetWindow->window = SDL_CreateWindow("Tileset", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, tilesetWindow->width, tilesetWindow->height, SDL_WINDOW_SHOWN);
@@ -94,7 +93,8 @@ void window_tileset(WindowTileset *tilesetWindow)
     else
     {
         tilesetWindow->ID = SDL_GetWindowID(tilesetWindow->window);
-        tilesetWindow->mouseFocus = SDL_TRUE;
+
+        tilesetWindow->mouseFocus = SDL_FALSE; // if the mouse is on the tileset window
         tilesetWindow->screen = SDL_CreateRenderer(tilesetWindow->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if(tilesetWindow->screen == NULL)
         {
@@ -103,30 +103,91 @@ void window_tileset(WindowTileset *tilesetWindow)
         }
         else
         {
-            /* Load the image of the tileset with the lines */
-            tilesetWindow->texture = load_image("ressources/tileset_tiles.png", tilesetWindow->screen);
-            SDL_RenderCopy(tilesetWindow->screen, tilesetWindow->texture, NULL, NULL);
-            SDL_RenderPresent(tilesetWindow->screen);
+            tilesetWindow->texture = load_image("ressources/tileset_tiles.png", tilesetWindow->screen); // Load the image of the tileset with the lines
+            tilesetWindow->created = SDL_TRUE;
         }
     }
 }
 
 
-void window_tileset_events(WindowTileset *tileset, Input *in)
+/**
+ * @brief Handles the events related to the tileset window (to select a tile and close the window)
+ *
+ * @param < *tileset > Structure which represents the tileset window
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
+ * @param < *mapEditor > Structure which represents the design of the edited map
+ * @param < *numTypeTile > Design of the selected tile
+ */
+void window_tileset_events(WindowTileset *tileset, Input *in, Map *mapEditor, int *numTypeTile)
 {
-    if(in->windowID == tileset->ID)
+    int tileX, tileY;
+
+    if(in->windowClosed == SDL_TRUE)
     {
-        if(in->windowClosed == SDL_TRUE)
+        SDL_DestroyTexture(tileset->texture);
+        SDL_DestroyRenderer(tileset->screen);
+        SDL_DestroyWindow(tileset->window);
+        in->windowClosed = SDL_FALSE;
+        tileset->created = SDL_FALSE;
+    }
+
+    if(in->windowID == tileset->ID) // If the events comes from the tileset window
+    {
+        if(in->focusMouse == SDL_TRUE) // If the mouse is over the tileset window
         {
-            SDL_DestroyTexture(tileset->texture);
-            SDL_DestroyRenderer(tileset->screen);
-            SDL_DestroyWindow(tileset->window);
-            printf("2eme fenetre quittee\n");
-        }
-        else if(in->focusMouse == SDL_TRUE) // A FAIRE : quand on clique dans la fenetre tileset on connaît la position de la souris et on devine la case cliquee donc on sait quelle tile utilisee cf TP2
-        {
-            printf("focus de la souris sur la fenetre");
+            tileX = in->mouseX / mapEditor->widthTile;
+            tileY = in->mouseY / mapEditor->heightTile;
+
+            if(in->mouseButtons[SDL_BUTTON_LEFT]) // Left click to change the design of the tile
+            {
+                *numTypeTile = (tileY * mapEditor->nbColumnsTileset) + tileX; // To have the numero of the tile which belongs to the selected tile in the tileset window => index of the array 'properties' of the mapEditor
+                in->mouseButtons[SDL_BUTTON_LEFT] = SDL_FALSE;
+            }
         }
     }
 }
+
+
+/**
+ * @brief Saves the edited map in a file by clicking on the 's' key
+ *
+ * @param < *mapEditor > Structure which represents the design of the edited map
+ */
+void save_mapEditor(Map *mapEditor)
+{
+    FILE *fileMapPerso = NULL;
+    char pathFilePerso[] = "ressources/level_design_map_perso.txt";
+
+    fileMapPerso = fopen(pathFilePerso, "w+");
+    if(fileMapPerso != NULL)
+    {
+        fputs("Tile mapping Version 1.0\n", fileMapPerso);
+        fputs("#tileset\n", fileMapPerso);
+        fputs("ressources/tileset.png\n", fileMapPerso);
+        fputs("ressources/tileset_array_properties.txt\n", fileMapPerso);
+        fputs("#level\n", fileMapPerso);
+        fprintf(fileMapPerso, "%d %d\n", mapEditor->nbTilesMapX, mapEditor->nbTilesMapY);
+
+        /* Writing of the tabMap which represents the current map in the editor */
+        for(int i = 0; i < mapEditor->nbTilesMapX; i++)
+        {
+            for(int j = 0; j < mapEditor->nbTilesMapY; j++)
+            {
+                if(fprintf(fileMapPerso, "%d ", mapEditor->tabMap[i][j]) == EOF)
+                {
+                    fprintf(stderr, "Error : Can't write the array which stands for the edited map in the file \"%s\"\n", pathFilePerso);
+                }
+            }
+            fputc('\n', fileMapPerso); // end of line
+        }
+        fputs("#end", fileMapPerso);
+    }
+    else
+    {
+        fprintf(stderr, "Error : Can't open the file \"%s\"\n", pathFilePerso);
+    }
+
+    fclose(fileMapPerso);
+}
+
 

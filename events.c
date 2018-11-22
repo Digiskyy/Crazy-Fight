@@ -13,9 +13,9 @@
 
 
 /**
- * @brief Update the structure Input in function of the events
+ * @brief Updates the structure Input in function of the events
  *
- * @param < in > Pointer on a structure which allows to update the states of the keys, buttons and so on in function of the events
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  */
 void update_events(Input* in)
 {
@@ -76,9 +76,9 @@ void update_events(Input* in)
 
 
 /**
- * @brief Initialise the structure Input
+ * @brief Initialises the structure Input
  *
- * @param < in > Pointer on a structure which allows to initialise the states of the keys, buttons and so on
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  */
 void initialise_events(Input* in)
 {

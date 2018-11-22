@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
     WindowTileset tilesetWindow;
     Map *map = NULL, *mapEditor = NULL;
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
-    char pathLevelDesignEditor[] = "ressources/level_design_map_editor.txt";
+    char pathLevelDesignEditor[] = "ressources/level_design_map_editor.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso
     Input in;
-    int choice = 0;
+    int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE;
 
     /* ========== INITIALISATION ========== */
@@ -71,7 +71,6 @@ int main(int argc, char* argv[])
     initialise_events(&in);
 
     map = load_map(pathLevelDesignMap);
-    mapEditor = load_map(pathLevelDesignEditor);
 
     printf("map loaded\n");
 
@@ -144,37 +143,47 @@ int main(int argc, char* argv[])
         /* ========== LEVEL EDITOR LOOP ========== */
         while(choice == 2 && !in.quit)
         {
-            /* Update events */
-            update_events(&in);  // FAIRE QUE SI ON APPUIE SUR ECHAP, CA SAUVEGARDE LA MAP ACTUELLE ET REVIENNE AU MENU donc choix = 0
+            /* Initialisation tileset window */
+            if(!windowTilesetCreated)
+            {
+                mapEditor = load_map(pathLevelDesignEditor);
+                init_window_tileset(&tilesetWindow);
+                windowTilesetCreated = SDL_TRUE;
+            }
 
-            /* Level Editor code */
-            //launch_editor(screen, &in);
+
+            /* Updates EVENTS */
+            update_events(&in);
+
+            /* Handles events for the main window and launches the editor */
+            launch_editor(screen, &in, mapEditor, &numTypeTile, &choice);
+            if(!choice) // choice == 0 : it means that the tileset has been closed
+            {
+                windowTilesetCreated = SDL_FALSE; // The tileset window will be created again
+            }
+
+            /* Handles events for the tileset window */
+            window_tileset_events(&tilesetWindow, &in, mapEditor, &numTypeTile);
 
 
-            /* Display on the main window */
+            /* On peut afficher un quadrillage qui représente les limites de chaque tuiles, si pas trop long */
+            /* Displays on the main window */
             SDL_RenderClear(screen);
             set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
             print_map(mapEditor, screen); // map which corresponds to the map editor file
             SDL_RenderPresent(screen);
 
-            /* On peut afficher un quadrillage qui représente les limites de chaque tuiles, si pas trop long */
-
-            /* Initialisation tileset window */
-            if(!windowTilesetCreated)
-            {
-                window_tileset(&tilesetWindow);
-                windowTilesetCreated = SDL_TRUE;
-            }
-
-            /* Handle events for the tileset window */
-            window_tileset_events(&tilesetWindow, &in);
+            /* Displays on the tilesetWindow */
+            SDL_RenderCopy(tilesetWindow.screen, tilesetWindow.texture, NULL, NULL);
+            SDL_RenderPresent(tilesetWindow.screen);
 
 
-            SDL_Delay(20); // A voir si je le laisse
+            SDL_Delay(20);
         }
     }
 
     /* ========== FREE MEMORY ========== */
+    free_map(mapEditor);
     free_map(map);
     SDL_DestroyRenderer(screen);
     SDL_DestroyWindow(window);

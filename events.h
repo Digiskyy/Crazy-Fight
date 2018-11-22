@@ -4,7 +4,7 @@
 
 /**
  * @struct Input
- * @brief Store the state of each button and each key and each stuff which will trigger a event
+ * @brief Stores the state of each button and each key and each stuff which will trigger a event
  */
 typedef struct Input
 {
@@ -19,16 +19,16 @@ typedef struct Input
 
 
 /**
- * @brief Loads the map in function of the read file
+ * @brief Updates the structure Input in function of the events
  *
- * @param < pathLevel > Path of the file for the level design that allows to know how the map will be designed
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  */
 void update_events(Input* in);
 
 /**
- * @brief Initialise the structure Input
+ * @brief Initialises the structure Input
  *
- * @param < in > Pointer on a structure which allows to initialise the states of the keys, buttons and so on
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  */
 void initialise_events(Input* in);
 

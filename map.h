@@ -4,7 +4,7 @@
 
 /**
  * @struct TileProperties
- * @brief Store the properties of one tile of the map
+ * @brief Stores the properties of one tile of the map
  */
 typedef struct TileProperties
 {
@@ -14,12 +14,12 @@ typedef struct TileProperties
 
 /**
  * @struct Map
- * @brief Store the properties of the map, especially its level design
+ * @brief Stores the properties of the map, especially its level design
  */
 typedef struct Map
 {
     int widthTile, heightTile;      /**< Width and height of one tile */
-    int nbTilesX, nbTilesY;         /**< Number of tiles which are displayed on the screen on the X-axis and the Y-axis */
+    int nbRowsTileset, nbColumnsTileset;         /**< Number of tiles which are displayed on the screen on the X-axis and the Y-axis */
     int nbTilesMapX, nbTilesMapY;   /**< Number of tiles which make up the entire map on the X-axis and the Y-axis */
     SDL_Surface *tileset;           /**< Pointer on a surface which stores the tileset image */
     TileProperties *properties;    /**< Pointer on an 'Tileproperties' type array stores the properties of each tile */

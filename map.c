@@ -127,19 +127,19 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
         exit(EXIT_FAILURE);
     }
 
-    fscanf(fileTileProp, "%d %d", &(map->nbTilesX), &(map->nbTilesY)); // Retrieve the size of the tileset array
+    fscanf(fileTileProp, "%d %d", &(map->nbRowsTileset), &(map->nbColumnsTileset)); // Retrieve the size of the tileset array
 
-    //printf("13 nom du fichier tileset : %s\n\tnbTilesX : %d, nbTilesY : %d\n", buffer1, map->nbTilesX, map->nbTilesY);
+    printf("13 nom du fichier tileset : %s\n\tnbTilesX : %d, nbTilesY : %d\n", buffer1, map->nbRowsTileset, map->nbColumnsTileset);
 
-    map->widthTile = map->tileset->w / map->nbTilesY; // = macro TILESIZE
-    map->heightTile = map->tileset->h / map->nbTilesX; // = macro TILESIZE
-    map->properties = malloc((map->nbTilesX) * (map->nbTilesY) * sizeof(TileProperties)); // Allocate memory for an array 1 dimension which stores the properties of each tile
+    map->widthTile = map->tileset->w / map->nbColumnsTileset; // = macro TILESIZE
+    map->heightTile = map->tileset->h / map->nbRowsTileset; // = macro TILESIZE
+    map->properties = malloc((map->nbRowsTileset) * (map->nbColumnsTileset) * sizeof(TileProperties)); // Allocate memory for an array 1 dimension which stores the properties of each tile
 
     //printf("14 nom du fichier tileset : %s\n\twidthTile : %d, heightTile : %d\n", buffer1, map->widthTile, map->heightTile);
 
-    for(i = 0; i < map->nbTilesX; i++)
+    for(i = 0; i < map->nbRowsTileset; i++)
     {
-        for(j = 0; j < map->nbTilesY; j++)
+        for(j = 0; j < map->nbColumnsTileset; j++)
         {
             map->properties[numTile].rect.w = map->widthTile;
             map->properties[numTile].rect.h = map->heightTile;
@@ -212,14 +212,14 @@ void load_map_level(FILE* file, Map* map)
         {
             fscanf(file, "%d ", &tmp);
 
-            if(tmp > map->nbTilesX * map->nbTilesY) // If the value linked to a tile is superior than the number of total tiles, it means that it's a wrong value
+            if(tmp > map->nbRowsTileset * map->nbColumnsTileset) // If the value linked to a tile is superior than the number of total tiles, it means that it's a wrong value
             {
                 fprintf(stderr, "Error : Wrong value. A tile has its value superior than the number of total tiles.\n");
                 IMG_Quit();
                 SDL_Quit();
                 exit(EXIT_FAILURE);
             }
-            map->tabMap[i][j] = tmp; //OK TABLEAU A LES BONNES VALEURS
+            map->tabMap[i][j] = tmp;
         }
     }
 
