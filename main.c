@@ -37,9 +37,12 @@ int main(int argc, char* argv[])
     WindowTileset tilesetWindow;
     Map *map = NULL, *mapEditor = NULL;
 
+    Character *player1 = NULL;
+
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
-    char pathSpriteNavyseal[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_right_move.png";
+    char pathSpriteNavysealMoveRight[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_right_move.png";
+    char pathSpriteNavysealMoveLeft
 
     Input in;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
@@ -115,6 +118,12 @@ int main(int argc, char* argv[])
             /* AFFICHAGE */
 
 
+
+    /* Initialisation characters */
+    player1 = init_character(screen, pathSpriteNavysealMoveRight, 6);
+    printf("init_character\n");
+
+
     /* ========== MAIN LOOP ========== */
     while(!in.quit)
     {
@@ -135,22 +144,21 @@ int main(int argc, char* argv[])
         /* ========== GAME LOOP ========== */
         while(choice == 1 && !in.quit)
         {
-            /* Print on the screen */
+            /* Update events */
+            update_events(&in);
+
+            /* Print the map on the screen */
             SDL_RenderClear(screen);
             set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
             print_map(map, screen);
 
-            /* Update events */
-            update_events(&in);
-
-            /* Game code */
-            launch_game(screen, pathSpriteNavyseal, &in);
-
+            /* Game code (Handle events and print on the screen) */
+            launch_game(screen, player1, &in);
 
             /* Display */
             SDL_RenderPresent(screen);
 
-            SDL_Delay(20);
+            SDL_Delay(50);
         }
 
         /* ========== LEVEL EDITOR LOOP ========== */
@@ -194,6 +202,7 @@ int main(int argc, char* argv[])
     }
 
     /* ========== FREE MEMORY ========== */
+    free_character(player1);
     free_map(mapEditor);
     free_map(map);
     SDL_DestroyRenderer(screen);

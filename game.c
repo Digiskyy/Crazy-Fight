@@ -16,6 +16,10 @@
 #include "game.h"
 
 
+#define LEFT 0
+#define RIGHT 1
+
+
 /* A FAIRE  :
 - faire en sorte que le personnage (sprite) avance en fonction des touches du clavier
 - quand il avance il utilise l'animation
@@ -44,15 +48,9 @@ FAIRE UN MAKEFILE POUR LE TP DE PROG AVANCEE LUNDI AFIN DE POUVOIR EXECUTER LE P
 /* Faire une struc sprite et une struct personnage qui prend, entre autre, un sprite en attribut */
 
 
-void launch_game(SDL_Renderer *screen, const char *filename, Input *in)
+void launch_game(SDL_Renderer *screen,  Character *player, Input *in)
 {
-    Character *player;
-
     printf("launch_game\n");
-
-    player = init_character(screen, filename, 6);
-
-    printf("init_character\n");
 
     game_event(in, player);
 
@@ -61,10 +59,6 @@ void launch_game(SDL_Renderer *screen, const char *filename, Input *in)
     display_sprite(screen, player);
 
     printf("display_sprite\n");
-
-    free_character(player);
-
-    printf("free_character\n");
 }
 
 
@@ -79,7 +73,8 @@ Character* init_character(SDL_Renderer *screen, const char *filename, int nbSpri
         exit(EXIT_FAILURE);
     }
     player->health = 100;
-    player->speed = 1;
+    player->speed = 8;
+    player->side = RIGHT;
 
     player->sprite = malloc(sizeof(Sprite));
     if(player->sprite == NULL)
@@ -98,18 +93,26 @@ Character* init_character(SDL_Renderer *screen, const char *filename, int nbSpri
         free(player);
         exit(EXIT_FAILURE);
     }
-    player->sprite->spritesheetPos[0].w = 70; // 70 pixels wide for the sprite
-    player->sprite->spritesheetPos[0].h = 85; // 85 pixels in height for the sprite
-    player->sprite->spritesheetPos[0].x = 0;
-    player->sprite->spritesheetPos[0].y = 0;
 
-    player->position.w = player->sprite->spritesheetPos[0].w;
-    player->position.h = player->sprite->spritesheetPos[0].h;
+    /* Load the position of each sprite on the spritesheet */
+    for(int i = 0; i < nbSpritesOnSpritesheet; i++)
+    {
+        player->sprite->spritesheetPos[i].w = 70; // Width of the sprite
+        player->sprite->spritesheetPos[i].h = 85; // Hight of the sprite
+        player->sprite->spritesheetPos[i].x = i * player->sprite->spritesheetPos[i].w;
+        player->sprite->spritesheetPos[i].y = 0;
+    }
+
+    /* Load the position where the charcater should be displayed at the beginning */
+    player->position.w = player->sprite->spritesheetPos->w;
+    player->position.h = player->sprite->spritesheetPos->h;
     player->position.x = 0;
     player->position.y = 652;
 
+    player->sprite->numSprite = 0;
 
-    printf("\tplayer->health = %d\n", player->health);
+
+    /*printf("\tplayer->health = %d\n", player->health);
     printf("\tplayer->speed = %d\n", player->speed);
     printf("\tplayer->position.w = %d\n", player->position.w);
     printf("\tplayer->position.h = %d\n", player->position.h);
@@ -119,7 +122,7 @@ Character* init_character(SDL_Renderer *screen, const char *filename, int nbSpri
     printf("\tplayer->sprite->spritesheetPos[0].h = %d\n", player->sprite->spritesheetPos[0].h);
     printf("\tplayer->sprite->spritesheetPos[0].x = %d\n", player->sprite->spritesheetPos[0].x);
     printf("\tplayer->sprite->spritesheetPos[0].y = %d\n", player->sprite->spritesheetPos[0].y);
-    printf("\tplayer->sprite->spritesheetPos[1].w = %d\n", player->sprite->spritesheetPos[1].w);
+    printf("\tplayer->sprite->spritesheetPos[1].x = %d\n", player->sprite->spritesheetPos[1].x);*/
 
     return player;
 }
@@ -135,7 +138,7 @@ void free_character(Character *player)
 
 void display_sprite(SDL_Renderer *screen, Character *player)
 {
-    SDL_RenderCopy(screen, player->sprite->texture, &(player->sprite->spritesheetPos[0]), &(player->position));
+    SDL_RenderCopy(screen, player->sprite->texture, &(player->sprite->spritesheetPos[player->sprite->numSprite]), &(player->position));
 }
 
 
@@ -143,11 +146,23 @@ void game_event(Input *in, Character *player)
 {
     if(in->key[SDLK_RIGHT])
     {
+        player->side = RIGHT;
+        player->sprite->numSprite++;
+        if(player->sprite->numSprite >= 6) // Reset of the sprite at the end of the spritesheet
+        {
+            player->sprite->numSprite = 0;
+        }
         player->position.x += player->speed;
     }
     if(in->key[SDLK_LEFT])
     {
-       player->position.x -= player->speed;
+        player->side = LEFT;
+        player->sprite->numSprite++;
+        if(player->sprite->numSprite >= 6)
+        {
+            player->sprite->numSprite = 0;
+        }
+        player->position.x -= player->speed;
     }
 
 }

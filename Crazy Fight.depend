@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1543079589 source:d:\programmation\sdl\crazy fight\main.c
+1543083572 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -414,9 +414,9 @@
 	"constantes.h"
 	"editor.h"
 
-1543079782 d:\programmation\sdl\crazy fight\game.h
+1543084274 d:\programmation\sdl\crazy fight\game.h
 
-1543079987 source:d:\programmation\sdl\crazy fight\game.c
+1543083911 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
