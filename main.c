@@ -41,8 +41,7 @@ int main(int argc, char* argv[])
 
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
-    char pathSpriteNavysealMoveRight[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_right_move.png";
-    char pathSpriteNavysealMoveLeft
+    char pathSpriteNavysealMove[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png";
 
     Input in;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
@@ -120,7 +119,7 @@ int main(int argc, char* argv[])
 
 
     /* Initialisation characters */
-    player1 = init_character(screen, pathSpriteNavysealMoveRight, 6);
+    player1 = init_character(screen, pathSpriteNavysealMove, 6);
     printf("init_character\n");
 
 

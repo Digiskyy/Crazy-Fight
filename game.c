@@ -16,8 +16,8 @@
 #include "game.h"
 
 
-#define LEFT 0
-#define RIGHT 1
+#define LEFT 1
+#define RIGHT 0
 
 
 /* A FAIRE  :
@@ -64,6 +64,7 @@ void launch_game(SDL_Renderer *screen,  Character *player, Input *in)
 
 Character* init_character(SDL_Renderer *screen, const char *filename, int nbSpritesOnSpritesheet)
 {
+    int i, j;
     Character* player = NULL;
 
     player = malloc(sizeof(Character));
@@ -76,69 +77,73 @@ Character* init_character(SDL_Renderer *screen, const char *filename, int nbSpri
     player->speed = 8;
     player->side = RIGHT;
 
-    player->sprite = malloc(sizeof(Sprite));
-    if(player->sprite == NULL)
+    player->spritesheetMove = malloc(sizeof(Sprite));
+    if(player->spritesheetMove == NULL)
     {
-        fprintf(stderr, "Error : Creation of the sprite of the character : %s", SDL_GetError());
+        fprintf(stderr, "Error : Creation of the spritesheetMove of the character : %s", SDL_GetError());
         free(player);
         exit(EXIT_FAILURE);
     }
-    player->sprite->texture = load_image_transparent(filename, screen, 255, 255, 255); // transparent color is white (255, 255, 255)
-    //player->sprite->texture = load_image(filename, screen);
-    player->sprite->spritesheetPos = malloc(nbSpritesOnSpritesheet * sizeof(SDL_Rect));
-    if(player->sprite->spritesheetPos == NULL)
+    player->spritesheetMove->texture = load_image_transparent(filename, screen, 255, 255, 255); // transparent color is white (255, 255, 255)
+    //player->spritesheetMove->texture = load_image(filename, screen);
+
+    /* Load the array 2 dimensions for the spritesheetMove -  peut-être qu'il faudra faire une fonction qui remplit les tableaux 2 dimesions en fonction des spritesheet et de la taille des tableaux*/
+    player->spritesheetMove->sprite = malloc(2 * sizeof(SDL_Rect*));
+    if(player->spritesheetMove->sprite == NULL)
     {
-        fprintf(stderr, "Error : Creation of the position in the spritesheet of the character : %s", SDL_GetError());
-        free(player->sprite);
+        fprintf(stderr, "Error : Creation of the array for the sprites of the spritesheet of the character : %s", SDL_GetError());
+        free(player->spritesheetMove);
         free(player);
         exit(EXIT_FAILURE);
+    }
+    for(i = 0; i < 2; i++)
+    {
+        player->spritesheetMove->sprite[i] = malloc(nbSpritesOnSpritesheet * sizeof(SDL_Rect));
     }
 
     /* Load the position of each sprite on the spritesheet */
-    for(int i = 0; i < nbSpritesOnSpritesheet; i++)
+    for(i = 0; i < 2; i++)
     {
-        player->sprite->spritesheetPos[i].w = 70; // Width of the sprite
-        player->sprite->spritesheetPos[i].h = 85; // Hight of the sprite
-        player->sprite->spritesheetPos[i].x = i * player->sprite->spritesheetPos[i].w;
-        player->sprite->spritesheetPos[i].y = 0;
+        for(j = 0; j < nbSpritesOnSpritesheet; j++)
+        {
+            player->spritesheetMove->sprite[i][j].w = 70; // Width of the sprite
+            player->spritesheetMove->sprite[i][j].h = 85; // Height of the sprite
+            player->spritesheetMove->sprite[i][j].x = j * player->spritesheetMove->sprite[i]->w; // Position on the X-axis
+            player->spritesheetMove->sprite[i][j].y = i * player->spritesheetMove->sprite[i]->h; // Position on the Y-axis
+        }
     }
 
-    /* Load the position where the charcater should be displayed at the beginning */
-    player->position.w = player->sprite->spritesheetPos->w;
-    player->position.h = player->sprite->spritesheetPos->h;
+    /* Load the position where the character should be displayed at the beginning */
+    player->position.w = player->spritesheetMove->sprite[0]->w;
+    player->position.h = player->spritesheetMove->sprite[0]->h;
     player->position.x = 0;
     player->position.y = 652;
 
-    player->sprite->numSprite = 0;
-
-
-    /*printf("\tplayer->health = %d\n", player->health);
-    printf("\tplayer->speed = %d\n", player->speed);
-    printf("\tplayer->position.w = %d\n", player->position.w);
-    printf("\tplayer->position.h = %d\n", player->position.h);
-    printf("\tplayer->position.x = %d\n", player->position.x);
-    printf("\tplayer->position.y = %d\n", player->position.y);
-    printf("\tplayer->sprite->spritesheetPos[0].w = %d\n", player->sprite->spritesheetPos[0].w);
-    printf("\tplayer->sprite->spritesheetPos[0].h = %d\n", player->sprite->spritesheetPos[0].h);
-    printf("\tplayer->sprite->spritesheetPos[0].x = %d\n", player->sprite->spritesheetPos[0].x);
-    printf("\tplayer->sprite->spritesheetPos[0].y = %d\n", player->sprite->spritesheetPos[0].y);
-    printf("\tplayer->sprite->spritesheetPos[1].x = %d\n", player->sprite->spritesheetPos[1].x);*/
+    player->spritesheetMove->numSprite = 0;
 
     return player;
 }
 
 void free_character(Character *player)
 {
-    free(player->sprite->spritesheetPos);
-    SDL_DestroyTexture(player->sprite->texture);
-    free(player->sprite);
+    int i;
+
+    for(i = 0; i < 2; i++)
+    {
+        free(player->spritesheetMove->sprite[i]);
+    }
+    free(player->spritesheetMove->sprite);
+    SDL_DestroyTexture(player->spritesheetMove->texture);
+    free(player->spritesheetMove);
     free(player);
 }
 
 
 void display_sprite(SDL_Renderer *screen, Character *player)
 {
-    SDL_RenderCopy(screen, player->sprite->texture, &(player->sprite->spritesheetPos[player->sprite->numSprite]), &(player->position));
+
+    SDL_RenderCopy(screen, player->spritesheetMove->texture, &(player->spritesheetMove->sprite[player->side][player->spritesheetMove->numSprite]), &(player->position));
+
 }
 
 
@@ -147,20 +152,20 @@ void game_event(Input *in, Character *player)
     if(in->key[SDLK_RIGHT])
     {
         player->side = RIGHT;
-        player->sprite->numSprite++;
-        if(player->sprite->numSprite >= 6) // Reset of the sprite at the end of the spritesheet
+        player->spritesheetMove->numSprite++;
+        if(player->spritesheetMove->numSprite >= 6) // Reset of the sprite at the end of the spritesheet
         {
-            player->sprite->numSprite = 0;
+            player->spritesheetMove->numSprite = 0;
         }
         player->position.x += player->speed;
     }
     if(in->key[SDLK_LEFT])
     {
         player->side = LEFT;
-        player->sprite->numSprite++;
-        if(player->sprite->numSprite >= 6)
+        player->spritesheetMove->numSprite++;
+        if(player->spritesheetMove->numSprite >= 6)
         {
-            player->sprite->numSprite = 0;
+            player->spritesheetMove->numSprite = 0;
         }
         player->position.x -= player->speed;
     }
