@@ -17,10 +17,10 @@
 
 
 /**
- * @brief Create the window container and the renderer linked to it
+ * @brief Creates the window container and the renderer linked to it
  *
- * @param < window > Pointer of pointer on a SDL_Window type object
- * @param < screen > Pointer of pointer on a SDL_Renderer type object
+ * @param < *window > Pointer of pointer on a SDL_Window type object
+ * @param < *screen > Pointer of pointer on a SDL_Renderer type object
  */
 void createWindowAndScreen(SDL_Window **window, SDL_Renderer **screen)
 {
@@ -43,22 +43,14 @@ void createWindowAndScreen(SDL_Window **window, SDL_Renderer **screen)
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
-
-    //*screen == NULL ? printf("1 screen NULL\n") : printf("1 screen non NULL\n");
-
-    /*SDL_GetRendererInfo(*screen, &infos);
-    if(infos.flags == (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC))
-    {
-        printf("render sdl_renderer_accelerated et presentvsync\n");
-    }*/
 }
 
 /**
- * @brief Load an image BMP in a pointer on a SDL_Texture type object
+ * @brief Loads an image BMP in a pointer on a SDL_Texture type object
  *
- * @param < fileName > String which contains the path of the image
- * @param < screen > Pointer on a SDL_Renderer type object
- * @return < texture > Return a pointer on a SDL_Texture type object
+ * @param < *fileName > String which contains the path of the image
+ * @param < *screen > Pointer on a SDL_Renderer type object
+ * @return < SDL_Texture* > Returns a pointer on a SDL_Texture type object
  */
 SDL_Texture* load_imageBMP (const char* fileName, SDL_Renderer* screen)
 {
@@ -82,43 +74,13 @@ SDL_Texture* load_imageBMP (const char* fileName, SDL_Renderer* screen)
     return texture;
 }
 
-/*SDL_Texture* charger_image_transparente(const char* nomFichier, SDL_Renderer* renderer, Uint8 rouge, Uint8 vert, Uint8 bleu)
-{
-    SDL_Surface *imageTmp = NULL;
-    SDL_Texture *texture = NULL;
-    Uint32 couleurTransparente = 0;
-
-    imageTmp = SDL_LoadBMP(nomFichier);
-    if(imageTmp == NULL)
-    {
-        fprintf(stderr, "Erreur chargement de l'image : %s", SDL_GetError());
-    }
-
-    couleurTransparente = SDL_MapRGB(imageTmp->format, rouge, vert, bleu);
-
-    if(SDL_SetColorKey(imageTmp, SDL_TRUE, couleurTransparente)) // Met une couleur transparente, SDL_TRUE active la transparence
-    {
-        fprintf(stderr, "Erreur mise en transparence d'une couleur dans l'image : %s", SDL_GetError());
-    }
-
-    texture = SDL_CreateTextureFromSurface(renderer, imageTmp);
-    if(texture == NULL)
-    {
-        fprintf(stderr, "Erreur chargement de l'image dans la texture : %s", SDL_GetError());
-    }
-
-    SDL_FreeSurface(imageTmp);
-
-    return texture;
-}*/
-
 
 /**
- * @brief Load an image in a pointer on a SDL_Texture type object
+ * @brief Loads an image in a pointer on a SDL_Texture type object
  *
- * @param < fileName > String which contains the path of the image
- * @param < screen > Pointer on a SDL_Renderer type object
- * @return < texture > Return a pointer on a SDL_Texture type object
+ * @param < *fileName > String which contains the path of the image
+ * @param < *screen > Pointer on a SDL_Renderer type object
+ * @return < SDL_Texture* > Returns a pointer on a SDL_Texture type object
  */
 SDL_Texture* load_image(const char* fileName, SDL_Renderer* screen)
 {
@@ -142,15 +104,55 @@ SDL_Texture* load_image(const char* fileName, SDL_Renderer* screen)
     return texture;
 }
 
+
+/**
+ * @brief Loads an image with a transparent color in a pointer on a SDL_Texture type object
+ *
+ * @param < *filename > String which contains the path of the image
+ * @param < *screen > Pointer on a SDL_Renderer type object
+ * @param < red, green, blue > Corresponds to the primary colors which make up the transparent color
+ * @return < SDL_Texture* > Returns a pointer on a SDL_Texture type object
+ */
+SDL_Texture* load_image_transparent(const char* filename, SDL_Renderer* screen, Uint8 red, Uint8 green, Uint8 blue)
+{
+    SDL_Surface *imageTmp = NULL;
+    SDL_Texture *texture = NULL;
+    Uint32 transparentColor = 0;
+
+    imageTmp = IMG_Load(filename);
+    if(imageTmp == NULL)
+    {
+        fprintf(stderr, "Error : Image \"%s\" loading : %s\n", filename, SDL_GetError());
+    }
+
+    transparentColor = SDL_MapRGB(imageTmp->format, red, green, blue);
+
+    if(SDL_SetColorKey(imageTmp, SDL_TRUE, transparentColor)) // Set a transparent color, SDL_TRUE toggles the transparency
+    {
+        fprintf(stderr, "Error : Set a transparent color in the image \"%s\" : %s", filename, SDL_GetError());
+    }
+
+    texture = SDL_CreateTextureFromSurface(screen, imageTmp);
+    if(texture == NULL)
+    {
+        fprintf(stderr, "Error of image loading in the texture : %s\n", SDL_GetError());
+    }
+
+    SDL_FreeSurface(imageTmp);
+
+    return texture;
+}
+
+
 /**
  * @brief Load the text made up of a message with a color and a font
  *
- * @param < message > the message which has to be printed
- * @param < screen > Pointer on a SDL_Renderer type object
- * @param < font > the font that is applied on the text
- * @param < color > Color of the text
- * @param < w > Width of the surface related to the text
- * @param < h > Height of the surface related to the text
+ * @param < *message > the message which has to be printed
+ * @param < *screen > Pointer on a SDL_Renderer type object
+ * @param < *font > the font that is applied on the text
+ * @param < *color > Color of the text
+ * @param < *w > Width of the surface related to the text
+ * @param < *h > Height of the surface related to the text
  * @return < SDL_Texture* > Return a pointer on a SDL_Texture type object related to the text to display
  */
 SDL_Texture* load_text(const char* message, SDL_Renderer* screen, TTF_Font* font, SDL_Color color, int* w, int* h)
@@ -184,7 +186,7 @@ SDL_Texture* load_text(const char* message, SDL_Renderer* screen, TTF_Font* font
 /**
  * @brief Set a color to the background, all the renderer will be painted
  *
- * @param < renderer > Pointer on a SDL_Renderer type object which will be colored
+ * @param < *screen > Pointer on a SDL_Renderer type object which will be colored
  * @param < red, green, blue, alpha > Correspond to the primary colors which make up the background color, alpha is the transparency parameter
  */
 void set_color_background(SDL_Renderer *screen, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha)

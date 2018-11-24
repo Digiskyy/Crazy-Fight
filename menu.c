@@ -80,6 +80,11 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     int nbCharTitle, nbCharGame, nbCharEditor, nbCharQuit;
 
     /* INITIALISATION */
+    /*textTitle = malloc(sizeof(MenuText));
+    textGame = malloc(sizeof(MenuText));
+    textEditor = malloc(sizeof(MenuText));
+    textQuit = malloc(sizeof(MenuText));*/
+
     /* Fonts */
     textTitle->font = TTF_OpenFont("ressources/funhouse.ttf", 100);
     if(textTitle->font == NULL)
@@ -158,6 +163,12 @@ void free_menu(MenuText *textTitle, MenuText *textGame, MenuText *textEditor, Me
     SDL_DestroyTexture(textGame->texture);
     SDL_DestroyTexture(textEditor->texture);
     SDL_DestroyTexture(textQuit->texture);
+
+    /* FREE THE STRUCTURES */
+    /*free(textTitle);
+    free(textGame);
+    free(textEditor);
+    free(textQuit);*/
 }
 
 

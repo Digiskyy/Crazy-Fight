@@ -129,7 +129,7 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
 
     fscanf(fileTileProp, "%d %d", &(map->nbRowsTileset), &(map->nbColumnsTileset)); // Retrieve the size of the tileset array
 
-    printf("13 nom du fichier tileset : %s\n\tnbTilesX : %d, nbTilesY : %d\n", buffer1, map->nbRowsTileset, map->nbColumnsTileset);
+    //printf("13 nom du fichier tileset : %s\n\tnbTilesX : %d, nbTilesY : %d\n", buffer1, map->nbRowsTileset, map->nbColumnsTileset);
 
     map->widthTile = map->tileset->w / map->nbColumnsTileset; // = macro TILESIZE
     map->heightTile = map->tileset->h / map->nbRowsTileset; // = macro TILESIZE
@@ -282,6 +282,9 @@ void print_map(Map *map, SDL_Renderer *screen)
             numTile++;
         }
     }
+
+    /* Free the unused texture */
+    SDL_DestroyTexture(tileset);
 }
 
 
