@@ -1,4 +1,4 @@
-* move : 3ème ligne de sprite - 1er, 3ème, 4ème, 6ème sprites touchent le sol ,  70 de large chaque sprite
+* move : 3ème ligne de sprite - 1er, 3ème, 4ème, 6ème sprites touchent le sol,  70 de large chaque sprite, 85 hauteur
 	- retourner de 180° : 1003 en largeur
 	- retourner de 180° : 424 en largeur
 	- pas de retournement : 342 en hauteur mais seulement pour le dernier sprite
@@ -8,3 +8,7 @@ FAIRE AVEC PHOTOSHOP CS6 PORTABLE
 PRENDRE L'OUTILE GOMME D'ARRIERE PLAN
 ENREGISTRER LA PHOTO EN PNG
 EN FAIRE UNE COPIE, L'OUVRIR AVEC PS ET FAIRE UNE ROTATION HORIZONTALE ET L'ENREGISTRER EN PNG
+
+FAIRE DES SPRITESHEET DE 2 LIGNES AVEC LES DEUX DIRECTIONS SUR CHAQUE LIGNE
+
+FAIRE UN SPRITE DE POSITION D'ATTENTE QUAND LE PERSO NE BOUGE PAS ET LE FAIRE DANS LES DIRECTIONS AUSSI

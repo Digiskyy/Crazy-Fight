@@ -17,19 +17,21 @@ typedef struct Sprite
 typedef struct Character
 {
     Sprite *spritesheetMove;
+    Sprite *spritesheetMotionless;
     int health;
     int speed;
     SDL_Rect position;
-    int side; //handle which side the character is moving or looking maybe with #define RIGHT 1 LEFT 0
-    //handle jump
+    int side; //handle which side the character is moving or looking
+    SDL_bool motionless; // If the character is moving or not
+    //handle jump, attack ...
 }Character;
 
 
-void launch_game(SDL_Renderer *screen, Character *player, Input *in);
+void launch_game(SDL_Renderer *screen,  Character *player, Input *in, unsigned int *lastTime);
 
-Character* init_character(SDL_Renderer *screen, const char *filename, int nbSpritesOnSpritesheet);
+Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100]);
 
-void game_event(Input *in, Character *player);
+void game_event(Input *in, Character *player, unsigned int *lastTime);
 
 void display_sprite(SDL_Renderer *screen, Character *player);
 

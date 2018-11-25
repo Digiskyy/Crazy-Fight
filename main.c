@@ -25,6 +25,7 @@
 #include "game.h"
 
 
+
 /**
  * @brief main.c - Entry point of the program
  */
@@ -41,9 +42,14 @@ int main(int argc, char* argv[])
 
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
-    char pathSpriteNavysealMove[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png";
+    //char pathSpriteNavysealMove[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png";
+
+    // Table which agreggates the spritesheets, the number of sprites on them and their paths. That's why it's a 3D array. For now, there are 2 spritesheets. 100 is the number max. of char in the 3rd string
+    char tableSpritesheet[2][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
+                                        {"motionless", "2", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"}};
 
     Input in;
+    unsigned int lastTime = 0;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE;
 
@@ -119,7 +125,7 @@ int main(int argc, char* argv[])
 
 
     /* Initialisation characters */
-    player1 = init_character(screen, pathSpriteNavysealMove, 6);
+    player1 = init_character(screen, tableSpritesheet);
     printf("init_character\n");
 
 
@@ -152,7 +158,7 @@ int main(int argc, char* argv[])
             print_map(map, screen);
 
             /* Game code (Handle events and print on the screen) */
-            launch_game(screen, player1, &in);
+            launch_game(screen, player1, &in, &lastTime);
 
             /* Display */
             SDL_RenderPresent(screen);

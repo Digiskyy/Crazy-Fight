@@ -15,6 +15,7 @@ typedef struct Input
     Uint32 windowID;
     SDL_bool windowClosed;
     SDL_bool focusMouse;
+    SDL_bool keyUp;
 }Input;
 
 
