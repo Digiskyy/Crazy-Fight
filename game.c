@@ -81,138 +81,94 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     player->move = SDL_FALSE;
     player->bendDown = SDL_FALSE;
 
-
-    /* ========== SPRITESHEET MOVE ========== */
-    player->spritesheetMove = malloc(sizeof(Sprite));
-    if(player->spritesheetMove == NULL)
-    {
-        fprintf(stderr, "Error : Creation of the spritesheet Move of the character : %s", SDL_GetError());
-        free(player);
-        exit(EXIT_FAILURE);
-    }
-    player->spritesheetMove->texture = load_image_transparent(tableSpritesheet[MOVE][2], screen, 255, 255, 255); // tableSpritesheet[MOVE][2] correponds to the path, transparent color is white (255, 255, 255)
-    //player->spritesheetMove->texture = load_image(filenameMove, screen);
-
-    /* Load the array 2 dimensions for the spritesheetMove -  peut-être qu'il faudra faire une fonction qui remplit les tableaux 2 dimesions en fonction des spritesheet et de la taille des tableaux*/
-    player->spritesheetMove->sprite = malloc(2 * sizeof(SDL_Rect*)); // 2 because there are 2 rows in the spritesheet, each row is for one direction
-    if(player->spritesheetMove->sprite == NULL)
-    {
-        fprintf(stderr, "Error : Creation of the array for the sprites of the spritesheet Move of the character : %s", SDL_GetError());
-        free(player->spritesheetMove);
-        free(player);
-        exit(EXIT_FAILURE);
-    }
-    for(i = 0; i < 2; i++) // 2 because there are 2 rows in the spritesheet, each row is for one direction
-    {
-        player->spritesheetMove->sprite[i] = malloc(nbSpritesMove  * sizeof(SDL_Rect));
-    }
-
-    /* Load the position of each sprite on the spritesheet */
-    for(i = 0; i < 2; i++) // 2 because there are 2 rows in the spritesheet, each row is for one direction
-    {
-        for(j = 0; j < nbSpritesMove; j++)
-        {
-            player->spritesheetMove->sprite[i][j].w = 70; // Width of the sprite
-            player->spritesheetMove->sprite[i][j].h = 85; // Height of the sprite
-            player->spritesheetMove->sprite[i][j].x = j * player->spritesheetMove->sprite[i]->w; // Position on the X-axis
-            player->spritesheetMove->sprite[i][j].y = i * player->spritesheetMove->sprite[i]->h; // Position on the Y-axis
-        }
-    }
-
     /* Load the position where the character should be displayed at the beginning */
-    player->position.w = player->spritesheetMove->sprite[0]->w;
-    player->position.h = player->spritesheetMove->sprite[0]->h;
+    player->position.w =  70; /*player->spritesheetMove->sprite[0]->w;*/
+    player->position.h = 85; /*player->spritesheetMove->sprite[0]->h;*/
     player->position.x = 0;
     player->position.y = 652;
 
-    player->spritesheetMove->numSprite = 0;
 
+    /* ========== SPRITESHEET MOVE ========== */
+    player->spritesheetMove = init_spritesheet(**tableSpritesheet, MOVE, screen);
+    if(player->spritesheetMove == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the spritesheet Move");
+    }
 
     /* ========== SPRITESHEET MOTIONLESS ========== */
-    player->spritesheetMotionless = malloc(sizeof(Sprite));
+    player->spritesheetMotionless = init_spritesheet(**tableSpritesheet, MOTIONLESS, screen);  /*malloc(sizeof(Sprite));*/
     if(player->spritesheetMotionless == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Motionless of the character : %s", SDL_GetError());
-        free(player->spritesheetMove);
-        free(player);
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Error : Creation of the spritesheet Motionless");
     }
-    player->spritesheetMotionless->texture = load_image_transparent(tableSpritesheet[MOTIONLESS][2], screen, 255, 255, 255);
-
-    /* Load the array 2 dimensions for the spritesheetMotionless */
-    player->spritesheetMotionless->sprite = malloc(2 * sizeof(SDL_Rect*));
-    if(player->spritesheetMove->sprite == NULL)
-    {
-        fprintf(stderr, "Error : Creation of the array for the sprites of the spritesheet Motionless of the character : %s", SDL_GetError());
-        free(player->spritesheetMove);
-        free(player->spritesheetMotionless);
-        free(player);
-        exit(EXIT_FAILURE);
-    }
-    for(i = 0; i < 2; i++)
-    {
-        player->spritesheetMotionless->sprite[i] = malloc(nbSpriteMotionless * sizeof(SDL_Rect));
-    }
-
-    /* Load the position of each sprite on the spritesheet */
-    for(i = 0; i < 2; i++)
-    {
-        for(j = 0; j < nbSpriteMotionless; j++)
-        {
-            player->spritesheetMotionless->sprite[i][j].w = 70;
-            player->spritesheetMotionless->sprite[i][j].h = 85;
-            player->spritesheetMotionless->sprite[i][j].x = j * 70;
-            player->spritesheetMotionless->sprite[i][j].y = i * 85;
-        }
-    }
-
-    player->spritesheetMotionless->numSprite = 0;
-
 
     /* ========== SPRITESHEET BEND DOWN ========== */
-    player->spritesheetBendDown = malloc(sizeof(Sprite));
+    player->spritesheetBendDown = init_spritesheet(**tableSpritesheet, BEND_DOWN, screen);  /*malloc(sizeof(Sprite));*/
     if(player->spritesheetBendDown == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Bend Down of the character : %s", SDL_GetError());
-        free(player->spritesheetMove);
-        free(player->spritesheetMotionless);
-        free(player);
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Error : Creation of the spritesheet Bend Down");
     }
-    player->spritesheetBendDown->texture = load_image_transparent(tableSpritesheet[BEND_DOWN][2], screen, 255, 255, 255);
-
-    /* Load the array 2 dimensions for the spritesheetMotionless */
-    player->spritesheetBendDown->sprite = malloc(2 * sizeof(SDL_Rect*));
-    if(player->spritesheetBendDown->sprite == NULL)
-    {
-        fprintf(stderr, "Error : Creation of the array for the sprites of the spritesheet Bend Down of the character : %s", SDL_GetError());
-        free(player->spritesheetMove);
-        free(player->spritesheetMotionless);
-        free(player);
-        exit(EXIT_FAILURE);
-    }
-    for(i = 0; i < 2; i++)
-    {
-        player->spritesheetBendDown->sprite[i] = malloc(nbSpriteBendDown * sizeof(SDL_Rect));
-    }
-
-    /* Load the position of each sprite on the spritesheet */
-    for(i = 0; i < 2; i++)
-    {
-        for(j = 0; j < nbSpriteBendDown; j++)
-        {
-            player->spritesheetBendDown->sprite[i][j].w = 70;
-            player->spritesheetBendDown->sprite[i][j].h = 85;
-            player->spritesheetBendDown->sprite[i][j].x = j * 70;
-            player->spritesheetBendDown->sprite[i][j].y = i * 85;
-        }
-    }
-
-    player->spritesheetBendDown->numSprite = 0;
-
 
     return player;
 }
+
+
+/* Return NULL si erreur ==> il faudra tester la valeur du pointeur au retour de la procédure */
+Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_Renderer *screen)
+{
+    Sprite *spritesheet = NULL;
+    int i, j;
+    int nbSprites = (int)strtol(tableSpritesheet[FLAGS][1], NULL, 10); // strtol converts an string to a long and the result is casted into an int, 10 is for the base (decimal)
+
+    spritesheet = malloc(sizeof(Sprite));
+    if(spritesheet == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the spritesheet of the character");
+        return NULL;
+    }
+
+    /* Loads the texture */
+    spritesheet->texture = load_image_transparent(tableSpritesheet[FLAGS][2], screen, 255, 255, 255); // tableSpritesheet[FLAGS][2] correponds to the path, transparent color is white (255, 255, 255)
+
+    /* Loads the array 2 dimensions */
+    spritesheet->sprite = malloc(2 * sizeof(SDL_Rect*)); // 2 because there are 2 rows in the spritesheet, each row is for one direction
+    if(spritesheet->sprite == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the array for the sprites of the spritesheet of the character");
+        free(spritesheet);
+        return NULL;
+    }
+    for(i = 0; i < 2; i++) // 2 because there are 2 rows in the spritesheet, each row is for one direction
+    {
+        spritesheet->sprite[i] = malloc(nbSprites * sizeof(SDL_Rect));
+        if(spritesheet->sprite[i] == NULL)
+        {
+            fprintf(stderr, "Error : Allocation memory in the array 2D for the sprites of the spritesheet of the character");
+            free(spritesheet->sprite);
+            free(spritesheet);
+            return NULL;
+        }
+    }
+
+    /* Loads the position of each sprite on the spritesheet */
+    for(i = 0; i < 2; i++)
+    {
+        for(j = 0; j < nbSprites; j++)
+        {
+            spritesheet->sprite[i][j].w = 70; // Width of the sprite
+            spritesheet->sprite[i][j].h = 85; // Height of the sprite     /!\  les sprites jump ont une hauteur de 87 pixels au lieu de 85, donc : .h = FLAGS == JUMP ? 87 : 85;
+            spritesheet->sprite[i][j].x = j * spritesheet->sprite[i]->w; // Position on the X-axis
+            spritesheet->sprite[i][j].y = i * spritesheet->sprite[i]->h; // Position on the Y-axis
+
+        }
+    }
+
+    /* Initialise the numero of the sprite at 0 */
+    spritesheet->numSprite = 0;
+
+    return spritesheet;
+}
+
 
 void free_character(Character *player)
 {

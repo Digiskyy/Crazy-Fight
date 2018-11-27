@@ -34,6 +34,8 @@ void launch_game(SDL_Renderer *screen,  Character *player, Input *in, unsigned i
 
 Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100]);
 
+Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_Renderer *screen);
+
 void game_event(Input *in, Character *player, unsigned int *lastTime);
 
 void display_sprite(SDL_Renderer *screen, Character *player);
