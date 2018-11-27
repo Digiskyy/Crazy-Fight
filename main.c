@@ -42,11 +42,11 @@ int main(int argc, char* argv[])
 
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
-    //char pathSpriteNavysealMove[] = "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png";
 
     // Table which agreggates the spritesheets, the number of sprites on them and their paths. That's why it's a 3D array. For now, there are 2 spritesheets. 100 is the number max. of char in the 3rd string
-    char tableSpritesheet[2][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
-                                        {"motionless", "2", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"}};
+    char tableSpritesheet[3][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
+                                        {"motionless", "2", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
+                                        {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"}};
 
     Input in;
     unsigned int lastTime = 0;
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
     map = load_map(pathLevelDesignMap);
 
-    printf("map loaded\n");
+    //printf("map loaded\n");
 
     /*  ==> Pour l'instant ne pas mettre de scroll (automatique) en hauteur, faire déjà les persos et qu'on puisse jouer à deux avec une arme etc
     car peut-être pas le temps de gérer un scroll automatique + zoom car si un joueur est tout en haut de la map eet lautre tout en bas, il faut dézoomer (compliqué)
@@ -126,7 +126,8 @@ int main(int argc, char* argv[])
 
     /* Initialisation characters */
     player1 = init_character(screen, tableSpritesheet);
-    printf("init_character\n");
+
+    //printf("init_character\n");
 
 
     /* ========== MAIN LOOP ========== */
@@ -152,18 +153,19 @@ int main(int argc, char* argv[])
             /* Update events */
             update_events(&in);
 
+            /* Game code (Handle events) */
+            launch_game(screen, player1, &in, &lastTime);
+
             /* Print the map on the screen */
             SDL_RenderClear(screen);
             set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
             print_map(map, screen);
-
-            /* Game code (Handle events and print on the screen) */
-            launch_game(screen, player1, &in, &lastTime);
-
+            /* Print the player on the screen */
+            display_sprite(screen, player1);
             /* Display */
             SDL_RenderPresent(screen);
 
-            SDL_Delay(50);
+            SDL_Delay(10);
         }
 
         /* ========== LEVEL EDITOR LOOP ========== */
@@ -177,27 +179,22 @@ int main(int argc, char* argv[])
                 windowTilesetCreated = SDL_TRUE;
             }
 
-
-            /* Updates EVENTS */
+            /* Updates events */
             update_events(&in);
-
-            /* Handles events for the main window and launches the editor */
+            /* Editor code (handles events for the main window and launches the editor) */
             launch_editor(screen, &in, mapEditor, &numTypeTile, &choice);
             if(!choice) // choice == 0 : it means that the player has just quit the editor so the tileset has been closed
             {
                 windowTilesetCreated = SDL_FALSE; // The tileset window will be created again the next time in the editor
             }
-
             /* Handles events for the tileset window */
             window_tileset_events(&tilesetWindow, &in, mapEditor, &numTypeTile);
-
 
             /* Displays on the main window */
             SDL_RenderClear(screen);
             set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
             print_map(mapEditor, screen); // map which corresponds to the map editor file
             SDL_RenderPresent(screen);
-
             /* Displays on the tilesetWindow */
             SDL_RenderCopy(tilesetWindow.screen, tilesetWindow.texture, NULL, NULL);
             SDL_RenderPresent(tilesetWindow.screen);
@@ -208,7 +205,8 @@ int main(int argc, char* argv[])
 
     /* ========== FREE MEMORY ========== */
     free_character(player1);
-    free_map(mapEditor);
+    if(mapEditor != NULL)
+        free_map(mapEditor);
     free_map(map);
     SDL_DestroyRenderer(screen);
     SDL_DestroyWindow(window);

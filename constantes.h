@@ -19,5 +19,6 @@
 
     #define MOVE        0 // For the tableSpritesheet
     #define MOTIONLESS  1
+    #define BEND_DOWN   2
 
 #endif // CONSTANTES_H_INCLUDED

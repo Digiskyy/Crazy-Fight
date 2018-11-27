@@ -100,6 +100,10 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     /* Title */
     nbCharTitle = (int)strlen(messageTitle) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textTitle->text = malloc(nbCharTitle * sizeof(char));
+    if(textTitle->text == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the string for the Title in the menu");
+    }
     /* Use of strcpy() to copy 'messageTitle' into 'textTitle->text' because it is no longer an initialisation of 'textTitle->text'
     since we use a function to intialise so 'textTitle->text' has already an value, it's considered as a change */
     strcpy(textTitle->text, messageTitle);
@@ -111,6 +115,10 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     /* Game */
     nbCharGame = (int)strlen(messageGame) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textGame->text = malloc(nbCharGame * sizeof(char));
+    if(textGame->text == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the string for the Game in the menu");
+    }
     strcpy(textGame->text, messageGame);
     textGame->font = fontMenu;
     textGame->color.r = 242; textGame->color.g = 238; textGame->color.b = 240; textGame->color.a = 255;
@@ -121,6 +129,10 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     /* Editor */
     nbCharEditor = (int)strlen(messageEditor) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textEditor->text = malloc(nbCharEditor * sizeof(char));
+    if(textEditor->text == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the string for the Editor in the menu");
+    }
     strcpy(textEditor->text, messageEditor);
     textEditor->font = fontMenu;
     textEditor->color.r = 242; textEditor->color.g = 238; textEditor->color.b = 240; textEditor->color.a = 255;
@@ -131,6 +143,10 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     /* Quit */
     nbCharQuit = (int)strlen(messageQuit)  + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
     textQuit->text = malloc(nbCharQuit * sizeof(char));
+    if(textQuit->text == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the string for the Quit in the menu");
+    }
     strcpy(textQuit->text, messageQuit);
     textQuit->font = fontMenu;
     textQuit->color.r = 242; textQuit->color.g = 238; textQuit->color.b = 240; textQuit->color.a = 255;

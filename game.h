@@ -18,11 +18,14 @@ typedef struct Character
 {
     Sprite *spritesheetMove;
     Sprite *spritesheetMotionless;
+    Sprite *spritesheetBendDown; // FAIRE UN TABLEAU DE TOUS LES SPRITESHEET AU LIEU DE LES METTRE UN PAR UN
     int health;
     int speed;
     SDL_Rect position;
     int side; //handle which side the character is moving or looking
     SDL_bool motionless; // If the character is moving or not
+    SDL_bool move;
+    SDL_bool bendDown;
     //handle jump, attack ...
 }Character;
 
