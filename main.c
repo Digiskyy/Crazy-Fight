@@ -43,13 +43,14 @@ int main(int argc, char* argv[])
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
 
-    // Table which agreggates the spritesheets, the number of sprites on them and their paths. That's why it's a 3D array. For now, there are 2 spritesheets. 100 is the number max. of char in the 3rd string
-    char tableSpritesheet[3][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
-                                        {"motionless", "2", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
-                                        {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"}};
+    // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 3 spritesheets. 100 is the number max. of char in the 3rd string
+    char tableSpritesheet[4][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
+                                        {"motionless", "1", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
+                                        {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"}/*,
+                                        {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"}*/};
 
     Input in;
-    unsigned int lastTime = 0;
+    unsigned int lastTime = 0, timer = 0, timeElapsed = 0;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE;
 
@@ -97,6 +98,8 @@ int main(int argc, char* argv[])
         - gérer les déplacements et les sauts et la gravité et les collisions avec la map des deux persos en même temps et gérer leurs animations (saut, mort, se baisser ?, ...),
         - afficher sprites armes (si pas trop compliqué faire en sorte qu'on puisse viser dans toutes les directions),
         - tirer avec l'arme (animation perso et (arme) et gestion des balles) et gestion de la vie des persos
+        - Gérer mieux TOUTES les erreurs, savoir quels sont les erreurs qui obligent de quitte car on ne peut plus continuer
+            et quelles sont celles où ils faut juste reporter l'erreur et libérer la mémoire sans quitter le jeu car elles ne sont pas indispensables à la bonne contnuation du jeu
         - Améliorations :
             * possibilité quand on a lancé le choix "Play" de pouvoir choisir la dernière map perso ou la map de base
             * dans l'éditeur, quand on a des objets qui prennent plusieurs tiles dans le tileset, les mettre complet dans la map au lieu de changer tuile par tuile, ex : un arbre, un pont, nuage, ...
@@ -136,6 +139,9 @@ int main(int argc, char* argv[])
         /* ========== MENU LOOP ========== */
         while(!choice && !in.quit)
         {
+            /* Timer */
+            timer = SDL_GetTicks();
+
             /* Update events */
             update_events(&in);
 
@@ -144,17 +150,23 @@ int main(int argc, char* argv[])
             choice = launch_menu(screen, &in);
             SDL_RenderPresent(screen);
 
-            SDL_Delay(20); // 20 ms not to take all the work time of the CPU for this program
+            /* Fresh rate 20 ms (not to take all the work time of the CPU for this program) */
+            timeElapsed = SDL_GetTicks() - timer; // Calculates the elapsed time since the beginning of each turn loop
+            if(timeElapsed < 20) // If the elapsed time is less than 20 ms,
+                SDL_Delay(20 - timeElapsed); // CPU "waits" for the remaining time to reach 20 ms (it waits in the program but no other stuff)
         }
 
         /* ========== GAME LOOP ========== */
         while(choice == 1 && !in.quit)
         {
+            /* Timer */
+            timer = SDL_GetTicks();
+
             /* Update events */
             update_events(&in);
 
             /* Game code (Handle events) */
-            launch_game(screen, player1, &in, &lastTime);
+            launch_game(player1, &in, &lastTime);
 
             /* Print the map on the screen */
             SDL_RenderClear(screen);
@@ -165,12 +177,19 @@ int main(int argc, char* argv[])
             /* Display */
             SDL_RenderPresent(screen);
 
-            SDL_Delay(10);
+
+            /* Fresh rate 10 ms */
+            timeElapsed = SDL_GetTicks() - timer;
+            if(timeElapsed < 10)
+                SDL_Delay(10 - timeElapsed);
         }
 
         /* ========== LEVEL EDITOR LOOP ========== */
         while(choice == 2 && !in.quit)
         {
+            /* Timer */
+            timer = SDL_GetTicks();
+
             /* Initialisation tileset window */
             if(!windowTilesetCreated)
             {
@@ -199,7 +218,10 @@ int main(int argc, char* argv[])
             SDL_RenderCopy(tilesetWindow.screen, tilesetWindow.texture, NULL, NULL);
             SDL_RenderPresent(tilesetWindow.screen);
 
-            SDL_Delay(20);
+            /* Fresh rate 20 ms */
+            timeElapsed = SDL_GetTicks() - timer;
+            if(timeElapsed < 20)
+                SDL_Delay(20 - timeElapsed);
         }
     }
 

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1543276631 source:d:\programmation\sdl\crazy fight\main.c
+1543356303 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -352,7 +352,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1543268185 d:\programmation\sdl\crazy fight\constantes.h
+1543345487 d:\programmation\sdl\crazy fight\constantes.h
 
 1376152742 c:\program files (x86)\codeblocks\sdl-2.0.8\i686-w64-mingw32\include\sdl2\sdl_image.h
 	"SDL.h"
@@ -362,7 +362,7 @@
 
 1542994886 d:\programmation\sdl\crazy fight\display.h
 
-1542991877 source:d:\programmation\sdl\crazy fight\display.c
+1543348924 source:d:\programmation\sdl\crazy fight\display.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -414,12 +414,13 @@
 	"constantes.h"
 	"editor.h"
 
-1543291137 d:\programmation\sdl\crazy fight\game.h
+1543356816 d:\programmation\sdl\crazy fight\game.h
 
-1543291221 source:d:\programmation\sdl\crazy fight\game.c
+1543356542 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
+	<math.h>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
 	"constantes.h"

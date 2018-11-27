@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -18,12 +19,10 @@
 #include "game.h"
 
 
-#define LEFT 1
-#define RIGHT 0
-
 
 /* A FAIRE  :
-- faire le saut et se baisser
+- faire le saut
+- gérer les déplacements dans les airs en saut ou quand on tombe
 - faire les collisions
 - faire les autres animations en fonction des touches (tirer, attaquer au couteau, mort ...)
 - vérifier toutes les collisions
@@ -49,24 +48,37 @@ FAIRE UN MAKEFILE POUR LE TP DE PROG AVANCEE LUNDI AFIN DE POUVOIR EXECUTER LE P
 /* Faire une struc sprite et une struct personnage qui prend, entre autre, un sprite en attribut */
 
 
-void launch_game(SDL_Renderer *screen,  Character *player, Input *in, unsigned int *lastTime)
+void launch_game(Character *player, Input *in, unsigned int *lastTime)
 {
     //printf("launch_game\n");
 
     game_event(in, player, lastTime);
 
+    if(player->state[JUMP])
+    {
+        player_jump(player);
+    }
+
+
+    /* TEST POUR VOIR SI ON PEUT REUTILISER LE JUMP APRES LA FIN DE CELUI-CI  */
+    if(player->positionReal.y + player->positionReal.h >= 800)
+    {
+        player->state[JUMP] = SDL_FALSE;
+        player->jumpParameters.t = 0;
+        player->jumpParameters.initialAngle = player->jumpParameters.pi / 2;
+
+        player->positionReal.y = 652;
+    }
+
+
+    /* COLLISION ici ou dans game event ??? */
     //printf("game_event\n");
 }
 
 
 Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100]) // array in 3 dimensions
 {
-    int i, j;
-    int nbSpritesMove = (int)strtol(tableSpritesheet[MOVE][1], NULL, 10); // strtol converts an string to a long and the result is casted into an int, 10 is for the base (decimal)
-    int nbSpriteMotionless = (int)strtol(tableSpritesheet[MOTIONLESS][1], NULL, 10);
-    int nbSpriteBendDown = (int)strtol(tableSpritesheet[BEND_DOWN][1], NULL, 10);
     Character* player = NULL;
-
 
     player = malloc(sizeof(Character));
     if(player == NULL)
@@ -77,37 +89,59 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     player->health = 100;
     player->speed = 3;
     player->side = RIGHT;
-    player->motionless = SDL_TRUE; // At the beginning, the character doesn't move
-    player->move = SDL_FALSE;
-    player->bendDown = SDL_FALSE;
 
-    /* Load the position where the character should be displayed at the beginning */
-    player->position.w =  70; /*player->spritesheetMove->sprite[0]->w;*/
-    player->position.h = 85; /*player->spritesheetMove->sprite[0]->h;*/
-    player->position.x = 0;
-    player->position.y = 652;
+    /* Initialises the state of the character */
+    player->state[MOTIONLESS] = SDL_TRUE; // At the beginning, the character doesn't move
+    player->state[MOVE] = SDL_FALSE;
+    player->state[BEND_DOWN] = SDL_FALSE;
+    player->state[JUMP] = SDL_FALSE;
+
+    /* Initialises the position where the character should be displayed at the beginning */
+    player->positionReal.w =  70; /*player->spritesheetMove->sprite[0]->w;*/
+    player->positionReal.h = 85; /*player->spritesheetMove->sprite[0]->h;*/
+    player->positionReal.x = 0;
+    player->positionReal.y = 652;
+
+    /* Initialises the relative position which is used for the jump */
+    player->positionRelative.x = 0; // Origin of the relative coordinate system
+    player->positionRelative.y = 0;
+
+    /* Initialises the parameters of the jump */
+    player->jumpParameters.g = 9.81; // Gravitational constant
+    player->jumpParameters.pi = 3.14; // Value of the constant PI
+    player->jumpParameters.initialSpeed = 1.5;
+    player->jumpParameters.initialAngle = player->jumpParameters.pi / 2; // In C, angles are in radians for the formulas which use them. Here, the standard angle is 90°, namely PI/2 radians.
+    player->jumpParameters.t = 0; // t represents the time
+
 
 
     /* ========== SPRITESHEET MOVE ========== */
-    player->spritesheetMove = init_spritesheet(**tableSpritesheet, MOVE, screen);
-    if(player->spritesheetMove == NULL)
+    player->spritesheet[MOVE] = init_spritesheet(**tableSpritesheet, MOVE, screen);
+    if(player->spritesheet[MOVE] == NULL)
     {
         fprintf(stderr, "Error : Creation of the spritesheet Move");
     }
 
     /* ========== SPRITESHEET MOTIONLESS ========== */
-    player->spritesheetMotionless = init_spritesheet(**tableSpritesheet, MOTIONLESS, screen);  /*malloc(sizeof(Sprite));*/
-    if(player->spritesheetMotionless == NULL)
+    player->spritesheet[MOTIONLESS] = init_spritesheet(**tableSpritesheet, MOTIONLESS, screen);
+    if(player->spritesheet[MOTIONLESS] == NULL)
     {
         fprintf(stderr, "Error : Creation of the spritesheet Motionless");
     }
 
     /* ========== SPRITESHEET BEND DOWN ========== */
-    player->spritesheetBendDown = init_spritesheet(**tableSpritesheet, BEND_DOWN, screen);  /*malloc(sizeof(Sprite));*/
-    if(player->spritesheetBendDown == NULL)
+    player->spritesheet[BEND_DOWN] = init_spritesheet(**tableSpritesheet, BEND_DOWN, screen);
+    if(player->spritesheet[BEND_DOWN] == NULL)
     {
         fprintf(stderr, "Error : Creation of the spritesheet Bend Down");
     }
+
+    /* ========== SPRITESHEET JUMP ========== */
+    /*player->spritesheet[JUMP] = init_spritesheet(**tableSpritesheet, JUMP, screen);
+    if(player->spritesheet[JUMP] == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the spritesheet Jump");
+    }*/
 
     return player;
 }
@@ -159,7 +193,6 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
             spritesheet->sprite[i][j].h = 85; // Height of the sprite     /!\  les sprites jump ont une hauteur de 87 pixels au lieu de 85, donc : .h = FLAGS == JUMP ? 87 : 85;
             spritesheet->sprite[i][j].x = j * spritesheet->sprite[i]->w; // Position on the X-axis
             spritesheet->sprite[i][j].y = i * spritesheet->sprite[i]->h; // Position on the Y-axis
-
         }
     }
 
@@ -177,29 +210,31 @@ void free_character(Character *player)
     /* SRITESHEET MOVE */
     for(i = 0; i < 2; i++)
     {
-        free(player->spritesheetMove->sprite[i]);
+        free(player->spritesheet[MOVE]->sprite[i]);
     }
-    free(player->spritesheetMove->sprite);
-    SDL_DestroyTexture(player->spritesheetMove->texture);
-    free(player->spritesheetMove);
+    free(player->spritesheet[MOVE]->sprite);
+    SDL_DestroyTexture(player->spritesheet[MOVE]->texture);
+    free(player->spritesheet[MOVE]);
 
     /* SRITESHEET MOTIONLESS */
     for(i = 0; i < 2; i++)
     {
-        free(player->spritesheetMotionless->sprite[i]);
+        free(player->spritesheet[MOTIONLESS]->sprite[i]);
     }
-    free(player->spritesheetMotionless->sprite);
-    SDL_DestroyTexture(player->spritesheetMotionless->texture);
-    free(player->spritesheetMotionless);
+    free(player->spritesheet[MOTIONLESS]->sprite);
+    SDL_DestroyTexture(player->spritesheet[MOTIONLESS]->texture);
+    free(player->spritesheet[MOTIONLESS]);
 
     /* SRITESHEET BEND DOWN */
     for(i = 0; i < 2; i++)
     {
-        free(player->spritesheetBendDown->sprite[i]);
+        free(player->spritesheet[BEND_DOWN]->sprite[i]);
     }
-    free(player->spritesheetBendDown->sprite);
-    SDL_DestroyTexture(player->spritesheetBendDown->texture);
-    free(player->spritesheetBendDown);
+    free(player->spritesheet[BEND_DOWN]->sprite);
+    SDL_DestroyTexture(player->spritesheet[BEND_DOWN]->texture);
+    free(player->spritesheet[BEND_DOWN]);
+
+    /* SPRITESHEET JUMP */
 
     free(player);
 }
@@ -211,48 +246,74 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 
     //printf("player->side = %d\n", player->side);
 
-    if(player->motionless)
+    if(player->state[MOTIONLESS] && !player->state[JUMP]) // If any key is down and the character is not jumping
     {
         //printf("player->side = %d\n", player->side);
 
-        SDL_RenderCopy(screen, player->spritesheetMotionless->texture, &(player->spritesheetMotionless->sprite[player->side][player->spritesheetMotionless->numSprite]), &(player->position));
+        SDL_RenderCopy(screen, player->spritesheet[MOTIONLESS]->texture, &(player->spritesheet[MOTIONLESS]->sprite[player->side][player->spritesheet[MOTIONLESS]->numSprite]), &(player->positionReal));
+
+        printf("MOTIONLESS");
     }
     else // player is performing an action
     {
         if(player->side == LEFT) // The animation starts on the right-hand side on the spritesheet whereas it starts on the left-hand side for the animation toward the right
         {
             /* SPRITESHEET MOVE */
-            if(player->move)
+            if(player->state[MOVE])
             {
-                numSpriteMove = 5 - player->spritesheetMove->numSprite; // To have the opposite way
-                SDL_RenderCopy(screen, player->spritesheetMove->texture, &(player->spritesheetMove->sprite[player->side][numSpriteMove]), &(player->position));
+                numSpriteMove = 5 - player->spritesheet[MOVE]->numSprite; // To have the opposite way
+                SDL_RenderCopy(screen, player->spritesheet[MOVE]->texture, &(player->spritesheet[MOVE]->sprite[player->side][numSpriteMove]), &(player->positionReal));
 
                 //printf("numSpriteMove = %d\n", numSpriteMove);
+                printf("MOVE gauche\n");
+
             }
             /* SPRITESHEET BEND DOWN */
-            if(player->bendDown)
+            else if(player->state[BEND_DOWN])
             {
-                numSpriteBendDown = 3 - player->spritesheetBendDown->numSprite;
-                SDL_RenderCopy(screen, player->spritesheetBendDown->texture, &(player->spritesheetBendDown->sprite[player->side][numSpriteBendDown]), &(player->position));
+                numSpriteBendDown = 3 - player->spritesheet[BEND_DOWN]->numSprite;
+                SDL_RenderCopy(screen, player->spritesheet[BEND_DOWN]->texture, &(player->spritesheet[BEND_DOWN]->sprite[player->side][numSpriteBendDown]), &(player->positionReal));
 
                 //printf("numSpriteBendDown = %d\n", numSpriteBendDown);
+                printf("BEND DOWN droite");
+            }
+            /* METTRE TABLESPRITESHEET EN PARAMETRE POUR AVOIR ACCES AU NB DE SPRITE ET COMME CA NE PLUS REECRIRE PLEIN DE FOIS ET CREER PLEIN DE VARIABLES POUR LE NUMERO DE SPRITE A AFFICHER A L ENVERS*/
+            else if(player->state[JUMP])
+            {
+                /* VOIR S'IL NE FAUT PAS CHANGER LE HAUTEUR 85 -> 87 ICI POUR LE SPRITESHEET JUMP */
+
+                SDL_RenderCopy(screen, player->spritesheet[BEND_DOWN]->texture, &(player->spritesheet[BEND_DOWN]->sprite[player->side][0]), &(player->positionReal));
+
+                printf("JUMP gauche\n");
             }
         }
         else // player->side  == RIGHT
         {
             /* SPRITESHEET MOVE */
-            if(player->move)
+            if(player->state[MOVE])
             {
-                SDL_RenderCopy(screen, player->spritesheetMove->texture, &(player->spritesheetMove->sprite[player->side][player->spritesheetMove->numSprite]), &(player->position));
+                SDL_RenderCopy(screen, player->spritesheet[MOVE]->texture, &(player->spritesheet[MOVE]->sprite[player->side][player->spritesheet[MOVE]->numSprite]), &(player->positionReal));
 
                 //printf("player->spritesheetMove->numSprite = %d\n", player->spritesheetMove->numSprite);
+                printf("MOVE droite\n");
             }
             /* SPRITESHEET BEND DOWN */
-            if(player->bendDown)
+            else if(player->state[BEND_DOWN])
             {
-                SDL_RenderCopy(screen, player->spritesheetBendDown->texture, &(player->spritesheetBendDown->sprite[player->side][player->spritesheetBendDown->numSprite]), &(player->position));
+                SDL_RenderCopy(screen, player->spritesheet[BEND_DOWN]->texture, &(player->spritesheet[BEND_DOWN]->sprite[player->side][player->spritesheet[BEND_DOWN]->numSprite]), &(player->positionReal));
 
                 //printf("player->spritesheetBendDown->numSprite = %d\n", player->spritesheetBendDown->numSprite);
+
+                printf("BEND DOWN droite");
+            }
+            /* SPRITESHEET JUMP  --  VERIFIER S IL NE FAUT PAS METTRE DES ELSE IF A LA PLACE DES IF */
+            else if(player->state[JUMP])
+            {
+                /* VOIR S'IL NE FAUT PAS CHANGER LA HAUTEUR 85 -> 87 ICI POUR LE SPRITESHEET JUMP */
+
+                SDL_RenderCopy(screen, player->spritesheet[BEND_DOWN]->texture, &(player->spritesheet[BEND_DOWN]->sprite[player->side][3]), &(player->positionReal));
+
+                printf("JUMP droite\n");
             }
         }
     }
@@ -263,81 +324,206 @@ void game_event(Input *in, Character *player, unsigned int *lastTime)
 {
     unsigned int currentTime;
 
-    if(!in->key[SDLK_RIGHT] && !in->key[SDLK_LEFT] && !in->key[SDLK_DOWN]) // There are no keys down which make the character move
+    if(!in->key[SDLK_RIGHT] && !in->key[SDLK_LEFT] && !in->key[SDLK_DOWN] && !in->key[SDLK_UP]) // There are no keys down which make the character move
     {
-        player->motionless = SDL_TRUE;
-        player->move = SDL_FALSE;
-        player->bendDown = SDL_FALSE;
-        player->spritesheetMove->numSprite = 0; //Reset of the other animations in order to restart them from the beginning when they will be run again
-        player->spritesheetBendDown->numSprite = 0;
+        /* Update the state of the character */
+        player->state[MOTIONLESS] = SDL_TRUE;
+        player->state[MOVE] = SDL_FALSE;
+        player->state[BEND_DOWN] = SDL_FALSE;
+
+        /* Reset of the animations in order to restart them from the beginning when they will be run again */
+        player->spritesheet[MOVE]->numSprite = 0;
+        player->spritesheet[BEND_DOWN]->numSprite = 0;
+        //player->spritesheet[JUMP]->numSprite = 0;
     }
     else // key down
     {
-        player->motionless = SDL_FALSE;
+        player->state[MOTIONLESS] = SDL_FALSE;
 
-        if(in->key[SDLK_RIGHT]) // key 'arrow right' : the player is moving toward the right
+        /* ========== MOVE TO THE RIGHT ========== */
+        if(in->key[SDLK_RIGHT]) // Right arrow key : the player is moving toward the right
         {
-            player->move = SDL_TRUE;
-            player->bendDown = SDL_FALSE; /* peut-être qu'il faut mettre ça dans la partie affichage  A VOIR */
+            /* Update the state of the character */  /* peut-être qu'il faut mettre ça dans la partie affichage  A VOIR mais pas sûr */
+            if(player->state[JUMP])
+                player->state[MOVE] = SDL_FALSE;
+            else
+                player->state[MOVE] = SDL_TRUE;
 
+            player->state[BEND_DOWN] = SDL_FALSE;
+
+            /* Change the side */
             player->side = RIGHT;
 
             currentTime = SDL_GetTicks();
             if(currentTime > *lastTime + 130) // Changing the sprite is delayed of 150 ms not to have an animation too fast
             {
-                player->spritesheetMove->numSprite++;
+                player->spritesheet[MOVE]->numSprite++;
                 *lastTime = currentTime;
             }
 
-            if(player->spritesheetMove->numSprite >= 6) // Reset of the sprite at the end of the spritesheet as there are 6 sprites in a row
+            if(player->spritesheet[MOVE]->numSprite >= 6) // Reset of the sprite at the end of the spritesheet as there are 6 sprites in a row
             {
-                player->spritesheetMove->numSprite = 0;
+                player->spritesheet[MOVE]->numSprite = 0;
             }
 
-            player->position.x += player->speed; // player moves to the right
+            player->positionReal.x += player->speed; // player moves to the right
+
+
+            /* MOVE TO THE RIGHT + JUMP = JUMP TO THE RIGHT */
+            if(in->key[SDLK_UP] && !player->state[JUMP]) // If the character is not jumping yet
+            {
+                /* Update the state of the character */
+                player->state[MOVE] = SDL_FALSE;
+                player->state[JUMP] = SDL_TRUE;
+
+                /* Changes the value of the initial angle to jump rightward and calculates the initial speed */
+                player->jumpParameters.initialAngle = 5 * player->jumpParameters.pi / 12;
+                player->jumpParameters.speedX = cos(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the X-axis
+                player->jumpParameters.speedY = sin(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the Y-axis
+
+                /* Saves the position when the character starts his jump (needed for the calculations) */
+                player->positionRealLast.x = player->positionReal.x;
+                player->positionRealLast.y = player->positionReal.y;
+
+                in->key[SDLK_UP] = SDL_FALSE;
+
+                printf("JUMP RIGHTWARD 5*pi/12\n");
+            }
         }
 
-        else if(in->key[SDLK_LEFT]) // key 'arrow left' : the player is moving toward the left
+        /* ========== MOVE TO THE LEFT ========== */
+        else if(in->key[SDLK_LEFT]) // Left arrow key : the player is moving toward the left
         {
-            player->move = SDL_TRUE;
-            player->bendDown = SDL_FALSE;
+            /* Update the state of the character */
+            if(player->state[JUMP]) // To avoid displaying at the same time, the sprite for jumping and the sprite for moving when the character is jumping
+                player->state[MOVE] = SDL_FALSE;
+            else
+                player->state[MOVE] = SDL_TRUE;
+
+            player->state[BEND_DOWN] = SDL_FALSE;
+
 
             player->side = LEFT;
 
             currentTime = SDL_GetTicks();
             if(currentTime > *lastTime + 130) // Changing the sprite is delayed of 150 ms not to have an animation too fast
             {
-                player->spritesheetMove->numSprite++;
+                player->spritesheet[MOVE]->numSprite++;
                 *lastTime = currentTime;
             }
 
-            if(player->spritesheetMove->numSprite >= 6)
+            if(player->spritesheet[MOVE]->numSprite >= 6)
             {
-                player->spritesheetMove->numSprite = 0;
+                player->spritesheet[MOVE]->numSprite = 0;
             }
 
-            player->position.x -= player->speed;
+            player->positionReal.x -= player->speed;
+
+
+            /* MOVE TO THE LEFT + JUMP = JUMP TO THE LEFT */
+            if(in->key[SDLK_UP] && !player->state[JUMP]) // If the character is not jumping yet
+            {
+                /* Update the state of the character */
+                player->state[MOVE] = SDL_FALSE;
+                player->state[JUMP] = SDL_TRUE;
+
+                /* Changes the value of the initial angle to jump leftward and calculates the initial speed */
+                player->jumpParameters.initialAngle = 7 * player->jumpParameters.pi / 12;
+                player->jumpParameters.speedX = cos(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the X-axis
+                player->jumpParameters.speedY = sin(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the Y-axis
+
+                /* Saves the position when the character starts his jump (needed for the calculations) */
+                player->positionRealLast.x = player->positionReal.x;
+                player->positionRealLast.y = player->positionReal.y;
+
+                in->key[SDLK_UP] = SDL_FALSE;
+
+                printf("JUMP LEFTWARD 7*pi/12\n");
+            }
         }
 
-        else if(in->key[SDLK_DOWN]) // key 'arrow down' : the player is bending down
+        /* ========== BEND DOWN ========== */
+        else if(in->key[SDLK_DOWN]) // Down arrow key : the player is bending down
         {
-            player->bendDown = SDL_TRUE;
-            player->move = SDL_FALSE;
+            /* Update the state of the character */
+            if(player->state[JUMP]) // To avoid displaying at the same time, the sprite for jumping and the sprite for bending down when the character is jumping
+                player->state[BEND_DOWN] = SDL_FALSE;
+            else
+                player->state[BEND_DOWN] = SDL_TRUE;
 
+            player->state[MOVE] = SDL_FALSE;
 
             currentTime = SDL_GetTicks();
             if(currentTime > *lastTime + 50) // Changing the sprite is delayed of 150 ms not to have an animation too fast
             {
-                player->spritesheetBendDown->numSprite++;
+                player->spritesheet[BEND_DOWN]->numSprite++;
                 *lastTime = currentTime;
             }
 
-            if(player->spritesheetBendDown->numSprite >= 4)
+            if(player->spritesheet[BEND_DOWN]->numSprite >= 4)
             {
-                player->spritesheetBendDown->numSprite = 3;
+                player->spritesheet[BEND_DOWN]->numSprite = 3;
+            }
+        }
+
+        /* ========== JUMP ========== */ /* FAIRE EN SORTE D AFFICHER TOUTES LES ANIMATIONS DU SAUT POUR N IMPORTE QUEL DUREE ET LONGUEUR DE SAUT */
+        else if(in->key[SDLK_UP]) // Up arrow key : the player is jumping
+        {
+            /* Avoid that during the jump, if the player presses the jump key, that will not stop the current jump and initialise again the position */
+            in->key[SDLK_UP] = SDL_FALSE;
+
+            /* Update the state of the character */
+            if(!player->state[JUMP]) // If the character is not jumping yet
+            {
+                player->state[JUMP] = SDL_TRUE;
+                player->state[MOVE] = SDL_FALSE;
+                player->state[BEND_DOWN] = SDL_FALSE;
+
+
+                /* Changes the value of the initial angle to jump upward and calculates the initial speed */
+                player->jumpParameters.initialAngle = player->jumpParameters.pi / 2;
+                player->jumpParameters.speedX = cos(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the X-axis
+                player->jumpParameters.speedY = sin(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the Y-axis
+
+                printf("JUMP UPWARD pi/2\n");
+
+                /* Saves the position when the character starts his jump (needed for the calculations) */
+                player->positionRealLast.x = player->positionReal.x;
+                player->positionRealLast.y = player->positionReal.y;
             }
         }
     }
+}
 
+
+/* On utilise la physique pour modéliser le saut et notamment la 2ème loi de Newton.
+    On part d'un point avec une vitesse initial et d'un angle de lancer (ce sont les deux paramètres sur lesquels on peut s'appuyer pour modifier le saut) */
+void player_jump(Character *player)
+{
+    /* Reset of the position of the character at the position where the jump began (needed for the calculation afterward) */
+    player->positionReal.x = player->positionRealLast.x;
+    player->positionReal.y = player->positionRealLast.y;
+
+    //printf("PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
+
+
+    /* Relative positions calculation (position = speed derivative) : the relative displacement */
+    player->positionRelative.x = (int)(player->jumpParameters.speedX * player->jumpParameters.t);
+    player->positionRelative.y = (int)((player->jumpParameters.speedY * player->jumpParameters.t) - ((player->jumpParameters.g * player->jumpParameters.t * player->jumpParameters.t)/2000));
+    // 2000 because in the formula we have to divide by 2 and we multiply by 1000 to have seconds instead of milliseconds
+
+    //printf("\tspeed.X = %f, Y = %f\n", player->jumpParameters.speedX, player->jumpParameters.speedY);
+    //printf("\tt = %d", player->jumpParameters.t);
+    //printf("\nPositionRelative.x = %d, .y = %d\n", player->positionRelative.x, player->positionRelative.y);
+
+    /* Real positions calculation (the coordinate system is the main window) ; we assign the displacement to the position of the character */
+    player->positionReal.x = player->positionReal.x + player->positionRelative.x;
+    player->positionReal.y = player->positionReal.y - player->positionRelative.y; // - as the coordinate system in SDL is inverted thus subtraction is needed to move upward the character
+
+    /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and the more accurate in the curve and as a result, the slower the jump is*/
+    player->jumpParameters.t += 5;
+
+    //printf("APRES CALCUL : PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
 
 }
+

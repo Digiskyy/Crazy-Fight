@@ -17,8 +17,14 @@
     #define WINDOW_TILESET_WIDTH    288
     #define WINDOW_TILESET_HEIGHT   608
 
-    #define MOVE        0 // For the tableSpritesheet
+    /* For the tableSpritesheet */
+    #define MOVE        0
     #define MOTIONLESS  1
     #define BEND_DOWN   2
+    #define JUMP        3
+
+    /* For the side of the character */
+    #define LEFT 1
+    #define RIGHT 0
 
 #endif // CONSTANTES_H_INCLUDED

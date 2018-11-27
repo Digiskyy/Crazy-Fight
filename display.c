@@ -122,7 +122,7 @@ SDL_Texture* load_image_transparent(const char* filename, SDL_Renderer* screen, 
     imageTmp = IMG_Load(filename);
     if(imageTmp == NULL)
     {
-        fprintf(stderr, "Error : Image \"%s\" loading : %s\n", filename, SDL_GetError());
+        fprintf(stderr, "Error : Loading of the image \"%s\"  : %s\n", filename, SDL_GetError());
     }
 
     transparentColor = SDL_MapRGB(imageTmp->format, red, green, blue);
