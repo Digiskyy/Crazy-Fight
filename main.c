@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
     // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 3 spritesheets. 100 is the number max. of char in the 3rd string
     char tableSpritesheet[4][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
                                         {"motionless", "1", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
-                                        {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"}/*,
-                                        {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"}*/};
+                                        {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"},
+                                        {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"}};
 
     Input in;
     unsigned int lastTime = 0, timer = 0, timeElapsed = 0;
