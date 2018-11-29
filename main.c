@@ -22,6 +22,7 @@
 #include "events.h"
 #include "menu.h"
 #include "editor.h"
+#include "character.h"
 #include "game.h"
 
 
