@@ -36,10 +36,10 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     player->state[JUMP] = SDL_FALSE;
 
     /* Initialises the position where the character should be displayed at the beginning */
-    player->positionReal.w =  70; /*player->spritesheetMove->sprite[0]->w;*/
-    player->positionReal.h = 85; /*player->spritesheetMove->sprite[0]->h;*/
-    player->positionReal.x = 0;
-    player->positionReal.y = 652;
+    player->positionReal.w =  70;
+    player->positionReal.h = 85;
+    player->positionReal.x = 150; //150
+    player->positionReal.y = 651; //652
 
     /* Initialises the relative position which is used for the jump */
     player->positionRelative.x = 0; // Origin of the relative coordinate system
@@ -101,8 +101,9 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
         return NULL;
     }
 
-    /* Loads the texture */
-    spritesheet->texture = load_image_transparent(tableSpritesheet[FLAGS][2], screen, 255, 255, 255); // tableSpritesheet[FLAGS][2] correponds to the path, transparent color is white (255, 255, 255)
+    /* Loads the texture */  /* A CHANGER - JUSTE POUR LES TESTS */
+    //spritesheet->texture = load_image_transparent(tableSpritesheet[FLAGS][2], screen, 255, 255, 255); // tableSpritesheet[FLAGS][2] correponds to the path, transparent color is white (255, 255, 255)
+    spritesheet->texture = load_image(tableSpritesheet[FLAGS][2], screen); /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TEST */
 
     /* Loads the array 2 dimensions */
     spritesheet->sprite = malloc(2 * sizeof(SDL_Rect*)); // 2 because there are 2 rows in the spritesheet, each row is for one direction
@@ -185,4 +186,36 @@ void free_character(Character *player)
     free(player->spritesheet[JUMP]);
 
     free(player);
+}
+
+
+/* On utilise la physique pour modéliser le saut et notamment la 2ème loi de Newton.
+    On part d'un point avec une vitesse initial et d'un angle de lancer (ce sont les deux paramètres sur lesquels on peut s'appuyer pour modifier le saut) */
+void player_jump(Character *player)
+{
+    /* Reset of the position of the character at the position where the jump began (needed for the calculation afterward) */
+    player->positionReal.x = player->positionRealLast.x;
+    player->positionReal.y = player->positionRealLast.y;
+
+    //printf("PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
+
+
+    /* Relative positions calculation (position = speed derivative) : the relative displacement */
+    player->positionRelative.x = (int)(player->jumpParameters.speedX * player->jumpParameters.t);
+    player->positionRelative.y = (int)((player->jumpParameters.speedY * player->jumpParameters.t) - ((player->jumpParameters.g * player->jumpParameters.t * player->jumpParameters.t)/2000));
+    // 2000 because in the formula we have to divide by 2 and we multiply by 1000 to have seconds instead of milliseconds
+
+    //printf("\tspeed.X = %f, Y = %f\n", player->jumpParameters.speedX, player->jumpParameters.speedY);
+    //printf("\tt = %d", player->jumpParameters.t);
+    //printf("\nPositionRelative.x = %d, .y = %d\n", player->positionRelative.x, player->positionRelative.y);
+
+    /* Real positions calculation (the coordinate system is the main window) ; we assign the displacement to the position of the character */
+    player->positionReal.x = player->positionReal.x + player->positionRelative.x;
+    player->positionReal.y = player->positionReal.y - player->positionRelative.y; // - as the coordinate system in SDL is inverted thus subtraction is needed to move upward the character
+
+    /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and the more accurate in the curve and as a result, the slower the jump is*/
+    player->jumpParameters.t += 5;
+
+    //printf("APRES CALCUL : PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
+
 }

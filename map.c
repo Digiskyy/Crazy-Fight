@@ -196,19 +196,19 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
 void load_map_level(FILE* file, Map* map)
 {
     int i, j, tmp = 0;
-    fscanf(file, "%d %d", &(map->nbTilesMapX), &(map->nbTilesMapY)); // Retrieve the number of lines (nbTilesMapY) and columns (nbTilesMapX)
+    fscanf(file, "%d %d", &(map->nbTilesMapOrd), &(map->nbTilesMapAbs)); // Retrieve the number of lines (nbTilesMapY) and columns (nbTilesMapX)
 
     //printf("19 nbTilesMapX = %d, nbTilesMapY = %d\n", map->nbTilesMapX, map->nbTilesMapY);
 
-    map->tabMap = malloc(map->nbTilesMapX * sizeof(int*)); // Memory allocation for a dynamic array
-    for(i = 0; i < map->nbTilesMapX; i++)
+    map->tabMap = malloc(map->nbTilesMapOrd * sizeof(int*)); // Memory allocation for a dynamic array
+    for(i = 0; i < map->nbTilesMapOrd; i++)
     {
-        map->tabMap[i] = malloc(map->nbTilesMapY * sizeof(int));
+        map->tabMap[i] = malloc(map->nbTilesMapAbs * sizeof(int));
     }
 
-    for(i = 0; i < map->nbTilesMapX; i++)
+    for(i = 0; i < map->nbTilesMapOrd; i++)
     {
-        for(j = 0; j < map->nbTilesMapY; j++)
+        for(j = 0; j < map->nbTilesMapAbs; j++)
         {
             fscanf(file, "%d ", &tmp);
 
@@ -261,9 +261,9 @@ void print_map(Map *map, SDL_Renderer *screen)
         exit(EXIT_FAILURE);
     }
 
-    for(i = 0; i < map->nbTilesMapX; i++)
+    for(i = 0; i < map->nbTilesMapOrd; i++)
     {
-        for(j = 0; j < map->nbTilesMapY; j++)
+        for(j = 0; j < map->nbTilesMapAbs; j++)
         {
             rectDest.w = map->widthTile;
             rectDest.h = map->heightTile;
@@ -299,7 +299,7 @@ void free_map(Map *map)
 
     SDL_FreeSurface(map->tileset); // Free the Surface for the tileset
     free(map->properties); // Free the array for the properties of each tile
-    for(i = 0; i < map->nbTilesMapX; i++) // Free the array for the map
+    for(i = 0; i < map->nbTilesMapOrd; i++) // Free the array for the map
     {
         free(map->tabMap[i]);
     }

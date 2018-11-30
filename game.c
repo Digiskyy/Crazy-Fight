@@ -14,12 +14,12 @@
 #include <SDL2/SDL_image.h>
 
 
+#include "map.h"
 #include "character.h"
 //#include "display.h"
 #include "constantes.h"
 #include "events.h"
 #include "game.h"
-#include "map.h"
 #include "collisions.h"
 
 
@@ -54,19 +54,16 @@ FAIRE UN MAKEFILE POUR LE TP DE PROG AVANCEE LUNDI AFIN DE POUVOIR EXECUTER LE P
 /* ECRIRE LES DESCRIPTIONS DES FONCTIONS ET DES STRUCTURES */
 
 
-/* PEUT ETRE FAIRE UN CHARACTER.C ET.H QUI REGROUPE TOUT CE QUI CONCERNE LE PERSONNAGE INIT, FREE, DISPLAY, JUMP POUR AVOIR TOUT CE QUI CONCERNE LE JEU VRAIMENT ICI comme pour la map qui est déclarée ailleurs et les collisions*/
-
-void launch_game(Character *player, Input *in, unsigned int *lastTime)
+void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime)
 {
     //printf("launch_game\n");
 
-    game_event(in, player, lastTime);
+    game_event(map, in, player, lastTime);
 
     if(player->state[JUMP])
     {
         player_jump(player);
     }
-
 
     /* TEST POUR VOIR SI ON PEUT REUTILISER LE JUMP APRES LA FIN DE CELUI-CI  */
     if(player->positionReal.y + player->positionReal.h >= 800)
@@ -110,6 +107,7 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 
                 //printf("numSpriteMove = %d\n", numSpriteMove);
                 //printf("MOVE gauche\n");
+                printf("position joueur : x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
 
             }
             /* SPRITESHEET BEND DOWN */
@@ -141,6 +139,8 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 
                 //printf("player->spritesheetMove->numSprite = %d\n", player->spritesheetMove->numSprite);
                 //printf("MOVE droite\n");
+                printf("position joueur : x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
+
             }
             /* SPRITESHEET BEND DOWN */
             else if(player->state[BEND_DOWN])
@@ -164,7 +164,7 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 }
 
 
-void game_event(Input *in, Character *player, unsigned int *lastTime)
+void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
 {
     unsigned int currentTime;
 
@@ -212,7 +212,8 @@ void game_event(Input *in, Character *player, unsigned int *lastTime)
 
             /* APPELER FCT DEPLACER PERSO  */
 
-            player->positionReal.x += player->speed; // player moves to the right
+            //player->positionReal.x += player->speed; // player moves to the right
+            player_move(map, player, player->speed, 0);
 
 
             /* MOVE TO THE RIGHT + JUMP = JUMP TO THE RIGHT */
@@ -266,7 +267,8 @@ void game_event(Input *in, Character *player, unsigned int *lastTime)
                 player->spritesheet[MOVE]->numSprite = 0;
             }
 
-            player->positionReal.x -= player->speed;
+            //player->positionReal.x -= player->speed;
+            player_move(map, player, -player->speed, 0);
 
 
             /* MOVE TO THE LEFT + JUMP = JUMP TO THE LEFT */
@@ -318,7 +320,7 @@ void game_event(Input *in, Character *player, unsigned int *lastTime)
             }
         }
 
-        /* ========== JUMP ========== */ /* FAIRE EN SORTE D AFFICHER TOUTES LES ANIMATIONS DU SAUT POUR N IMPORTE QUEL DUREE ET LONGUEUR DE SAUT */
+        /* ========== JUMP ========== */ /* FAIRE EN SORTE D AFFICHER TOUTES LES ANIMATIONS DU SAUT POUR N IMPORTE QUEL DUREE ET LONGUEUR DE SAUT pas possible a moins d'nticiper la trajectoire pour savoir s'il y aura une collision ou pas et quand */
         else if(in->key[SDLK_UP]) // Up arrow key : the player is jumping
         {
             /* Avoid that during the jump, if the player presses the jump key, that will not stop the current jump and initialise again the position */
@@ -348,37 +350,5 @@ void game_event(Input *in, Character *player, unsigned int *lastTime)
             }
         }
     }
-}
-
-
-/* On utilise la physique pour modéliser le saut et notamment la 2ème loi de Newton.
-    On part d'un point avec une vitesse initial et d'un angle de lancer (ce sont les deux paramètres sur lesquels on peut s'appuyer pour modifier le saut) */
-void player_jump(Character *player)
-{
-    /* Reset of the position of the character at the position where the jump began (needed for the calculation afterward) */
-    player->positionReal.x = player->positionRealLast.x;
-    player->positionReal.y = player->positionRealLast.y;
-
-    //printf("PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
-
-
-    /* Relative positions calculation (position = speed derivative) : the relative displacement */
-    player->positionRelative.x = (int)(player->jumpParameters.speedX * player->jumpParameters.t);
-    player->positionRelative.y = (int)((player->jumpParameters.speedY * player->jumpParameters.t) - ((player->jumpParameters.g * player->jumpParameters.t * player->jumpParameters.t)/2000));
-    // 2000 because in the formula we have to divide by 2 and we multiply by 1000 to have seconds instead of milliseconds
-
-    //printf("\tspeed.X = %f, Y = %f\n", player->jumpParameters.speedX, player->jumpParameters.speedY);
-    //printf("\tt = %d", player->jumpParameters.t);
-    //printf("\nPositionRelative.x = %d, .y = %d\n", player->positionRelative.x, player->positionRelative.y);
-
-    /* Real positions calculation (the coordinate system is the main window) ; we assign the displacement to the position of the character */
-    player->positionReal.x = player->positionReal.x + player->positionRelative.x;
-    player->positionReal.y = player->positionReal.y - player->positionRelative.y; // - as the coordinate system in SDL is inverted thus subtraction is needed to move upward the character
-
-    /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and the more accurate in the curve and as a result, the slower the jump is*/
-    player->jumpParameters.t += 5;
-
-    //printf("APRES CALCUL : PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
-
 }
 

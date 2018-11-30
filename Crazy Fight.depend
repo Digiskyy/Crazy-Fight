@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1543504963 source:d:\programmation\sdl\crazy fight\main.c
+1543524504 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -372,7 +372,7 @@
 	"constantes.h"
 	"display.h"
 
-1543034771 source:d:\programmation\sdl\crazy fight\map.c
+1543525927 source:d:\programmation\sdl\crazy fight\map.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -381,7 +381,7 @@
 	"map.h"
 	"constantes.h"
 
-1542886549 d:\programmation\sdl\crazy fight\map.h
+1543525927 d:\programmation\sdl\crazy fight\map.h
 
 1543275882 d:\programmation\sdl\crazy fight\events.h
 
@@ -406,7 +406,7 @@
 
 1542887426 d:\programmation\sdl\crazy fight\editor.h
 
-1542992116 source:d:\programmation\sdl\crazy fight\editor.c
+1543525927 source:d:\programmation\sdl\crazy fight\editor.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -415,23 +415,23 @@
 	"constantes.h"
 	"editor.h"
 
-1543504451 d:\programmation\sdl\crazy fight\game.h
+1543506726 d:\programmation\sdl\crazy fight\game.h
 
-1543505074 source:d:\programmation\sdl\crazy fight\game.c
+1543530889 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
 	<math.h>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
+	"map.h"
 	"character.h"
 	"constantes.h"
 	"events.h"
 	"game.h"
-	"map.h"
 	"collisions.h"
 
-1543504789 source:d:\programmation\sdl\crazy fight\collisions.c
+1543536525 source:d:\programmation\sdl\crazy fight\collisions.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -441,7 +441,7 @@
 	"game.h"
 	"collisions.h"
 
-1543504634 source:d:\programmation\sdl\crazy fight\character.c
+1543536775 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -449,7 +449,7 @@
 	"constantes.h"
 	"events.h"
 
-1543504443 d:\programmation\sdl\crazy fight\character.h
+1543505853 d:\programmation\sdl\crazy fight\character.h
 
-1543504773 d:\programmation\sdl\crazy fight\collisions.h
+1543522915 d:\programmation\sdl\crazy fight\collisions.h
 

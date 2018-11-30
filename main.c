@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
 
     // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 3 spritesheets. 100 is the number max. of char in the 3rd string
-    char tableSpritesheet[4][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
+    char tableSpritesheet[4][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move_TEST.png"}, //"ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"
                                         {"motionless", "1", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
                                         {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"},
                                         {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"}};
@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
             update_events(&in);
 
             /* Game code (Handle events) */
-            launch_game(player1, &in, &lastTime);
+            launch_game(map, player1, &in, &lastTime);
 
             /* Print the map on the screen */
             SDL_RenderClear(screen);

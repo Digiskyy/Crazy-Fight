@@ -43,6 +43,14 @@
 			<Add library="C:/Program Files (x86)/CodeBlocks/SDL-2.0.8/i686-w64-mingw32/lib/libSDL2_image.dll.a" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL-2.0.8/i686-w64-mingw32/lib" />
 		</Linker>
+		<Unit filename="character.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="character.h" />
+		<Unit filename="collisions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="collisions.h" />
 		<Unit filename="constantes.h" />
 		<Unit filename="display.c">
 			<Option compilerVar="CC" />

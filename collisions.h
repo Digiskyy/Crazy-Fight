@@ -5,7 +5,7 @@ int player_move(Map *map, Character *player, int vectorX, int vectorY);
 
 int movement_test(Map *map, Character *player, int vectorX, int vectorY);
 
-int collisionMap(Map *map, Character *player);
+int collisionMap(Map *map, Character *player, int vectorX, int vectorY);
 
 void movement_slim(Map *map, Character *player, int vectorX, int vectorY);
 

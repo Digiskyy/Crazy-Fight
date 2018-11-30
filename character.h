@@ -53,5 +53,7 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
 
 void free_character(Character *player);
 
+void player_jump(Character *player);
+
 
 #endif // CHARACTER_H_INCLUDED

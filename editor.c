@@ -166,12 +166,12 @@ void save_mapEditor(Map *mapEditor)
         fputs("ressources/tileset.png\n", fileMapPerso);
         fputs("ressources/tileset_array_properties.txt\n", fileMapPerso);
         fputs("#level\n", fileMapPerso);
-        fprintf(fileMapPerso, "%d %d\n", mapEditor->nbTilesMapX, mapEditor->nbTilesMapY);
+        fprintf(fileMapPerso, "%d %d\n", mapEditor->nbTilesMapOrd, mapEditor->nbTilesMapAbs);
 
         /* Writing of the tabMap which represents the current map in the editor */
-        for(int i = 0; i < mapEditor->nbTilesMapX; i++)
+        for(int i = 0; i < mapEditor->nbTilesMapOrd; i++)
         {
-            for(int j = 0; j < mapEditor->nbTilesMapY; j++)
+            for(int j = 0; j < mapEditor->nbTilesMapAbs; j++)
             {
                 if(fprintf(fileMapPerso, "%d ", mapEditor->tabMap[i][j]) == EOF)
                 {
