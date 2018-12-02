@@ -95,17 +95,20 @@ int main(int argc, char* argv[])
     et comment les joueurs pourront viser...
 
     A FAIRE :
-        - afficher les sprites des persos,
-        - gérer les déplacements et les sauts et la gravité et les collisions avec la map des deux persos en même temps et gérer leurs animations (saut, mort, se baisser ?, ...),
-        - afficher sprites armes (si pas trop compliqué faire en sorte qu'on puisse viser dans toutes les directions),
+        - gérer les déplacements et les sauts et la gravité et les collisions avec la map un perso puis deux persos en même temps et gérer leurs animations (saut, mort, se baisser ?, ...),
         - tirer avec l'arme (animation perso et (arme) et gestion des balles) et gestion de la vie des persos
-        - Gérer mieux TOUTES les erreurs, savoir quels sont les erreurs qui obligent de quitte car on ne peut plus continuer
+        - Gérer mieux TOUTES les erreurs, savoir quelles sont les erreurs qui obligent de quitter car on ne peut plus continuer
             et quelles sont celles où ils faut juste reporter l'erreur et libérer la mémoire sans quitter le jeu car elles ne sont pas indispensables à la bonne contnuation du jeu
-        - Améliorations :
+        - Enlever tous les commentaires inutiles (tous les tests, les mettre dans un fichier texte mais pas dans le code), vérifier toute la doc de chaque fonction, structure et fichier .h et .c,
+
+        - AMELIORATIONS :
+            * faire en sorte que la taille du sprite soit variable et suive la taille du personnage quand on se baisse pour permettre de passer dans des chemins plus petits (gagne 1 tile),
+                OU pour éviter des balles quand l'autre personnage tire en étant debout (possibilité d'"outplay" l'adversaire)
             * possibilité quand on a lancé le choix "Play" de pouvoir choisir la dernière map perso ou la map de base
-            * dans l'éditeur, quand on a des objets qui prennent plusieurs tiles dans le tileset, les mettre complet dans la map au lieu de changer tuile par tuile, ex : un arbre, un pont, nuage, ...
             * possibilité quand on est sur l'éditeur de pouvoir choisir si on charge la map de base, la dernière map perso ou une map vierge pour pouvoir la modifier
+            * dans l'éditeur, quand on a des objets qui prennent plusieurs tiles dans le tileset, les mettre complet dans la map au lieu de changer tuile par tuile, ex : un arbre, un pont, nuage, ...
             * mettre un quadrillage représentant les limites des tiles dans la fenêtre principale de l'éditeur
+            * afficher sprites armes (si pas trop compliqué faire en sorte qu'on puisse viser dans toutes les directions)
             * scroll et zoom,
             * plusieurs armes (différents types :  fusil mitrailleur, pistolet, sniper, fusil à pompe, grenade, ...),
             * possibilité de construire des murs comme territory wars */

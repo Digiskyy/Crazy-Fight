@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1543524504 source:d:\programmation\sdl\crazy fight\main.c
+1543711841 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -417,7 +417,7 @@
 
 1543506726 d:\programmation\sdl\crazy fight\game.h
 
-1543530889 source:d:\programmation\sdl\crazy fight\game.c
+1543710661 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -431,17 +431,18 @@
 	"game.h"
 	"collisions.h"
 
-1543536525 source:d:\programmation\sdl\crazy fight\collisions.c
+1543711362 source:d:\programmation\sdl\crazy fight\collisions.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
+	"constantes.h"
 	"character.h"
 	"map.h"
 	"events.h"
 	"game.h"
 	"collisions.h"
 
-1543536775 source:d:\programmation\sdl\crazy fight\character.c
+1543709871 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -449,7 +450,7 @@
 	"constantes.h"
 	"events.h"
 
-1543505853 d:\programmation\sdl\crazy fight\character.h
+1543592314 d:\programmation\sdl\crazy fight\character.h
 
-1543522915 d:\programmation\sdl\crazy fight\collisions.h
+1543543020 d:\programmation\sdl\crazy fight\collisions.h
 

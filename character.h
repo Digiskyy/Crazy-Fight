@@ -35,7 +35,8 @@ typedef struct Character
     int speed;
     SDL_Rect positionReal;
     SDL_Point positionRelative;
-    SDL_Point positionRealLast;
+    SDL_Point positionRealStartJump;
+    SDL_Point positionRealLastJump;
     int side; // Handles which side the character is moving or looking
     SDL_bool state[4]; // Indicates the states of the character in reel time, if the character is performing an action or not
     JumpParameters  jumpParameters;
@@ -52,8 +53,6 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
 Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_Renderer *screen);
 
 void free_character(Character *player);
-
-void player_jump(Character *player);
 
 
 #endif // CHARACTER_H_INCLUDED

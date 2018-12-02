@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 
 
+#include "constantes.h"
 #include "character.h"
 #include "map.h"
 #include "events.h"
@@ -23,8 +24,7 @@
 
 
 /*
-A FAIRE :
-=> Tester les mouvements hauts et bas pour vérifier s'il y a des problèmes, à la place de sauter faire temporairement juste un mouvement en haut ou en bas avec les fleches juste pour tester
+=> Bug ?? : Quand je tombe avec la gravité, je peux appuyer sur les touches, c'est-à-dire que je peux me déplacer (OK) mais je peux aussi faire un saut (OK OU  PAS ??)
 
 => tester toutes les possibilités possibles de collision en créant des maps et en ajoutant des blocs différents, des escaliers, des trous, des ponts ...
 
@@ -43,7 +43,7 @@ tester toutes les possibilités possibles avec le saut, en tombant dans le vide e
 
 
 ==> Normalement tout devrait fonctionner à ce stade, donc passer autre chose, mise en place du tir (animation et vie)
-puis les 2 joueurs,, vérifier que tous fonctionne bien pour les 2 joueurs en même temps,
+puis les 2 joueurs, vérifier que tout fonctionne bien pour les 2 joueurs en même temps,
 puis le design de la fenêtre avec les scores (les écrire également dans un fichier), le temps ...
 Vérifier par rapport au cahier des charges établit ce qu'il y a à rajouter, ou passer aux améliorations écrites dans le main.c si TOUT est ok.
 */
@@ -59,6 +59,46 @@ int player_move(Map *map, Character *player, int vectorX, int vectorY)
 }
 
 
+/* On utilise la physique pour modéliser le saut et notamment la 2ème loi de Newton.
+    On part d'un point avec une vitesse initial et d'un angle de lancer (ce sont les deux paramètres sur lesquels on peut s'appuyer pour modifier le saut) */
+void player_jump(Map *map, Character *player)
+{
+
+    player->positionRealLastJump.x = player->positionReal.x;
+    player->positionRealLastJump.y = player->positionReal.y;
+
+
+    /* Reset of the position of the character at the position where the jump began (needed for the calculation afterward) */
+    player->positionReal.x = player->positionRealStartJump.x;
+    player->positionReal.y = player->positionRealStartJump.y;
+
+    //printf("PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
+
+
+    /* Relative positions calculation (position = speed derivative) : the relative displacement */
+    player->positionRelative.x = (int)(player->jumpParameters.speedX * player->jumpParameters.t);
+    player->positionRelative.y = (int)((player->jumpParameters.speedY * player->jumpParameters.t) - ((player->jumpParameters.g * player->jumpParameters.t * player->jumpParameters.t)/2000));
+    // 2000 because in the formula we have to divide by 2 and we multiply by 1000 to have seconds instead of milliseconds
+
+    //printf("\tspeed.X = %f, Y = %f\n", player->jumpParameters.speedX, player->jumpParameters.speedY);
+    /*printf("\tt = %d", player->jumpParameters.t);
+    printf("\nPositionRelative.x = %d, .y = %d\n", player->positionRelative.x, player->positionRelative.y);*/
+
+    /* Collision tests */
+    player_move(map, player, player->positionRelative.x, -(player->positionRelative.y));
+
+    /* Real positions calculation (the coordinate system is the main window) ; we assign the displacement to the position of the character */
+    //player->positionReal.x = player->positionReal.x + player->positionRelative.x;
+    //player->positionReal.y = player->positionReal.y - player->positionRelative.y; // - as the coordinate system in SDL is inverted thus subtraction is needed to move upward the character
+
+    /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and the more accurate in the curve it will be and as a result, the slower the jump is */
+    player->jumpParameters.t += 5;
+
+    //printf("APRES CALCUL : PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
+
+}
+
+
 int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
 {
     int minX, minY, maxX, maxY, tileIndex, i, j;
@@ -66,8 +106,8 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
     /* If the player wants to move out of the world */
     if(player->positionReal.x + vectorX < 0
        || player->positionReal.x + player->positionReal.w + vectorX > map->nbTilesMapAbs * map->widthTile
-       || player->positionReal.y - vectorY < 0
-       || player->positionReal.y + player->positionReal.h - vectorY > map->nbTilesMapOrd * map->heightTile)
+       || player->positionReal.y + vectorY < 0
+       || player->positionReal.y + player->positionReal.h + vectorY > map->nbTilesMapOrd * map->heightTile)
     {
         printf("Limit of the map !\n");
         return 1; // Out of the world
@@ -76,11 +116,11 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
     /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the player */
     minX = (player->positionReal.x + vectorX) / map->widthTile;
     minY = (player->positionReal.y + vectorY) / map->heightTile;
-    maxX = (player->positionReal.x + player->positionReal.w - 1 + vectorX) / map->widthTile; /* ESSAYER AVEC -1, RIEN, +1, +2 avec +2 on voit bien qu'on ne touche pas du tout le bloc et pourtant on ne peut plus bouger */
+    maxX = (player->positionReal.x + player->positionReal.w - 1 + vectorX) / map->widthTile;
     maxY = (player->positionReal.y + player->positionReal.h - 1 + vectorY) / map->heightTile;
 
-    printf("\n\nnumTile minX = %d, minY = %d\n", minX, minY);
-    printf("numTile maxX = %d, maxY = %d\n", maxX, maxY);
+    //printf("\n\nnumTile minX = %d, minY = %d\n", minX, minY);
+    //printf("numTile maxX = %d, maxY = %d\n", maxX, maxY);
     /*printf("(position X = %d / nbTilesMapAbs = %d) = minX = %d\n", player->positionReal.x, map->widthTile, player->positionReal.x / map->widthTile);
     printf("(position X + width - 1) = %d / nbTilesMapAbs = %d) = maxX = %d\n", (player->positionReal.x + player->positionReal.w - 1), map->widthTile, (player->positionReal.x + player->positionReal.w - 1) / map->widthTile);
     printf("(position Y = %d / nbTilesMapOrd = %d) = minY = %d\n", player->positionReal.y, map->heightTile, player->positionReal.y / map->heightTile);
@@ -92,7 +132,7 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
         {
             tileIndex = map->tabMap[i][j];
 
-            if(map->properties[tileIndex].full == 1)
+            /*if(map->properties[tileIndex].full == 1)
             {
                 printf("\ttile FULL, tileIndex = %d, i = %d, j = %d\n", tileIndex, i, j);
                 printf("\ttile point en haut a gauche x = %d, y = %d\n", j * map->widthTile, i * map->heightTile);
@@ -104,7 +144,7 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
             {
                 printf("\ttile OTHER, tileIndex = %d, i = %d, j = %d\n", tileIndex, i, j);
                 printf("\ttile point en haut a gauche x = %d, y = %d\n", j * map->widthTile, i * map->heightTile);
-            }
+            }*/
 
             if(map->properties[tileIndex].full == 1) // If the tile is define as full
                 return 1; // Founded collision
@@ -119,14 +159,34 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
 {
     if(!collisionMap(map, player, vectorX, vectorY)) // If no collisions
     {
-        printf("collision : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
-        printf("collision2 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
+        //printf("collision : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
+        //printf("collision2 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
+
         player->positionReal.x += vectorX; // Moves the player on the X-axis
         player->positionReal.y += vectorY; // Moves the player on the Y-axis
-        printf("collision3 : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
-        printf("collision4 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
+
+        //printf("collision3 : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
+        //printf("collision4 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
+
+        /* Update the last good position of the character during the jump */
+        if(player->state[JUMP])
+        {
+            player->positionRealLastJump.x = player->positionReal.x;
+            player->positionRealLastJump.y = player->positionReal.y;
+        }
         return 1;
     }
+
+    /* Reset of the parameters for the jump */
+    if(player->state[JUMP])
+    {
+        player->state[JUMP] = SDL_FALSE;
+        player->jumpParameters.t = 0;
+        player->positionReal.x = player->positionRealLastJump.x;
+        player->positionReal.y = player->positionRealLastJump.y;
+    }
+
+
     return 0; // Not possible movement
 }
 

@@ -60,24 +60,29 @@ void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime)
 
     game_event(map, in, player, lastTime);
 
+    /* If the player is jumping */
     if(player->state[JUMP])
     {
-        player_jump(player);
+        player_jump(map, player);
+    }
+    /* Otherwise, gravity is applied */
+    else
+    {
+        player_move(map, player, 0, 5);
     }
 
-    /* TEST POUR VOIR SI ON PEUT REUTILISER LE JUMP APRES LA FIN DE CELUI-CI  */
-    if(player->positionReal.y + player->positionReal.h >= 800)
+    /* If the player fall down and go over the height of the window => He lost NOW RESET OF THE POSITION FOR THE TESTS */
+    if(player->positionReal.y >= WINDOW_HEIGHT)
     {
+        printf("You lost ! \n"); /* Dire quel joueur a perdu  */
+
         player->state[JUMP] = SDL_FALSE;
         player->jumpParameters.t = 0;
-        player->jumpParameters.initialAngle = player->jumpParameters.pi / 2;
+        //player->jumpParameters.initialAngle = player->jumpParameters.pi / 2;
 
         player->positionReal.y = 652;
     }
 
-
-    /* COLLISION ici ou dans game event ??? */
-    //printf("game_event\n");
 }
 
 
@@ -178,6 +183,19 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
         /* Reset of the animations in order to restart them from the beginning when they will be run again */
         player->spritesheet[MOVE]->numSprite = 0;
         player->spritesheet[BEND_DOWN]->numSprite = 0;
+
+        /* TEST RENITIALISATIOIN DE LA POSITION DU PERSO */
+        if(in->key[SDLK_r])
+        {
+            player->state[MOVE] = SDL_FALSE;
+            player->state[BEND_DOWN] = SDL_FALSE;
+            player->state[JUMP] = SDL_FALSE;
+
+            printf("\nRESET POSITION\n");
+
+            player->positionReal.x = 150;
+            player->positionReal.y = 300;
+        }
     }
     else // key down
     {
@@ -229,8 +247,8 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
                 player->jumpParameters.speedY = sin(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the Y-axis
 
                 /* Saves the position when the character starts his jump (needed for the calculations) */
-                player->positionRealLast.x = player->positionReal.x;
-                player->positionRealLast.y = player->positionReal.y;
+                player->positionRealStartJump.x = player->positionReal.x;
+                player->positionRealStartJump.y = player->positionReal.y;
 
                 in->key[SDLK_UP] = SDL_FALSE;
 
@@ -284,8 +302,8 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
                 player->jumpParameters.speedY = sin(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the Y-axis
 
                 /* Saves the position when the character starts his jump (needed for the calculations) */
-                player->positionRealLast.x = player->positionReal.x;
-                player->positionRealLast.y = player->positionReal.y;
+                player->positionRealStartJump.x = player->positionReal.x;
+                player->positionRealStartJump.y = player->positionReal.y;
 
                 in->key[SDLK_UP] = SDL_FALSE;
 
@@ -334,7 +352,7 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
                 player->state[BEND_DOWN] = SDL_FALSE;
 
 
-                /* Changes the value of the initial angle to jump upward and calculates the initial speed */
+                /* Initialisation of the initial angle to jump upward and calculates the initial speed */
                 player->jumpParameters.initialAngle = player->jumpParameters.pi / 2;
                 player->jumpParameters.speedX = cos(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the X-axis
                 player->jumpParameters.speedY = sin(player->jumpParameters.initialAngle) * player->jumpParameters.initialSpeed; // Initial speed on the Y-axis
@@ -342,12 +360,15 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
                 printf("JUMP UPWARD pi/2\n");
 
                 /* Saves the position when the character starts his jump (needed for the calculations) */
-                player->positionRealLast.x = player->positionReal.x;
-                player->positionRealLast.y = player->positionReal.y;
+                player->positionRealStartJump.x = player->positionReal.x;
+                player->positionRealStartJump.y = player->positionReal.y;
 
                 /* Use the sprite n°0 for the upward jump */
                 player->spritesheet[JUMP]->numSprite = 0;
             }
+
+            /* TEST  : avance vers le haut */
+            //player_move(map, player, 0, -player->speed);
         }
     }
 }

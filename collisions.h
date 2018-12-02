@@ -3,6 +3,8 @@
 
 int player_move(Map *map, Character *player, int vectorX, int vectorY);
 
+void player_jump(Map *map, Character *player);
+
 int movement_test(Map *map, Character *player, int vectorX, int vectorY);
 
 int collisionMap(Map *map, Character *player, int vectorX, int vectorY);
