@@ -22,6 +22,7 @@
     #define MOTIONLESS  1
     #define BEND_DOWN   2
     #define JUMP        3
+    #define FIRE        4
 
     /* For the side of the character */
     #define LEFT 1

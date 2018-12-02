@@ -48,7 +48,7 @@ typedef struct Sprite
  */
 typedef struct Character
 {
-    Sprite* spritesheet[4];             /**< Bring together all the spritesheets used by the character, there are 4 spritesheets so far */
+    Sprite* spritesheet[5];             /**< Bring together all the spritesheets used by the character, there are 5 spritesheets so far */
     int health;                         /**< Health of the player (100) */
     int speed;                          /**< Speed of the movement of the player (3) */
     SDL_Rect positionReal;              /**< Position of the upper left-hand corner of the player where he's displayed and with its height and width */
@@ -56,7 +56,7 @@ typedef struct Character
     SDL_Point positionRealStartJump;    /**< Position where the player starts to jump */
     SDL_Point positionRealLastJump;     /**< Position of the last position of the player during the jump, needed to handle the collisisons */
     int side;                           /**< Side where the character is moving or looking */
-    SDL_bool state[4];                  /**< Indicates the states of the character in reel time, if the character is performing an action or not */
+    SDL_bool state[5];                  /**< Indicates the states of the character in reel time, if the character is performing an action or not */
     JumpParameters  jumpParameters;     /**< Structure needed to calculate the jump */
 
     //int FLAGS; // Pour savoir quel sprite à afficher car on ne peut en afficher qu'un seul. Car on peut faire plusieurs action en même temps genre sauter et se déplacer mais seulment un sprite à la fois

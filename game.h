@@ -16,7 +16,7 @@
  * @param < *map > Structure which stands for the map
  * @param < *player > Structure which stands for the player 1
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
- * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
+ * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  */
 void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime, int *choice);
 

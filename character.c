@@ -41,6 +41,7 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     player->state[MOVE] = SDL_FALSE;
     player->state[BEND_DOWN] = SDL_FALSE;
     player->state[JUMP] = SDL_FALSE;
+    player->state[FIRE] = SDL_FALSE;
 
     /* Initialises the position where the character should be displayed at the beginning */
     player->positionReal.w =  70;
@@ -87,6 +88,13 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     if(player->spritesheet[JUMP] == NULL)
     {
         fprintf(stderr, "Error : Creation of the spritesheet Jump");
+    }
+
+    /* ========== SPRITESHEET FIRE ========== */
+    player->spritesheet[FIRE] = init_spritesheet(**tableSpritesheet, FIRE, screen);
+    if(player->spritesheet[FIRE] == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the spritesheet Fire");
     }
 
     return player;
@@ -143,7 +151,7 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
     {
         for(j = 0; j < nbSprites; j++)
         {
-            spritesheet->sprite[i][j].w = 70; // Width of the sprite
+            spritesheet->sprite[i][j].w = FLAGS == FIRE ? 90 : 70; // Width of the sprite, the fire sprites have 85 pixels in width instead of 70
             /* P-E METTRE TOUS LES SPRITES A 87 DE PIXEL MAIS DU COUP MODIFIER LES IMAGES CAR LA TETE DES ANIM VERS LA GAUCHE EST COUPEE ET ON LA VOIT SUR LES ANIMS DE DROITE EN DESSOUS DES PIEDS */
             spritesheet->sprite[i][j].h = FLAGS == JUMP ? 87 : 85; // Height of the sprite, the jump sprites have 87 pixels in height instead of 85
             spritesheet->sprite[i][j].x = j * spritesheet->sprite[i]->w; // Position on the X-axis
@@ -151,7 +159,7 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
         }
     }
 
-    /* Initialise the numero of the sprite at 0 */
+    /* Initialises the numero of the sprite at 0 */
     spritesheet->numSprite = 0;
 
     return spritesheet;
@@ -201,6 +209,15 @@ void free_character(Character *player)
     free(player->spritesheet[JUMP]->sprite);
     SDL_DestroyTexture(player->spritesheet[JUMP]->texture);
     free(player->spritesheet[JUMP]);
+
+    /* SPRITESHEET FIRE */
+    for(i = 0; i < 2; i++)
+    {
+        free(player->spritesheet[FIRE]->sprite[i]);
+    }
+    free(player->spritesheet[FIRE]->sprite);
+    SDL_DestroyTexture(player->spritesheet[FIRE]->texture);
+    free(player->spritesheet[FIRE]);
 
     free(player);
 }

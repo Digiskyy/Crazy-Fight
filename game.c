@@ -147,6 +147,21 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 
                 //printf("JUMP gauche\n");
             }
+            /* SPRITESHEET FIRE */
+            else if(player->state[FIRE])
+            {
+                numSpriteLeft = 3 - player->spritesheet[FIRE]->numSprite;
+
+                /* Changes the width and the position in x because the sprite fire doesn't have the same width than the other, thus it's necessary to compensate this distance to display the player shots at the same position than normal without any shift */
+                player->positionReal.w = player->spritesheet[FIRE]->sprite[0]->w;
+                player->positionReal.x = player->positionReal.x - 20; // normal sprite 70 and fire sprite 90 : difference of 20
+
+                SDL_RenderCopy(screen, player->spritesheet[FIRE]->texture, &(player->spritesheet[FIRE]->sprite[player->side][numSpriteLeft]), &(player->positionReal));
+
+                /* Reset of the changements before */
+                player->positionReal.w = player->spritesheet[MOVE]->sprite[0]->w;
+                player->positionReal.x = player->positionReal.x + 20;
+            }
         }
         else // player->side  == RIGHT
         {
@@ -177,6 +192,23 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 
                 //printf("JUMP droite\n");
             }
+            /* SPRITESHEET FIRE */
+            else if(player->state[FIRE])
+            {
+                printf("\nw = %d\n", player->positionReal.w);
+                printf("position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
+
+                player->positionReal.w = player->spritesheet[FIRE]->sprite[0]->w;
+
+                printf("w = %d\n", player->positionReal.w);
+                printf("position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
+                //printf("w = %d\tnumSprite = %d\t side = %d\n", player->positionReal.w, player->spritesheet[FIRE]->numSprite, player->side);
+
+                SDL_RenderCopy(screen, player->spritesheet[FIRE]->texture, &(player->spritesheet[FIRE]->sprite[player->side][player->spritesheet[FIRE]->numSprite]), &(player->positionReal));
+
+                player->positionReal.w = player->spritesheet[MOVE]->sprite[0]->w;
+                //printf("w = %d\n", player->positionReal.w);
+            }
         }
     }
 }
@@ -188,34 +220,38 @@ void display_sprite(SDL_Renderer *screen, Character *player)
  * @param < *map > Structure which stands for the map
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param < *player > Structure which stands for the player 1
- * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
+ * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  */
 void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, int *choice)
 {
     unsigned int currentTime;
 
-    if(in->key[SDLK_ESCAPE]) // Escape key down : Quit the game and get back to the menu
+    if(in->key[SDLK_ESCAPE]) // Escape key down : Quit the game and get back to the menu A FAIRE : SAUVEGARDE LE SCORE DANS UN FICHIER AVANT DE REVENIR AU MENU
     {
         in->key[SDLK_ESCAPE] = SDL_FALSE;
         *choice = 0;
     }
-    else if(!in->key[SDLK_RIGHT] && !in->key[SDLK_LEFT] && !in->key[SDLK_DOWN] && !in->key[SDLK_UP]) // There are no down keys which make the character move
+    else if(!in->key[SDLK_RIGHT] && !in->key[SDLK_LEFT] && !in->key[SDLK_DOWN] && !in->key[SDLK_UP] && !in->key[SDLK_p]) // There are no down keys which make the character move
     {
         /* Update the state of the character */
         player->state[MOTIONLESS] = SDL_TRUE;
         player->state[MOVE] = SDL_FALSE;
         player->state[BEND_DOWN] = SDL_FALSE;
+        player->state[FIRE] = SDL_FALSE;
 
         /* Reset of the animations in order to restart them from the beginning when they will be run again */
         player->spritesheet[MOVE]->numSprite = 0;
         player->spritesheet[BEND_DOWN]->numSprite = 0;
+        player->spritesheet[FIRE]->numSprite = 0;
 
-        /* TEST RENITIALISATIOIN DE LA POSITION DU PERSO */
+        /* TEST REINITIALISATION DE LA POSITION DU PERSO */
         if(in->key[SDLK_r])
         {
             player->state[MOVE] = SDL_FALSE;
             player->state[BEND_DOWN] = SDL_FALSE;
             player->state[JUMP] = SDL_FALSE;
+            player->state[FIRE] = SDL_FALSE;
+
 
             printf("\nRESET POSITION\n");
 
@@ -230,19 +266,21 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
         /* ========== MOVE TO THE RIGHT ========== */
         if(in->key[SDLK_RIGHT]) // Right arrow key : the player is moving toward the right
         {
-            /* Update the state of the character */  /* peut-être qu'il faut mettre ça dans la partie affichage  A VOIR mais pas sûr */
+            /* Updates the state of the character */  /* peut-être qu'il faut mettre ça dans la partie affichage  A VOIR mais pas sûr */
             if(player->state[JUMP])
                 player->state[MOVE] = SDL_FALSE;
             else
                 player->state[MOVE] = SDL_TRUE;
 
             player->state[BEND_DOWN] = SDL_FALSE;
+            player->state[FIRE] = SDL_FALSE; /* <<<<<<<<<<<<<<< POUR L'INSTANT ON NE PEUT QUE TIRER QUAND ON FAIT RIEN D'AUTRE, voir après si on peut tire en bougeant, sautant, se baissant */
 
             /* Change the side */
             player->side = RIGHT;
 
+            /* Changes the sprite to make an animation */
             currentTime = SDL_GetTicks();
-            if(currentTime > *lastTime + 130) // Changing the sprite is delayed of 150 ms not to have an animation too fast
+            if(currentTime > *lastTime + 130) // Changing the sprite is delayed of 130 ms not to have an animation too fast
             {
                 player->spritesheet[MOVE]->numSprite++;
                 *lastTime = currentTime;
@@ -253,10 +291,7 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
                 player->spritesheet[MOVE]->numSprite = 0;
             }
 
-
-            /* APPELER FCT DEPLACER PERSO  */
-
-            //player->positionReal.x += player->speed; // player moves to the right
+            /* Movement of the player */
             player_move(map, player, player->speed, 0);
 
 
@@ -288,17 +323,19 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
         /* ========== MOVE TO THE LEFT ========== */
         else if(in->key[SDLK_LEFT]) // Left arrow key : the player is moving toward the left
         {
-            /* Update the state of the character */
+            /* Updates the state of the character */
             if(player->state[JUMP]) // To avoid displaying at the same time, the sprite for jumping and the sprite for moving when the character is jumping
                 player->state[MOVE] = SDL_FALSE;
             else
                 player->state[MOVE] = SDL_TRUE;
 
             player->state[BEND_DOWN] = SDL_FALSE;
-
+            player->state[FIRE] = SDL_FALSE; /* <<<<<<<<<<<<<<< POUR L'INSTANT ON NE PEUT QUE TIRER QUAND ON FAIT RIEN D'AUTRE, voir après si on peut tire en bougeant, sautant, se baissant */
 
             player->side = LEFT;
 
+
+            /* Changes the sprite to make an animation */
             currentTime = SDL_GetTicks();
             if(currentTime > *lastTime + 130) // Changing the sprite is delayed of 150 ms not to have an animation too fast
             {
@@ -311,7 +348,7 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
                 player->spritesheet[MOVE]->numSprite = 0;
             }
 
-            //player->positionReal.x -= player->speed;
+            /* Movement of the player */
             player_move(map, player, -player->speed, 0);
 
 
@@ -343,16 +380,19 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
         /* ========== BEND DOWN ========== */
         else if(in->key[SDLK_DOWN]) // Down arrow key : the player is bending down
         {
-            /* Update the state of the character */
+            /* Updates the state of the character */
             if(player->state[JUMP]) // To avoid displaying at the same time, the sprite for jumping and the sprite for bending down when the character is jumping
                 player->state[BEND_DOWN] = SDL_FALSE;
             else
                 player->state[BEND_DOWN] = SDL_TRUE;
 
             player->state[MOVE] = SDL_FALSE;
+            player->state[FIRE] = SDL_FALSE; /* <<<<<<<<<<<<<<< POUR L'INSTANT ON NE PEUT QUE TIRER QUAND ON FAIT RIEN D'AUTRE, voir après si on peut tire en bougeant, sautant, se baissant */
 
+
+            /* Changes the sprite to make an animation */
             currentTime = SDL_GetTicks();
-            if(currentTime > *lastTime + 50) // Changing the sprite is delayed of 150 ms not to have an animation too fast
+            if(currentTime > *lastTime + 50) // Changing the sprite is delayed of 50 ms not to have an animation too fast
             {
                 player->spritesheet[BEND_DOWN]->numSprite++;
                 *lastTime = currentTime;
@@ -360,7 +400,7 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
 
             if(player->spritesheet[BEND_DOWN]->numSprite >= 4)
             {
-                player->spritesheet[BEND_DOWN]->numSprite = 3;
+                player->spritesheet[BEND_DOWN]->numSprite = 3; // Set the sprite 3 in order to stay bent down
             }
         }
 
@@ -395,6 +435,35 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
 
             /* TEST  : avance vers le haut */
             //player_move(map, player, 0, -player->speed);
+        }
+
+        /* ========== FIRE ========== */
+        else if(in->key[SDLK_p])
+        {
+            /* Updates the state of the character */ /* <<<<<<<<<<<<<<< POUR L'INSTANT ON NE PEUT QUE TIRER QUAND ON FAIT RIEN D'AUTRE, voir après si on peut tire en bougeant, sautant, se baissant */
+            if(player->state[JUMP])
+                player->state[FIRE] = SDL_FALSE;
+            else
+                player->state[FIRE] = SDL_TRUE;
+
+            player->state[MOVE] = SDL_FALSE;
+            player->state[BEND_DOWN] = SDL_FALSE;
+
+
+            /* Changes the sprite to make an animation */
+            currentTime = SDL_GetTicks();
+            if(currentTime > *lastTime + 90) // Changing the sprite is delayed of 90 ms not to have an animation too fast
+            {
+                player->spritesheet[FIRE]->numSprite++;
+                *lastTime = currentTime;
+            }
+
+            if(player->spritesheet[FIRE]->numSprite >= 4)
+            {
+                player->spritesheet[FIRE]->numSprite = 0;
+            }
+
+            /* Fires */
         }
     }
 }

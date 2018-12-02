@@ -45,10 +45,11 @@ int main(int argc, char* argv[])
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
 
     // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 3 spritesheets. 100 is the number max. of char in the 3rd string
-    char tableSpritesheet[4][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move_TEST.png"}, //"ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"
+    char tableSpritesheet[5][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move_TEST.png"}, //"ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"
                                         {"motionless", "1", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
                                         {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"},
-                                        {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"}};
+                                        {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"},
+                                        {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire_TEST.png"}};
 
     Input in;
     unsigned int lastTime = 0, timer = 0, timeElapsed = 0;
@@ -97,6 +98,7 @@ int main(int argc, char* argv[])
     A FAIRE :
         - gérer les déplacements et les sauts et la gravité et les collisions avec la map un perso puis deux persos en même temps et gérer leurs animations (saut, mort, se baisser ?, ...),
         - tirer avec l'arme (animation perso et (arme) et gestion des balles) et gestion de la vie des persos
+        - Ecrire un README et également transposer tout le read me dans uouveau choix du menu RULES qui explique le jeu les règes et les différentes touches
         - Gérer mieux TOUTES les erreurs, savoir quelles sont les erreurs qui obligent de quitter car on ne peut plus continuer
             et quelles sont celles où ils faut juste reporter l'erreur et libérer la mémoire sans quitter le jeu car elles ne sont pas indispensables à la bonne contnuation du jeu
         - Enlever tous les commentaires inutiles (tous les tests, les mettre dans un fichier texte mais pas dans le code), vérifier toute la doc de chaque fonction, structure et fichier .h et .c,
@@ -118,13 +120,14 @@ int main(int argc, char* argv[])
         /* BOUCLE MENU => Tant que quit est faux ET choix = 0 */
             /* GESTION EVENEMENTS */
             /* AFFICHAGE */
-        /* BOUCLE JEU => Tant que quit est faux ET choix = 1 (appui sur échap, met pause ou revient au menu, à voir)*/
+        /* BOUCLE JEU => Tant que quit est faux ET choix = 1 (appui sur échap,pour l'instant revient au menu (à voir pour mettre en pause)) */
+            /* INITIALISATION si pas initialisé */
             /* GESTION EVENEMENTS */
             /* CODE DU JEU */
             /* AFFICHAGE */
 
-        /* BOUCLE EDITEUR DE NIVEAU => Tant que quit est faux ET choix = 2 (appui sur échap, revient au menu (ou petit menu pour demander sauvegarder les changements avant de quitter) à voir)*/
-            /* INITIALISATION FENETRE TILESET */
+        /* BOUCLE EDITEUR DE NIVEAU => Tant que quit est faux ET choix = 2 (appui sur échap, revient au menu (ou petit menu pour demander sauvegarder les changements avant de quitter) à voir) */
+            /* INITIALISATION FENETRE TILESET si pas initialisée */
             /* GESTION EVENEMENTS */
             /* CODE EDITEUR */
             /* AFFICHAGE */
@@ -190,7 +193,6 @@ int main(int argc, char* argv[])
             display_sprite(screen, player1);
             /* Display */
             SDL_RenderPresent(screen);
-
 
             /* Fresh rate 10 ms */
             timeElapsed = SDL_GetTicks() - timer;
