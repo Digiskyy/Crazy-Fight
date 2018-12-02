@@ -2,7 +2,7 @@
  * @author Aurélien BLAISE
  * @date november 2018
  * @version 1.0
- * @brief Allows to handle the events
+ * @brief Handles the events
  */
 
 

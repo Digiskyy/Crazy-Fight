@@ -3,6 +3,14 @@
 
 
 /**
+ * @author Aurélien BLAISE
+ * @date november 2018
+ * @version 1.0
+ * @brief Allows to display on the computer screen thanks to the SDL librairy
+ */
+
+
+/**
  * @brief Creates the window container and the renderer linked to it
  *
  * @param < *window > Pointer of pointer on a SDL_Window type object

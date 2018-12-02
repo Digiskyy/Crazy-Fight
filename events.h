@@ -3,6 +3,14 @@
 
 
 /**
+ * @author Aurélien BLAISE
+ * @date november 2018
+ * @version 1.0
+ * @brief Handles the events
+ */
+
+
+/**
  * @struct Input
  * @brief Stores the state of each button and each key and each stuff which will trigger a event
  */

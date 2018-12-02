@@ -3,6 +3,14 @@
 
 
 /**
+ * @author Aurélien BLAISE
+ * @date november 2018
+ * @version 1.0
+ * @brief Allows to display the main menu and handle the players' choices
+ */
+
+
+/**
  * @brief Displays the menu on the renderer
  *
  * @param < screen > Renderer that allows to display on the window to which screen belongs

@@ -3,6 +3,14 @@
 
 
 /**
+ * @author Aurélien BLAISE
+ * @date november 2018
+ * @version 1.0
+ * @brief Allows to load and display the map from formatted files which give informations on the map design
+ */
+
+
+/**
  * @struct TileProperties
  * @brief Stores the properties of one tile of the map
  */

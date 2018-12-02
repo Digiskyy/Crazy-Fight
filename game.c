@@ -2,7 +2,7 @@
  * @author Aurélien BLAISE
  * @date november 2018
  * @version 1.0
- * @brief Handles the game
+ * @brief Handles the game (events and game code)
  */
 
 
@@ -53,12 +53,19 @@ FAIRE UN MAKEFILE POUR LE TP DE PROG AVANCEE LUNDI AFIN DE POUVOIR EXECUTER LE P
 
 /* ECRIRE LES DESCRIPTIONS DES FONCTIONS ET DES STRUCTURES */
 
-
-void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime)
+/**
+ * @brief Runs the game code each turn of the game loop
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < *player > Structure which stands for the player 1
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
+ * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
+ */
+void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime, int *choice)
 {
     //printf("launch_game\n");
 
-    game_event(map, in, player, lastTime);
+    game_event(map, in, player, lastTime, choice);
 
     /* If the player is jumping */
     if(player->state[JUMP])
@@ -72,7 +79,7 @@ void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime)
     }
 
     /* If the player fall down and go over the height of the window => He lost NOW RESET OF THE POSITION FOR THE TESTS */
-    if(player->positionReal.y >= WINDOW_HEIGHT)
+    if(player->positionReal.y >= WINDOW_HEIGHT) // SI joueur estMort vrai, alors faire fin de partie
     {
         printf("You lost ! \n"); /* Dire quel joueur a perdu  */
 
@@ -86,6 +93,12 @@ void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime)
 }
 
 
+/**
+ * @brief Displays the sprites on the renderer in function of the state of the player
+ *
+ * @param < *screen > Represents the renderer on which sprites will be displayed
+ * @param < *player > Represents the player whose sprites will be displayed
+ */
 void display_sprite(SDL_Renderer *screen, Character *player)
 {
     int numSpriteLeft = 0;
@@ -169,11 +182,24 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 }
 
 
-void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime)
+/**
+ * @brief Runs the proper code in function of the events triggered by the players
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
+ * @param < *player > Structure which stands for the player 1
+ * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
+ */
+void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, int *choice)
 {
     unsigned int currentTime;
 
-    if(!in->key[SDLK_RIGHT] && !in->key[SDLK_LEFT] && !in->key[SDLK_DOWN] && !in->key[SDLK_UP]) // There are no down keys which make the character move
+    if(in->key[SDLK_ESCAPE]) // Escape key down : Quit the game and get back to the menu
+    {
+        in->key[SDLK_ESCAPE] = SDL_FALSE;
+        *choice = 0;
+    }
+    else if(!in->key[SDLK_RIGHT] && !in->key[SDLK_LEFT] && !in->key[SDLK_DOWN] && !in->key[SDLK_UP]) // There are no down keys which make the character move
     {
         /* Update the state of the character */
         player->state[MOTIONLESS] = SDL_TRUE;

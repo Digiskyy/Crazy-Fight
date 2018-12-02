@@ -35,13 +35,12 @@ AMELIORATIONS :
 /**
  * @brief Handles events in order to change the tile on the main window by the selected tile in the tileset window and to save the map and to close the editor
  *
- * @param < *tileset > Structure which represents the tileset window
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param < *mapEditor > Structure which represents the design of the edited map
  * @param < *numTypeTile > Design of the selected tile
  * @param < *choice > Choice in order to know which part of the program running
  */
-void launch_editor(WindowTileset *tileset, Input *in, Map *mapEditor, int *numTypeTile, int *choice) // TILESET INUTILE DANS LA FONCTION
+void launch_editor(Input *in, Map *mapEditor, int *numTypeTile, int *choice)
 {
     int tileX, tileY;
 

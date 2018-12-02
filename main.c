@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
     Input in;
     unsigned int lastTime = 0, timer = 0, timeElapsed = 0;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
-    SDL_bool windowTilesetCreated = SDL_FALSE;
+    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
 
 
     /* ========== INITIALISATION ========== */
@@ -131,8 +131,7 @@ int main(int argc, char* argv[])
 
 
 
-    /* Initialisation characters */
-    player1 = init_character(screen, tableSpritesheet);
+
 
     //printf("init_character\n");
 
@@ -145,6 +144,10 @@ int main(int argc, char* argv[])
         {
             /* Timer */
             timer = SDL_GetTicks();
+
+            /* Game uninitialised */
+            windowTilesetCreated = SDL_FALSE; // The tileset window will be created again the next time in the editor
+            gameInitialised = SDL_FALSE; // The game will be initialised again the next time in the game
 
             /* Update events */
             update_events(&in);
@@ -163,6 +166,13 @@ int main(int argc, char* argv[])
         /* ========== GAME LOOP ========== */
         while(choice == 1 && !in.quit)
         {
+            /* Initialisation characters */
+            if(!gameInitialised)
+            {
+                player1 = init_character(screen, tableSpritesheet);
+                gameInitialised = SDL_TRUE;
+            }
+
             /* Timer */
             timer = SDL_GetTicks();
 
@@ -170,7 +180,7 @@ int main(int argc, char* argv[])
             update_events(&in);
 
             /* Game code (Handle events) */
-            launch_game(map, player1, &in, &lastTime);
+            launch_game(map, player1, &in, &lastTime, &choice);
 
             /* Print the map on the screen */
             SDL_RenderClear(screen);
@@ -191,9 +201,6 @@ int main(int argc, char* argv[])
         /* ========== LEVEL EDITOR LOOP ========== */
         while(choice == 2 && !in.quit)
         {
-            /* Timer */
-            timer = SDL_GetTicks();
-
             /* Initialisation tileset window */
             if(!windowTilesetCreated)
             {
@@ -202,14 +209,15 @@ int main(int argc, char* argv[])
                 windowTilesetCreated = SDL_TRUE;
             }
 
+            /* Timer */
+            timer = SDL_GetTicks();
+
             /* Updates events */
             update_events(&in);
+
             /* Editor code (handles events for the main window and launches the editor) */
-            launch_editor(screen, &in, mapEditor, &numTypeTile, &choice);
-            if(!choice) // choice == 0 : it means that the player has just quit the editor so the tileset has been closed
-            {
-                windowTilesetCreated = SDL_FALSE; // The tileset window will be created again the next time in the editor
-            }
+            launch_editor(&in, mapEditor, &numTypeTile, &choice);
+
             /* Handles events for the tileset window */
             window_tileset_events(&tilesetWindow, &in, mapEditor, &numTypeTile);
 

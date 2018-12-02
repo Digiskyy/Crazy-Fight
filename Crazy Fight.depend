@@ -361,7 +361,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1542994886 d:\programmation\sdl\crazy fight\display.h
+1543764117 d:\programmation\sdl\crazy fight\display.h
 
 1543348924 source:d:\programmation\sdl\crazy fight\display.c
 	<stdlib.h>
@@ -381,17 +381,17 @@
 	"map.h"
 	"constantes.h"
 
-1543525927 d:\programmation\sdl\crazy fight\map.h
+1543764038 d:\programmation\sdl\crazy fight\map.h
 
-1543275882 d:\programmation\sdl\crazy fight\events.h
+1543764074 d:\programmation\sdl\crazy fight\events.h
 
-1543504828 source:d:\programmation\sdl\crazy fight\events.c
+1543764069 source:d:\programmation\sdl\crazy fight\events.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
 	"events.h"
 
-1543233425 source:d:\programmation\sdl\crazy fight\menu.c
+1543760497 source:d:\programmation\sdl\crazy fight\menu.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -402,11 +402,11 @@
 	"events.h"
 	"menu.h"
 
-1542937634 d:\programmation\sdl\crazy fight\menu.h
+1543764099 d:\programmation\sdl\crazy fight\menu.h
 
-1542887426 d:\programmation\sdl\crazy fight\editor.h
+1543766390 d:\programmation\sdl\crazy fight\editor.h
 
-1543525927 source:d:\programmation\sdl\crazy fight\editor.c
+1543766429 source:d:\programmation\sdl\crazy fight\editor.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -415,9 +415,9 @@
 	"constantes.h"
 	"editor.h"
 
-1543506726 d:\programmation\sdl\crazy fight\game.h
+1543766617 d:\programmation\sdl\crazy fight\game.h
 
-1543710661 source:d:\programmation\sdl\crazy fight\game.c
+1543766573 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -431,7 +431,7 @@
 	"game.h"
 	"collisions.h"
 
-1543711362 source:d:\programmation\sdl\crazy fight\collisions.c
+1543765665 source:d:\programmation\sdl\crazy fight\collisions.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -442,7 +442,7 @@
 	"game.h"
 	"collisions.h"
 
-1543709871 source:d:\programmation\sdl\crazy fight\character.c
+1543762885 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -450,7 +450,7 @@
 	"constantes.h"
 	"events.h"
 
-1543592314 d:\programmation\sdl\crazy fight\character.h
+1543764137 d:\programmation\sdl\crazy fight\character.h
 
-1543543020 d:\programmation\sdl\crazy fight\collisions.h
+1543764014 d:\programmation\sdl\crazy fight\collisions.h
 

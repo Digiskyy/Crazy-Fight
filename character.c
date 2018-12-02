@@ -2,7 +2,7 @@
  * @author Aurélien BLAISE
  * @date november 2018
  * @version 1.0
- * @brief Handles the stuff related to the character
+ * @brief Initialises the characters and all their parameters
  */
 
 
@@ -15,6 +15,13 @@
 #include "events.h"
 
 
+/**
+ * @brief Initialises the parameters of the player
+ *
+ * @param < *screen > Represents the renderer on which sprites will be displayed
+ * @param < (*tableSpritesheet)[3][100] > Arrays with 3 dimensions which stores all the spritesheets with the number of sprites on each rows (1 row for 1 direction) and the path of each spritesheet
+ * @return < Character* > Pointer on a Character type object
+ */
 Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100]) // array in 3 dimensions
 {
     Character* player = NULL;
@@ -86,8 +93,14 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
 }
 
 
-
-/* Return NULL si erreur ==> il faudra tester la valeur du pointeur au retour de la procédure */
+/**
+ * @brief Initialises one spritesheet in the tableSpritesheet
+ *
+ * @param < (*tableSpritesheet)[3][100] > Arrays with 3 dimensions which stores all the spritesheets with the number of sprites on each rows (1 row for 1 direction) and the path of each spritesheet
+ * @param < FLAGS > Allows to know which sprite to initialise
+ * @param < *screen > Represents the renderer on which sprites will be displayed
+ * @return < Sprite* > Pointer on a Sprite type object, returns NULL if error  (have to test the return value)
+ */
 Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_Renderer *screen)
 {
     Sprite *spritesheet = NULL;
@@ -144,7 +157,11 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
     return spritesheet;
 }
 
-
+/**
+ * @brief Free the memory used for a character
+ *
+ * @param < *player > Character to free
+ */
 void free_character(Character *player)
 {
     int i;
