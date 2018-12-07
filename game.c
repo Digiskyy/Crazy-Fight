@@ -281,8 +281,60 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
     {
         player->state[MOTIONLESS] = SDL_FALSE;
 
+        /* ========== FIRE ========== */
+        if(in->key[SDLK_p])
+        {
+            /* Updates the state of the character */ /* <<<<<<<<<<<<<<< POUR L'INSTANT ON NE PEUT QUE TIRER QUAND ON FAIT RIEN D'AUTRE, voir après si on peut tire en bougeant, sautant, se baissant */
+            if(player->state[JUMP])
+                player->state[FIRE] = SDL_FALSE;
+            else
+                player->state[FIRE] = SDL_TRUE;
+
+            player->state[MOVE] = SDL_FALSE;
+            player->state[BEND_DOWN] = SDL_FALSE;
+
+
+            /* Changes the sprite to make an animation */
+            currentTime = SDL_GetTicks();
+            if(currentTime > *lastTime + 90) // Changing the sprite is delayed of 90 ms not to have an animation too fast
+            {
+                player->spritesheet[FIRE]->numSprite++;
+                *lastTime = currentTime;
+            }
+
+            if(player->spritesheet[FIRE]->numSprite >= 4)
+            {
+                player->spritesheet[FIRE]->numSprite = 0;
+            }
+
+            /* Fires */
+
+            /* Si numSprites = 0 // à chaque reset du sprite, on tire
+                player_fire()
+
+            player_fire() crée une (nouvelle) balle ==> liste chainée pour avoir une liste variable de balles sur le terrain
+            qui pourra permettre de stocker les balles, les supprimer, etc
+            P-E CREER UN TYPE ARME (Weapon) avec une liste chaînée firedBullets dedans, avec les dégats de l'arme, avec la vitesse d'attaque qui gèrera la vitesse de changement du sprite de tir,
+            la vitesse de la balle, le chargeur (à faire en amélioration) et
+            mettre le spritesheet de la balle pas dans le tablespritesheet mais dans le type Weapon. Mettre dans la structure Character un variable de type Weapon */
+
+
+            /* Créer une fonction qui génère une balle quand le tir est activée, cette fonction devra également gérer toute la durée de vie de la balle.
+            A chaque itération dans la boucle, la position de la balle devra être mis à jour, et vérifer s'il y a collision ou pas (elle pourra appeler d'autre fct si elle est trop grosse)
+
+                Au moment où l'on tire, on affiche au bon endroit (à la hauteur du canon de l'arme et en ligne droite) la balle qui part du fusil pour avoir une trajectoire rectiligne uniforme
+            Si pas collision, elle continue d'avancer
+            Si collision avec un bloc solide, elle s'arrête et disparaît
+            Si collision avec l'autre joueur, elle s'arrête et disparaît et inflige des dégâts à la cible touchée (-10 par exemple)
+
+            Les rafales de balles correspondent à la fréquence de changement de sprite du perso qui tire, donc ajuster si c'est trop rapide ou trop lent
+            Voir aussi pour la vitesse de la balle */
+
+            player->firedBullet = SDL_TRUE;
+        }
+
         /* ========== MOVE TO THE RIGHT ========== */
-        if(in->key[SDLK_RIGHT]) // Right arrow key : the player is moving toward the right
+        else if(in->key[SDLK_RIGHT]) // Right arrow key : the player is moving toward the right
         {
             /* Updates the state of the character */  /* peut-être qu'il faut mettre ça dans la partie affichage  A VOIR mais pas sûr */
             if(player->state[JUMP])
@@ -453,58 +505,6 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
 
             /* TEST  : avance vers le haut */
             //player_move(map, player, 0, -player->speed);
-        }
-
-        /* ========== FIRE ========== */
-        else if(in->key[SDLK_p])
-        {
-            /* Updates the state of the character */ /* <<<<<<<<<<<<<<< POUR L'INSTANT ON NE PEUT QUE TIRER QUAND ON FAIT RIEN D'AUTRE, voir après si on peut tire en bougeant, sautant, se baissant */
-            if(player->state[JUMP])
-                player->state[FIRE] = SDL_FALSE;
-            else
-                player->state[FIRE] = SDL_TRUE;
-
-            player->state[MOVE] = SDL_FALSE;
-            player->state[BEND_DOWN] = SDL_FALSE;
-
-
-            /* Changes the sprite to make an animation */
-            currentTime = SDL_GetTicks();
-            if(currentTime > *lastTime + 90) // Changing the sprite is delayed of 90 ms not to have an animation too fast
-            {
-                player->spritesheet[FIRE]->numSprite++;
-                *lastTime = currentTime;
-            }
-
-            if(player->spritesheet[FIRE]->numSprite >= 4)
-            {
-                player->spritesheet[FIRE]->numSprite = 0;
-            }
-
-            /* Fires */
-
-            /* Si numSprites = 0 // à chaque reset du sprite, on tire
-                player_fire()
-
-            player_fire() crée une (nouvelle) balle ==> liste chainée pour avoir une liste variable de balles sur le terrain
-            qui pourra permettre de stocker les balles, les supprimer, etc
-            P-E CREER UN TYPE ARME (Weapon) avec une liste chaînée firedBullets dedans, avec les dégats de l'arme, avec la vitesse d'attaque qui gèrera la vitesse de changement du sprite de tir,
-            la vitesse de la balle, le chargeur (à faire en amélioration) et
-            mettre le spritesheet de la balle pas dans le tablespritesheet mais dans le type Weapon. Mettre dans la structure Character un variable de type Weapon */
-
-
-            /* Créer une fonction qui génère une balle quand le tir est activée, cette fonction devra également gérer toute la durée de vie de la balle.
-            A chaque itération dans la boucle, la position de la balle devra être mis à jour, et vérifer s'il y a collision ou pas (elle pourra appeler d'autre fct si elle est trop grosse)
-
-                Au moment où l'on tire, on affiche au bon endroit (à la hauteur du canon de l'arme et en ligne droite) la balle qui part du fusil pour avoir une trajectoire rectiligne uniforme
-            Si pas collision, elle continue d'avancer
-            Si collision avec un bloc solide, elle s'arrête et disparaît
-            Si collision avec l'autre joueur, elle s'arrête et disparaît et inflige des dégâts à la cible touchée (-10 par exemple)
-
-            Les rafales de balles correspondent à la fréquence de changement de sprite du perso qui tire, donc ajuster si c'est trop rapide ou trop lent
-            Voir aussi pour la vitesse de la balle */
-
-            player->firedBullet = SDL_TRUE;
         }
     }
 

@@ -298,7 +298,7 @@ void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour
         if(player->side == RIGHT)
             player->weapon.firedBullets = list_initialise(player->positionReal.x + 75 , player->positionReal.y + 29, player->side); /* +29 and +75 to put the bullet at the beginning of the barrel of the rifle when he's standing */
         else // player->side == LEFT
-            player->weapon.firedBullets = list_initialise(player->positionReal.x, player->positionReal.y + 29, player->side);
+            player->weapon.firedBullets = list_initialise(player->positionReal.x - 14, player->positionReal.y + 29, player->side);
     }
     else // list 'firedBullets' not empty
     {
@@ -310,19 +310,31 @@ void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour
             if(bulletIterator->side == RIGHT)
             {
                 if(bulletIterator->position.x > WINDOW_WIDTH) // COLLISION AVEC LA FENETRE PEUT - ETRE FAIRE UNE FONCTION GERE LES COLLISSION DES BALLES AVEC LES ENNEEMIS LES TILES ET LA FENETRE
+                {
+                    printf("Suppression balle cote DROIT\n");
                     list_delete_element(player->weapon.firedBullets, bulletIterator);
+                }
                 else
                     bulletIterator->position.x += player->weapon.speedBullet;
             }
             else // side == LEFT
             {
                 if(bulletIterator->position.x < 0) // COLLISION AVEC LA FENETRE PEUT - ETRE FAIRE UNE FONCTION GERE LES COLLISSION DES BALLES AVEC LES ENNEEMIS LES TILES ET LA FENETRE
+                {
+                    printf("Suppression balle cote GAUCHE\n");
                     list_delete_element(player->weapon.firedBullets, bulletIterator);
+                }
                 else
                     bulletIterator->position.x -= player->weapon.speedBullet;
             }
 
             bulletIterator = bulletIterator->next; // To go in the whole linked list
+        }
+
+        /* Check if there are no bullets on the map */
+        if(player->weapon.firedBullets->first == NULL)
+        {
+            player->firedBullet = SDL_FALSE;
         }
 
 
@@ -341,6 +353,7 @@ void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour
             }
             else // side == LEFT
             {
+                positionBullet.x = player->positionReal.x - 14;
                 list_append_first(player->weapon.firedBullets, positionBullet, player->side);
             }
 

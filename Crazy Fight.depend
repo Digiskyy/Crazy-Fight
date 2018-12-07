@@ -417,7 +417,7 @@
 
 1544142284 d:\programmation\sdl\crazy fight\game.h
 
-1544142972 source:d:\programmation\sdl\crazy fight\game.c
+1544151621 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -443,7 +443,7 @@
 	"game.h"
 	"collisions.h"
 
-1544142772 source:d:\programmation\sdl\crazy fight\character.c
+1544151329 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
