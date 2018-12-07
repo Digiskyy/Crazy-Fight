@@ -10,6 +10,9 @@
  */
 
 
+
+ /* ========== STRUCTURES ========= */
+
 /**
  * @struct JumpParameters
  * @brief Stores all the physics parameters regarding the jump
@@ -31,16 +34,31 @@ typedef struct JumpParameters
  */
 typedef struct Sprite
 {
-    /* Faire des tableaux 2 dimensions qui géreraient quel sprite à afficher en fonction du côté du perso et de l'action effectuée
-    Il prendrait 2 lignes (comme les 2 côtés qu'il peut y avoir pour chaque type de spritesheet) et en colonne le nombre de sprite différents dans le spritesheet de l'action
-    en gros  la ligne serait pour le côté et la colonne pourquel sprite à afficher
-    Il y aurait un certain nombre de tableaux correspondant au nombre d'actions que peux faire le perso
-    ex : spriteMove[2][6], spriteJump[2][?], ... */
     SDL_Rect **sprite;      /**< Position of the sprite to use in the spritesheet */
     SDL_Texture *texture;   /**< Texture corresponding to the spritesheet */
     int numSprite;          /**< Numero of the sprite to display */
 
 }Sprite;
+
+
+typedef struct LinkedList LinkedList; // Needed otherwise the compiler doesn't know the structure LinkedList although the header LinkedList.h is included before inluding the header for character.h
+
+
+/**
+ * @struct Weapon
+ * @brief Handles the weapon and allows to the player to fire bullets
+ */
+typedef struct Weapon
+{
+    int damage;
+    Sprite* spritesheetBullet;
+    //int magazine; // Number of bullets in the magazine (= chargeur)
+    //int reloadTime; // en ms A FAIRE AVEC LE CHARGEUR
+    int firingRate;
+    int speedBullet;
+    LinkedList* firedBullets;
+
+}Weapon;
 
 /**
  * @struct Character
@@ -56,14 +74,19 @@ typedef struct Character
     SDL_Point positionRealStartJump;    /**< Position where the player starts to jump */
     SDL_Point positionRealLastJump;     /**< Position of the last position of the player during the jump, needed to handle the collisisons */
     int side;                           /**< Side where the character is moving or looking */
-    SDL_bool state[5];                  /**< Indicates the states of the character in reel time, if the character is performing an action or not */
+    SDL_bool state[5];                  /**< Indicates the states of the character in real time, if the character is performing an action or not */
     JumpParameters  jumpParameters;     /**< Structure needed to calculate the jump */
+    Weapon weapon;                      /**< Structure that handles the parameters of the weapon and allows to fire */
+    SDL_bool firedBullet;               /**< When the player fires, bulletFired is true as long as there are some bullets on the map (= LinkedList for the bullets is not empty) */
+
 
     //int FLAGS; // Pour savoir quel sprite à afficher car on ne peut en afficher qu'un seul. Car on peut faire plusieurs action en même temps genre sauter et se déplacer mais seulment un sprite à la fois
 
     /* handle jump, attack, displacement during jumping, attack during bending down, attack during jumping ... */
 }Character;
 
+
+/* ========== FUNCTIONS ========= */
 
 /**
  * @brief Initialises the parameters of the player
@@ -90,6 +113,8 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
  * @param < *player > Character to free
  */
 void free_character(Character *player);
+
+void player_fire(Character *player, unsigned int *lastFireTime);
 
 
 #endif // CHARACTER_H_INCLUDED

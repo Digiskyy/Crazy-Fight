@@ -43,6 +43,10 @@
 			<Add library="C:/Program Files (x86)/CodeBlocks/SDL-2.0.8/i686-w64-mingw32/lib/libSDL2_image.dll.a" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL-2.0.8/i686-w64-mingw32/lib" />
 		</Linker>
+		<Unit filename="LinkedList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LinkedList.h" />
 		<Unit filename="character.c">
 			<Option compilerVar="CC" />
 		</Unit>

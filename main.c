@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
                                         {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire_TEST.png"}};
 
     Input in;
-    unsigned int lastTime = 0, timer = 0, timeElapsed = 0;
+    unsigned int lastTime = 0, lastFireTime = 0, timer = 0, timeElapsed = 0;
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
 
@@ -164,6 +164,8 @@ int main(int argc, char* argv[])
             timeElapsed = SDL_GetTicks() - timer; // Calculates the elapsed time since the beginning of each turn loop
             if(timeElapsed < 20) // If the elapsed time is less than 20 ms,
                 SDL_Delay(20 - timeElapsed); // CPU "waits" for the remaining time to reach 20 ms (it waits in the program but no other stuff)
+
+            //printf("CHOICE LOOP choice = %d, gameInitialised = %d, player1 = %d\n", choice, gameInitialised, player1);
         }
 
         /* ========== GAME LOOP ========== */
@@ -183,7 +185,7 @@ int main(int argc, char* argv[])
             update_events(&in);
 
             /* Game code (Handle events) */
-            launch_game(map, player1, &in, &lastTime, &choice);
+            launch_game(map, player1, &in, &lastTime, &lastFireTime, &choice);
 
             /* Print the map on the screen */
             SDL_RenderClear(screen);
@@ -198,6 +200,14 @@ int main(int argc, char* argv[])
             timeElapsed = SDL_GetTicks() - timer;
             if(timeElapsed < 10)
                 SDL_Delay(10 - timeElapsed);
+
+            /* Free the memory */ /* VOIR POURQUOI CA BUG QUAND JE VEUX QUITTER LE JEU */
+            //printf("choice = %d, gameInitialised = %d, player1 = %d\n", choice, gameInitialised, player1);
+            /*if(choice == 0 && gameInitialised)
+            {
+                free_character(player1);
+                printf("game loop : player1 = %d\n", player1);
+            }*/
         }
 
         /* ========== LEVEL EDITOR LOOP ========== */
@@ -240,7 +250,10 @@ int main(int argc, char* argv[])
     }
 
     /* ========== FREE MEMORY ========== */
-    free_character(player1);
+    //printf("FREE : player1 = %d, player->side = %d, spritesheet = %d\n", player1, player1->side, player1->spritesheet[MOVE]);
+    if(player1 != NULL)
+        free_character(player1);
+    //printf("FREE MEMORY : player1 = %d, player->side = %d, spritesheet = %d\n", player1, player1->side, player1->spritesheet[MOVE]);
     if(mapEditor != NULL)
         free_map(mapEditor);
     free_map(map);

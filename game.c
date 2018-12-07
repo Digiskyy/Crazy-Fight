@@ -14,6 +14,7 @@
 #include <SDL2/SDL_image.h>
 
 
+#include "LinkedList.h"
 #include "map.h"
 #include "character.h"
 //#include "display.h"
@@ -61,11 +62,11 @@ FAIRE UN MAKEFILE POUR LE TP DE PROG AVANCEE LUNDI AFIN DE POUVOIR EXECUTER LE P
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
  */
-void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime, int *choice)
+void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime, unsigned int *lastFireTime, int *choice)
 {
     //printf("launch_game\n");
 
-    game_event(map, in, player, lastTime, choice);
+    game_event(map, in, player, lastTime, lastFireTime, choice);
 
     /* If the player is jumping */
     if(player->state[JUMP])
@@ -93,6 +94,8 @@ void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime,
 }
 
 
+/* <<<<<<<<<<<<<<<<<<<<<<<< VOIR SI ON PEUT PAS FACTORISER ET SIMPLIFIER LA FONCTION DISPLAY */
+
 /**
  * @brief Displays the sprites on the renderer in function of the state of the player
  *
@@ -101,6 +104,7 @@ void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime,
  */
 void display_sprite(SDL_Renderer *screen, Character *player)
 {
+    Bullet *bulletIterator = NULL;
     int numSpriteLeft = 0;
 
     //printf("player->side = %d\n", player->side);
@@ -163,7 +167,7 @@ void display_sprite(SDL_Renderer *screen, Character *player)
                 player->positionReal.x = player->positionReal.x + 20;
             }
         }
-        else // player->side  == RIGHT
+        else // player->side == RIGHT
         {
             /* SPRITESHEET MOVE */
             if(player->state[MOVE])
@@ -198,7 +202,7 @@ void display_sprite(SDL_Renderer *screen, Character *player)
                 printf("\nw = %d\n", player->positionReal.w);
                 printf("position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
 
-                player->positionReal.w = player->spritesheet[FIRE]->sprite[0]->w;
+                player->positionReal.w = player->spritesheet[FIRE]->sprite[0]->w; // To synchronise the width of the sprite FIRE with the sprite of the character
 
                 printf("w = %d\n", player->positionReal.w);
                 printf("position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
@@ -206,11 +210,25 @@ void display_sprite(SDL_Renderer *screen, Character *player)
 
                 SDL_RenderCopy(screen, player->spritesheet[FIRE]->texture, &(player->spritesheet[FIRE]->sprite[player->side][player->spritesheet[FIRE]->numSprite]), &(player->positionReal));
 
-                player->positionReal.w = player->spritesheet[MOVE]->sprite[0]->w;
+                player->positionReal.w = player->spritesheet[MOVE]->sprite[0]->w; // To reset the width of the sprite of the character (MOVE has the standard width)
                 //printf("w = %d\n", player->positionReal.w);
             }
         }
     }
+
+    /* SPRITESHEET BULLET */
+    if(player->weapon.firedBullets != NULL)
+        bulletIterator = player->weapon.firedBullets->first;
+
+    while(bulletIterator != NULL)
+    {
+        SDL_RenderCopy(screen, player->weapon.spritesheetBullet->texture, &(player->weapon.spritesheetBullet->sprite[bulletIterator->side][player->weapon.spritesheetBullet->numSprite]), &(bulletIterator->position));
+
+        bulletIterator = bulletIterator->next;
+    }
+
+    if(player->weapon.firedBullets != NULL) //<<<<<<<<<<<  TEST
+        list_print(player->weapon.firedBullets);
 }
 
 
@@ -222,7 +240,7 @@ void display_sprite(SDL_Renderer *screen, Character *player)
  * @param < *player > Structure which stands for the player 1
  * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  */
-void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, int *choice)
+void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, unsigned int *lastFireTime, int *choice)
 {
     unsigned int currentTime;
 
@@ -464,7 +482,36 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
             }
 
             /* Fires */
+
+            /* Si numSprites = 0 // à chaque reset du sprite, on tire
+                player_fire()
+
+            player_fire() crée une (nouvelle) balle ==> liste chainée pour avoir une liste variable de balles sur le terrain
+            qui pourra permettre de stocker les balles, les supprimer, etc
+            P-E CREER UN TYPE ARME (Weapon) avec une liste chaînée firedBullets dedans, avec les dégats de l'arme, avec la vitesse d'attaque qui gèrera la vitesse de changement du sprite de tir,
+            la vitesse de la balle, le chargeur (à faire en amélioration) et
+            mettre le spritesheet de la balle pas dans le tablespritesheet mais dans le type Weapon. Mettre dans la structure Character un variable de type Weapon */
+
+
+            /* Créer une fonction qui génère une balle quand le tir est activée, cette fonction devra également gérer toute la durée de vie de la balle.
+            A chaque itération dans la boucle, la position de la balle devra être mis à jour, et vérifer s'il y a collision ou pas (elle pourra appeler d'autre fct si elle est trop grosse)
+
+                Au moment où l'on tire, on affiche au bon endroit (à la hauteur du canon de l'arme et en ligne droite) la balle qui part du fusil pour avoir une trajectoire rectiligne uniforme
+            Si pas collision, elle continue d'avancer
+            Si collision avec un bloc solide, elle s'arrête et disparaît
+            Si collision avec l'autre joueur, elle s'arrête et disparaît et inflige des dégâts à la cible touchée (-10 par exemple)
+
+            Les rafales de balles correspondent à la fréquence de changement de sprite du perso qui tire, donc ajuster si c'est trop rapide ou trop lent
+            Voir aussi pour la vitesse de la balle */
+
+            player->firedBullet = SDL_TRUE;
         }
+    }
+
+    /* HANDLES PLAYER FIRING */
+    if(player->firedBullet)
+    {
+        player_fire(player, lastFireTime);
     }
 }
 

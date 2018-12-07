@@ -170,6 +170,10 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
             if(map->properties[tileIndex].full == 1) // If the tile is define as full
                 return 1; // Founded collision
 
+            /*else if(map->properties[tileIndex].full == 2)
+            {
+                return 2; // Special tile
+            } */
         }
     }
     return 0; // No collisions
@@ -186,7 +190,9 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
  */
 int movement_test(Map *map, Character *player, int vectorX, int vectorY)
 {
-    if(!collisionMap(map, player, vectorX, vectorY)) // If no collisions
+    int collision = collisionMap(map, player, vectorX, vectorY);
+
+    if(!collision) // If no collisions
     {
         //printf("collision : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
         //printf("collision2 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
@@ -205,6 +211,22 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
         }
         return 1;
     }
+    /*else if(collision == 2) // Tile with properties 2 : when the player jump upward, he go through but when he moves down he can't go through
+    {
+        if(vectorY >= 0) // If the player moves upward, he can go through
+        {
+            player->positionReal.x += vectorX; // Moves the player on the X-axis
+            player->positionReal.y += vectorY; // Moves the player on the Y-axis*/
+
+            /* Update the last good position of the character during the jump */
+            /*if(player->state[JUMP])
+            {
+                player->positionRealLastJump.x = player->positionReal.x;
+                player->positionRealLastJump.y = player->positionReal.y;
+            }
+            return 1;
+        }
+    }*/
 
     /* Reset of the parameters for the jump */
     if(player->state[JUMP])

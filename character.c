@@ -10,8 +10,9 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
-#include "character.h"
+#include "LinkedList.h"
 #include "constantes.h"
+#include "character.h"
 #include "events.h"
 
 
@@ -61,40 +62,89 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     player->jumpParameters.t = 0; // t represents the time
 
 
+    /* WEAPON */
+    player->weapon.damage = 10;
+    player->weapon.speedBullet = 20; // pixels by frame
+    player->weapon.firingRate = 360; // in ms, it's the time to reset the animation of firing (360 = 90 * 4 and 90 : time to change a sprite in the spritesheet FIRE and 4 : 4 sprites in this one)
+    player->weapon.firedBullets = NULL;
+    player->firedBullet = SDL_FALSE;
+
+
+    /* ========== SPRITESHEET BULLET ========== */
+    player->weapon.spritesheetBullet = malloc(sizeof(Sprite));
+    if(player->weapon.spritesheetBullet == NULL)
+    {
+        fprintf(stderr, "Error : Can't load the spritesheet for the bullet.");
+        exit(EXIT_FAILURE);
+    }
+    player->weapon.spritesheetBullet->texture = load_image_transparent("ressources/sprites/bullet/bullet.png", screen, 255, 255, 255);
+
+    player->weapon.spritesheetBullet->sprite = malloc(2 * sizeof(SDL_Rect*)); // 2 because there are 2 rows in the spritesheet, each row is for one direction
+    if(player->weapon.spritesheetBullet->sprite == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the array for the sprites of the spritesheet of the bullets");
+        exit(EXIT_FAILURE);
+    }
+    for(int i = 0; i < 2; i++) // 2 because there are 2 rows in the spritesheet, each row is for one direction
+    {
+        player->weapon.spritesheetBullet->sprite[i] = malloc(sizeof(SDL_Rect));
+        if(player->weapon.spritesheetBullet->sprite[i] == NULL)
+        {
+            fprintf(stderr, "Error : Allocation memory in the array 2D for the sprites of the spritesheet of the bullets");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    /* Loads the position of each sprite on the spritesheet */
+    for(int i = 0; i < 2; i++)
+    {
+        for(int j = 0; j < 1; j++) // 1 because there is 1 sprite on each row for the spritesheet of bullets
+        {
+            player->weapon.spritesheetBullet->sprite[i][j].w = 967; // Width of the sprite
+            player->weapon.spritesheetBullet->sprite[i][j].h = 300; // Height of the sprite
+            player->weapon.spritesheetBullet->sprite[i][j].x = 0; // Position on the X-axis
+            player->weapon.spritesheetBullet->sprite[i][j].y = (i == 1) ? 300 : 0; // Position on the Y-axis
+        }
+    }
+
+    /* Initialises the numero of the sprite at 0 */
+    player->weapon.spritesheetBullet->numSprite = 0;
+
+
 
     /* ========== SPRITESHEET MOVE ========== */
     player->spritesheet[MOVE] = init_spritesheet(**tableSpritesheet, MOVE, screen);
     if(player->spritesheet[MOVE] == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Move");
+        fprintf(stderr, "Error : Creation of the spritesheet Move\n");
     }
 
     /* ========== SPRITESHEET MOTIONLESS ========== */
     player->spritesheet[MOTIONLESS] = init_spritesheet(**tableSpritesheet, MOTIONLESS, screen);
     if(player->spritesheet[MOTIONLESS] == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Motionless");
+        fprintf(stderr, "Error : Creation of the spritesheet Motionless\n");
     }
 
     /* ========== SPRITESHEET BEND DOWN ========== */
     player->spritesheet[BEND_DOWN] = init_spritesheet(**tableSpritesheet, BEND_DOWN, screen);
     if(player->spritesheet[BEND_DOWN] == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Bend Down");
+        fprintf(stderr, "Error : Creation of the spritesheet Bend Down\n");
     }
 
     /* ========== SPRITESHEET JUMP ========== */
     player->spritesheet[JUMP] = init_spritesheet(**tableSpritesheet, JUMP, screen);
     if(player->spritesheet[JUMP] == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Jump");
+        fprintf(stderr, "Error : Creation of the spritesheet Jump\n");
     }
 
     /* ========== SPRITESHEET FIRE ========== */
     player->spritesheet[FIRE] = init_spritesheet(**tableSpritesheet, FIRE, screen);
     if(player->spritesheet[FIRE] == NULL)
     {
-        fprintf(stderr, "Error : Creation of the spritesheet Fire");
+        fprintf(stderr, "Error : Creation of the spritesheet Fire\n");
     }
 
     return player;
@@ -219,5 +269,85 @@ void free_character(Character *player)
     SDL_DestroyTexture(player->spritesheet[FIRE]->texture);
     free(player->spritesheet[FIRE]);
 
+    /* SPRITESHEET BULLET */
+    for(i = 0; i < 2; i++)
+    {
+        free(player->weapon.spritesheetBullet->sprite[i]);
+    }
+    free(player->weapon.spritesheetBullet->sprite);
+    SDL_DestroyTexture(player->weapon.spritesheetBullet->texture);
+    free(player->weapon.spritesheetBullet);
+
+
     free(player);
+
+    player = NULL;
+}
+
+
+/* FAIRE LES FONCTIONS POUR TIRER en fonction de la position du perso                       POUR RECHARGER A FAIRE APRES */
+void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour les collisions avec les tiles pour savoir s'il touche un enemi et map est utile pour savoir s'il touche un bloc qui va faire disparaître la balle*/
+{
+    Bullet *bulletIterator = NULL;
+    SDL_Rect positionBullet;
+    unsigned int currentTime;
+
+    if(player->weapon.firedBullets == NULL) // If list is NULL : if there are currently no fired bullets in the map
+    {
+        /* If the player is standing, so far we don't handle yet if the player is bending down */
+        if(player->side == RIGHT)
+            player->weapon.firedBullets = list_initialise(player->positionReal.x + 75 , player->positionReal.y + 29, player->side); /* +29 and +75 to put the bullet at the beginning of the barrel of the rifle when he's standing */
+        else // player->side == LEFT
+            player->weapon.firedBullets = list_initialise(player->positionReal.x, player->positionReal.y + 29, player->side);
+    }
+    else // list 'firedBullets' not empty
+    {
+        /* MOVES EACH BULLET OF THE LINKED LIST */
+        bulletIterator = player->weapon.firedBullets->first;
+
+        while(bulletIterator != NULL)
+        {
+            if(bulletIterator->side == RIGHT)
+            {
+                if(bulletIterator->position.x > WINDOW_WIDTH) // COLLISION AVEC LA FENETRE PEUT - ETRE FAIRE UNE FONCTION GERE LES COLLISSION DES BALLES AVEC LES ENNEEMIS LES TILES ET LA FENETRE
+                    list_delete_element(player->weapon.firedBullets, bulletIterator);
+                else
+                    bulletIterator->position.x += player->weapon.speedBullet;
+            }
+            else // side == LEFT
+            {
+                if(bulletIterator->position.x < 0) // COLLISION AVEC LA FENETRE PEUT - ETRE FAIRE UNE FONCTION GERE LES COLLISSION DES BALLES AVEC LES ENNEEMIS LES TILES ET LA FENETRE
+                    list_delete_element(player->weapon.firedBullets, bulletIterator);
+                else
+                    bulletIterator->position.x -= player->weapon.speedBullet;
+            }
+
+            bulletIterator = bulletIterator->next; // To go in the whole linked list
+        }
+
+
+        /* ADD ONE BULLET TO THE LINKED LIST */
+        currentTime = SDL_GetTicks();
+        if(player->state[FIRE] && currentTime > *lastFireTime + player->weapon.firingRate) // If the time between each shot is over the rate of fire, then a new shot can start
+        {
+            positionBullet.w = 10;
+            positionBullet.h = 3;
+            positionBullet.y = player->positionReal.y + 29;
+
+            if(player->side == RIGHT)
+            {
+                positionBullet.x = player->positionReal.x + 75;
+                list_append_first(player->weapon.firedBullets, positionBullet, player->side);
+            }
+            else // side == LEFT
+            {
+                list_append_first(player->weapon.firedBullets, positionBullet, player->side);
+            }
+
+            *lastFireTime = currentTime;
+        }
+    }
+
+    /* QUAND ON UTILISE LIST DELETE METTRE LE POINTEUR A NULL DANS LA FONCTION OU ON L'UTILISE ET METTRE LA VARIABLE firedBullet A FAUX*/
+
 }
