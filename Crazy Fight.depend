@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1544142142 source:d:\programmation\sdl\crazy fight\main.c
+1544293004 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -353,7 +353,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1544040748 d:\programmation\sdl\crazy fight\constantes.h
+1544285483 d:\programmation\sdl\crazy fight\constantes.h
 
 1376152742 c:\program files (x86)\codeblocks\sdl-2.0.8\i686-w64-mingw32\include\sdl2\sdl_image.h
 	"SDL.h"
@@ -381,7 +381,7 @@
 	"map.h"
 	"constantes.h"
 
-1543764038 d:\programmation\sdl\crazy fight\map.h
+1544211965 d:\programmation\sdl\crazy fight\map.h
 
 1543764074 d:\programmation\sdl\crazy fight\events.h
 
@@ -415,9 +415,9 @@
 	"constantes.h"
 	"editor.h"
 
-1544142284 d:\programmation\sdl\crazy fight\game.h
+1544292110 d:\programmation\sdl\crazy fight\game.h
 
-1544151621 source:d:\programmation\sdl\crazy fight\game.c
+1544297075 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -432,10 +432,11 @@
 	"game.h"
 	"collisions.h"
 
-1543938346 source:d:\programmation\sdl\crazy fight\collisions.c
+1544296980 source:d:\programmation\sdl\crazy fight\collisions.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
+	"LinkedList.h"
 	"constantes.h"
 	"character.h"
 	"map.h"
@@ -443,7 +444,7 @@
 	"game.h"
 	"collisions.h"
 
-1544151329 source:d:\programmation\sdl\crazy fight\character.c
+1544293107 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -452,11 +453,11 @@
 	"character.h"
 	"events.h"
 
-1544142361 d:\programmation\sdl\crazy fight\character.h
+1544292654 d:\programmation\sdl\crazy fight\character.h
 
-1543764014 d:\programmation\sdl\crazy fight\collisions.h
+1544212337 d:\programmation\sdl\crazy fight\collisions.h
 
-1544141346 source:d:\programmation\sdl\crazy fight\linkedlist.c
+1544205093 source:d:\programmation\sdl\crazy fight\linkedlist.c
 	<stdio.h>
 	<stdlib.h>
 	<SDL2/SDL.h>

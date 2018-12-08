@@ -9,6 +9,7 @@
 #ifndef CONSTANTES_H_INCLUDED
 #define CONSTANTES_H_INCLUDED
 
+    /* For the window */
     #define TILE_SIZE               32 // 32 pixels wide and 32 pixels long
     #define NB_TILES_WIDTH          40
     #define NB_TILES_HEIGHT         30
@@ -17,14 +18,16 @@
     #define WINDOW_TILESET_WIDTH    288
     #define WINDOW_TILESET_HEIGHT   608
 
-    /* For the tableSpritesheet */
+    #define NB_PLAYERS  2
+
+    /* For the tableSpritesheet of the characters */
     #define MOVE        0
     #define MOTIONLESS  1
     #define BEND_DOWN   2
     #define JUMP        3
     #define FIRE        4
 
-    /* For the side of the character */
+    /* For the side of the characters */
     #define LEFT 1
     #define RIGHT 0
 

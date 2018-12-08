@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
-
+#include "LinkedList.h"
 #include "constantes.h"
 #include "character.h"
 #include "map.h"
@@ -21,6 +21,7 @@
 
 #define SGN(X) (((X)==0)?(0):(((X)<0)?(-1):(1))) // To have the sign of the number X
 #define ABS(X) ((((X)<0)?(-(X)):(X))) //To have the absolute value of the number X
+
 
 
 /*
@@ -238,7 +239,7 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
     }
 
 
-    return 0; // Not possible movement
+    return 0; // No possible movement
 }
 
 /**
@@ -266,5 +267,91 @@ void movement_slim(Map *map, Character *player, int vectorX, int vectorY)
         if(movement_test(map, player, 0, SGN(vectorY)))
             break;
     }
+}
+
+
+int bullet_move(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
+{
+    int testMovement = movement_test_bullet(map, ennemy, bullet, vectorX);
+
+    if(testMovement) // If the movement is possible
+        return 1; // Bullet moved
+    else if(testMovement == 2)
+        return 2; // Bullet hit an ennemy
+
+    //movement_slim_bullet(map, ennemy, bullet); // Slims the movement to approach the closest position of the tile which caused the collision
+
+    return 0; // No movement
+}
+
+int movement_test_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
+{
+    int collision = collision_bullet(map, ennemy, bullet, vectorX);
+
+    if(!collision) // No collisions
+    {
+        bullet->position.x += vectorX;
+
+        return 1; // No collisions, return 1 whereas collision = 0 because the function movement_test_bullet() moves the bullet so, it is a success, so return 1 like TRUE
+    }
+    else if(collision == 1) // Collision with a full tile or bullet out of the world
+    {
+        return 0; // Collision detected
+    }
+    else if(collision == 2) // Collision with an ennemy
+    {
+        return 2; // Collision detected
+    }
+}
+
+int collision_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
+{
+    int minX, minY, maxX, maxY, tileIndex, i, j;
+
+    /* LIMIT OF THE MAP : */
+    /*If the bullet goes over the limit of the map */
+    if(bullet->position.x + vectorX < 0 // Left
+       || bullet->position.x + bullet->position.w + vectorX > map->nbTilesMapAbs * map->widthTile) // Right
+    {
+        return 1; // Out of the map
+    }
+
+    /* COLLISION WITH ENNEMY */
+    if(collision_bullet_ennemy(map, ennemy, bullet))
+        return 2; // Collision with an ennemy
+
+    /* COLLISION WITH TILE : */
+    /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the bullet */
+    minX = (bullet->position.x + vectorX) / map->widthTile;
+    minY = bullet->position.y / map->heightTile;
+    maxX = (bullet->position.x + bullet->position.w - 1 + vectorX) / map->widthTile;
+    maxY = (bullet->position.y + bullet->position.h - 1) / map->heightTile;
+
+    /* Check the property of the tiles */
+    for(i = minY; i <= maxY; i++)
+    {
+        for(j = minX; j <= maxX; j++)
+        {
+            tileIndex = map->tabMap[i][j];
+
+            if(map->properties[tileIndex].full == 1) // If the tile is define as full
+                return 1; // Founded collision
+        }
+    }
+
+    return 0; // No collisions
+}
+
+int collision_bullet_ennemy(Map *map, Character *ennemy, Bullet *bullet)
+{
+    if(bullet->position.x + bullet->position.w < ennemy->positionReal.x // Left compared to the ennemy position
+       || bullet->position.x > ennemy->positionReal.x + ennemy->positionReal.w // Right compared to the ennemy
+       || bullet->position.y + bullet->position.h < ennemy->positionReal.y // Above the ennemy
+       || bullet->position.y > ennemy->positionReal.y + ennemy->positionReal.h) // Under the ennemy (below, beneath, underneath)
+    {
+        return 0; // No collisions
+    }
+
+    return 1; // Collision with an ennemy, bullet is hitting the sprite of the ennemy
 }
 

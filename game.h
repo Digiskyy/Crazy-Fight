@@ -19,7 +19,7 @@
  * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  * @param < *lastFireTime > Handles the rate of fire
  */
-void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime, unsigned int *lastFireTime, int *choice);
+void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, unsigned int lastTime[NB_PLAYERS], unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5]);
 
 /**
  * @brief Runs the proper code in function of the events triggered by the players
@@ -30,7 +30,7 @@ void launch_game(Map* map, Character *player, Input *in, unsigned int *lastTime,
  * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
  * @param < *lastFireTime > Handles the rate of fire
  */
-void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, unsigned int *lastFireTime, int *choice);
+void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned int lastTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[NB_PLAYERS][5]);
 
  /**
  * @brief Displays the sprites on the renderer in function of the state of the player
@@ -38,7 +38,7 @@ void game_event(Map* map, Input *in, Character *player, unsigned int *lastTime, 
  * @param < *screen > Represents the renderer on which sprites will be displayed
  * @param < *player > Represents the player whose sprites will be displayed
  */
-void display_sprite(SDL_Renderer *screen, Character *player);
+void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS]);
 
 
 #endif // GAME_H_INCLUDED

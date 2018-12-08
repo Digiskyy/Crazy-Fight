@@ -34,27 +34,38 @@ int main(int argc, char* argv[])
 {
     /* ========== DECLARATION ========== */
 
-    SDL_Window **window = NULL; // Pointer of pointer because I initialise it in another function and not in the main
+    SDL_Window **window = NULL; // Pointer of pointer because it is initialised in another function and not in the main
     SDL_Renderer **screen = NULL;
     WindowTileset tilesetWindow;
     Map *map = NULL, *mapEditor = NULL;
 
-    Character *player1 = NULL;
+    //Character *player1 = NULL, *player2 = NULL;
+    Character* players[NB_PLAYERS] = {NULL, NULL};
+    /* FAIRE UN TABLEAU POUR LES JOUEURS POUR POUVOIR LES MODIFIER DANS LA BOUCLE FOR DANS LE GAME EVENT, cf main du tp2, pcq actuellement ca modifie a chaque itération les deux  au lieu d'un
+    ET FAIRE UN TABLEAU DE TABLESPRITESHEETPLAYER QUAND LES DEUX SPRITESHEET SERONT FAITS*/
+
+    int tableSimilarKeys[NB_PLAYERS][5] = {{SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_DOWN, SDLK_p}, {SDLK_d, SDLK_q, SDLK_z, SDLK_s, SDLK_v}}; // Tableau qui va permettre la correspondance entre les touches du joueurs 1 (les flèches) et le joueur 2 (z,q,s,d), il y a 2 joueurs et 4 touches
 
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
 
     // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 3 spritesheets. 100 is the number max. of char in the 3rd string
-    char tableSpritesheet[5][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move_TEST.png"}, //"ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"
+    char tableSpritesheetPlayer1[5][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move_TEST.png"}, //"ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"
                                         {"motionless", "1", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
                                         {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"},
                                         {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"},
                                         {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire_TEST.png"}};
 
     Input in;
-    unsigned int lastTime = 0, lastFireTime = 0, timer = 0, timeElapsed = 0;
+    unsigned int /*lastTime = 0, lastTime2 = 0, lastFireTime = 0, lastFireTime2 = 0,*/ timer = 0, timeElapsed = 0; /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ENLEVER LAST TIME ET LASTTIME2*/
+    unsigned int lastTime[NB_PLAYERS] = {0}, lastTimeFire[NB_PLAYERS] = {0};
     int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
+
+
+    /*  faire un tableau pour mettre les deux joueurs dedans ou commencer par pas faire de tableaux mais tableaux est mieux, tableau de pointeur de Character* */
+
+
 
 
     /* ========== INITIALISATION ========== */
@@ -104,6 +115,7 @@ int main(int argc, char* argv[])
         - Enlever tous les commentaires inutiles (tous les tests, les mettre dans un fichier texte mais pas dans le code), vérifier toute la doc de chaque fonction, structure et fichier .h et .c,
 
         - AMELIORATIONS :
+            * faire une barre de santé, la mettre juste au-dessus des perso en petit ou alors plus grosse mais fixe en haut de la fenêtre de jeu, la barre doit être vert pour la vie et rouge pour la vie qu'il manque
             * faire en sorte que la taille du sprite soit variable et suive la taille du personnage quand on se baisse pour permettre de passer dans des chemins plus petits (gagne 1 tile),
                 OU pour éviter des balles quand l'autre personnage tire en étant debout (possibilité d'"outplay" l'adversaire)
             * possibilité quand on a lancé le choix "Play" de pouvoir choisir la dernière map perso ou la map de base
@@ -174,7 +186,13 @@ int main(int argc, char* argv[])
             /* Initialisation characters */
             if(!gameInitialised)
             {
-                player1 = init_character(screen, tableSpritesheet);
+                //player1 = init_character(screen, tableSpritesheetPlayer1);
+                //player2 = init_character(screen, tableSpritesheetPlayer1);
+
+                for(int i = 0; i < NB_PLAYERS; i++) //IL FAUT UN TABLEAU POUR LES 2 SPRITESHEETS DE CHAQUE PERSO
+                {
+                    players[i] = init_character(screen, tableSpritesheetPlayer1, i);
+                }
                 gameInitialised = SDL_TRUE;
             }
 
@@ -185,14 +203,14 @@ int main(int argc, char* argv[])
             update_events(&in);
 
             /* Game code (Handle events) */
-            launch_game(map, player1, &in, &lastTime, &lastFireTime, &choice);
+            launch_game(map, players, &in, lastTime, lastTimeFire, &choice, tableSimilarKeys); /* , player1, player2, &in, &lastTime, &lastTime2, &lastFireTime, &lastFireTime2, */
 
             /* Print the map on the screen */
             SDL_RenderClear(screen);
             set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
             print_map(map, screen);
             /* Print the player on the screen */
-            display_sprite(screen, player1);
+            display_sprite(screen, players); /* player1, player2 */
             /* Display */
             SDL_RenderPresent(screen);
 
@@ -251,9 +269,18 @@ int main(int argc, char* argv[])
 
     /* ========== FREE MEMORY ========== */
     //printf("FREE : player1 = %d, player->side = %d, spritesheet = %d\n", player1, player1->side, player1->spritesheet[MOVE]);
-    if(player1 != NULL)
-        free_character(player1);
+    /*if(player1 != NULL)
+        free_character(player1);*/
     //printf("FREE MEMORY : player1 = %d, player->side = %d, spritesheet = %d\n", player1, player1->side, player1->spritesheet[MOVE]);
+    /*if(player2 != NULL)
+        free_character(player2);*/
+
+    for(int i = 0; i < NB_PLAYERS; i++)
+    {
+        if(players[i] != NULL)
+            free_character(players[i]);
+    }
+
     if(mapEditor != NULL)
         free_map(mapEditor);
     free_map(map);

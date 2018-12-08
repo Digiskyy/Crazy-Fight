@@ -95,7 +95,7 @@ typedef struct Character
  * @param < (*tableSpritesheet)[3][100] > Arrays with 3 dimensions which stores all the spritesheets with the number of sprites on each rows (1 row for 1 direction) and the path of each spritesheet
  * @return < Character* > Pointer on a Character type object
  */
-Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100]);
+Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100], int numPlayer);
 
 /**
  * @brief Initialises one spritesheet in the tableSpritesheet
@@ -114,7 +114,10 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
  */
 void free_character(Character *player);
 
-void player_fire(Character *player, unsigned int *lastFireTime);
+typedef struct Map Map;
+
+
+void player_fire(Character *player, Character *ennemy, Map *map, unsigned int *lastFireTime);
 
 
 #endif // CHARACTER_H_INCLUDED

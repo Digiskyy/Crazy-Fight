@@ -245,7 +245,6 @@ void list_delete(LinkedList *list)
         list_delete_first(list);
     }
     free(list);
-    list = NULL;
 }
 
 

@@ -23,7 +23,7 @@
  * @param < (*tableSpritesheet)[3][100] > Arrays with 3 dimensions which stores all the spritesheets with the number of sprites on each rows (1 row for 1 direction) and the path of each spritesheet
  * @return < Character* > Pointer on a Character type object
  */
-Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100]) // array in 3 dimensions
+Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100], int numPlayer) // array in 3 dimensions
 {
     Character* player = NULL;
 
@@ -47,7 +47,7 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     /* Initialises the position where the character should be displayed at the beginning */
     player->positionReal.w =  70;
     player->positionReal.h = 85;
-    player->positionReal.x = 150;
+    player->positionReal.x = (numPlayer == 1) ? 150 : WINDOW_WIDTH - player->positionReal.w - 150; /** <<<<<<<<<<<  A VOIR OU PLACER LES DEUX PERSO EN FONCTION DE LA MAP CREEE ET FAIRE EN SORT QU'IL REGARDE DANS LA BONNE POSITION  */
     player->positionReal.y = 651;
 
     /* Initialises the relative position which is used for the jump */
@@ -224,6 +224,10 @@ void free_character(Character *player)
 {
     int i;
 
+    /* LINKED LIST FOR BULLETS */
+    list_delete(player->weapon.firedBullets);
+    player->weapon.firedBullets = NULL;
+
     /* SRITESHEET MOVE */
     for(i = 0; i < 2; i++)
     {
@@ -286,11 +290,12 @@ void free_character(Character *player)
 
 
 /* FAIRE LES FONCTIONS POUR TIRER en fonction de la position du perso                       POUR RECHARGER A FAIRE APRES */
-void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour les collisions avec les tiles pour savoir s'il touche un enemi et map est utile pour savoir s'il touche un bloc qui va faire disparaître la balle*/
+void player_fire(Character *player, Character *ennemy, Map *map, unsigned int *lastFireTime)
 {
     Bullet *bulletIterator = NULL;
     SDL_Rect positionBullet;
     unsigned int currentTime;
+    int testCollisionResult;
 
     if(player->weapon.firedBullets == NULL) // If list is NULL : if there are currently no fired bullets in the map
     {
@@ -302,30 +307,70 @@ void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour
     }
     else // list 'firedBullets' not empty
     {
-        /* MOVES EACH BULLET OF THE LINKED LIST */
+        /* MOVES EACH BULLET OF THE LINKED LIST if possible */
         bulletIterator = player->weapon.firedBullets->first;
 
         while(bulletIterator != NULL)
         {
+            /* SOIT COLLISION ICI */
+            /*
+            envoyer chaque bullet séparément et envoyer le vector de déplacement
+            */
             if(bulletIterator->side == RIGHT)
             {
-                if(bulletIterator->position.x > WINDOW_WIDTH) // COLLISION AVEC LA FENETRE PEUT - ETRE FAIRE UNE FONCTION GERE LES COLLISSION DES BALLES AVEC LES ENNEEMIS LES TILES ET LA FENETRE
+                /* COLLISION TEST */
+                testCollisionResult = bullet_move(map, ennemy, bulletIterator, player->weapon.speedBullet);
+
+                if(testCollisionResult == 2) // Bullet is hitting an ennemy
+                {
+                    /* The ennemy losts some hit points (= health points) */
+                    ennemy->health -= player->weapon.damage;
+
+                    /* Take out the bullet of the list */
+                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
+                }
+                else if(testCollisionResult == 0) // Collision detected
+                {
+                    /* Take out the bullet of the list */
+                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
+                }
+
+                /* SOIT COLLISION ICI */
+                /*if(bulletIterator->position.x > WINDOW_WIDTH)
                 {
                     printf("Suppression balle cote DROIT\n");
                     list_delete_element(player->weapon.firedBullets, bulletIterator);
                 }
                 else
-                    bulletIterator->position.x += player->weapon.speedBullet;
+                    bulletIterator->position.x += player->weapon.speedBullet;*/
             }
             else // side == LEFT
             {
-                if(bulletIterator->position.x < 0) // COLLISION AVEC LA FENETRE PEUT - ETRE FAIRE UNE FONCTION GERE LES COLLISSION DES BALLES AVEC LES ENNEEMIS LES TILES ET LA FENETRE
+                /* COLLISION TEST */
+                testCollisionResult = bullet_move(map, ennemy, bulletIterator, -player->weapon.speedBullet);
+
+                if(testCollisionResult == 2) // Bullet is hitting an ennemy
+                {
+                    /* The ennemy losts some hit points (= health points) */
+                    ennemy->health -= player->weapon.damage;
+
+                    /* Take out the bullet of the list */
+                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
+                }
+                else if(testCollisionResult == 0) // Collision detected
+                {
+                    /* Take out the bullet of the list */
+                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
+                }
+
+                /* ET COLLISION ICI */
+                /*if(bulletIterator->position.x < 0)
                 {
                     printf("Suppression balle cote GAUCHE\n");
                     list_delete_element(player->weapon.firedBullets, bulletIterator);
                 }
                 else
-                    bulletIterator->position.x -= player->weapon.speedBullet;
+                    bulletIterator->position.x -= player->weapon.speedBullet;*/
             }
 
             bulletIterator = bulletIterator->next; // To go in the whole linked list
@@ -360,7 +405,4 @@ void player_fire(Character *player, unsigned int *lastFireTime)/*, Map *map pour
             *lastFireTime = currentTime;
         }
     }
-
-    /* QUAND ON UTILISE LIST DELETE METTRE LE POINTEUR A NULL DANS LA FONCTION OU ON L'UTILISE ET METTRE LA VARIABLE firedBullet A FAUX*/
-
 }
