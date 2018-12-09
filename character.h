@@ -114,10 +114,15 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
  */
 void free_character(Character *player);
 
-typedef struct Map Map;
 
+typedef struct Map Map; // Because the function player_fire(...) doesn't know the type Map
 
-void player_fire(Character *player, Character *ennemy, Map *map, unsigned int *lastFireTime);
+#ifndef NB_PLAYERS
+#define NB_PLAYERS  2 // Because here apparently, the compiler doesn't know NB_PLAYERS
+
+void player_fire(Character* players[NB_PLAYERS], int numFiringPlayer, Map *map, unsigned int *lastFireTime);
+
+#endif // NB_PLAYERS
 
 
 #endif // CHARACTER_H_INCLUDED

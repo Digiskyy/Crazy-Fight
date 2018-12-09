@@ -24,7 +24,7 @@ void update_events(Input* in)
 
     while(SDL_PollEvent(&event))
     {
-        in->windowID = event.window.windowID; // Set the ID of the window in the attribute windowID
+        in->windowID = event.window.windowID; // Sets the ID of the window in the attribute windowID
 
         switch(event.type)
         {
@@ -87,13 +87,13 @@ void initialise_events(Input* in)
 
     in->quit = SDL_FALSE;
 
-    /* Initialise the keys of the keyboard */
+    /* Initialises the keys of the keyboard */
     for(i = 0; i < SDL_NUM_SCANCODES; i++)
     {
         in->key[i] = SDL_FALSE;
     }
 
-    /* Initialise the buttons of the mouse */
+    /* Initialises the buttons of the mouse */
     for(i = 0; i < 5; i++)
     {
         in->mouseButtons[i] = SDL_FALSE;

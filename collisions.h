@@ -62,12 +62,12 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY);
  */
 void movement_slim(Map *map, Character *player, int vectorX, int vectorY);
 
-int bullet_move(Map *map, Character *ennemy, Bullet *bullet, int vectorX);
+int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
-int movement_test_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX);
+int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
-int collision_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX);
+int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
-int collision_bullet_ennemy(Map *map, Character *ennemy, Bullet *bullet);
+int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet);
 
 #endif // COLLISIONS_H_INCLUDED

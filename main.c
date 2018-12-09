@@ -268,22 +268,17 @@ int main(int argc, char* argv[])
     }
 
     /* ========== FREE MEMORY ========== */
-    //printf("FREE : player1 = %d, player->side = %d, spritesheet = %d\n", player1, player1->side, player1->spritesheet[MOVE]);
-    /*if(player1 != NULL)
-        free_character(player1);*/
-    //printf("FREE MEMORY : player1 = %d, player->side = %d, spritesheet = %d\n", player1, player1->side, player1->spritesheet[MOVE]);
-    /*if(player2 != NULL)
-        free_character(player2);*/
-
+    /* PLAYERS */
     for(int i = 0; i < NB_PLAYERS; i++)
     {
         if(players[i] != NULL)
             free_character(players[i]);
     }
-
+    /* MAPS */
     if(mapEditor != NULL)
         free_map(mapEditor);
     free_map(map);
+    /* WINDOW STUFF */
     SDL_DestroyRenderer(screen);
     SDL_DestroyWindow(window);
     TTF_Quit();

@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
-#include "LinkedList.h"
 #include "constantes.h"
+#include "LinkedList.h"
 #include "character.h"
 #include "events.h"
 
@@ -172,9 +172,9 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
         return NULL;
     }
 
-    /* Loads the texture */  /* A CHANGER - JUSTE POUR LES TESTS */
-    //spritesheet->texture = load_image_transparent(tableSpritesheet[FLAGS][2], screen, 255, 255, 255); // tableSpritesheet[FLAGS][2] correponds to the path, transparent color is white (255, 255, 255)
-    spritesheet->texture = load_image(tableSpritesheet[FLAGS][2], screen); /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TEST */
+    /* Loads the texture */
+    spritesheet->texture = load_image_transparent(tableSpritesheet[FLAGS][2], screen, 255, 255, 255); // tableSpritesheet[FLAGS][2] correponds to the path, transparent color is white (255, 255, 255)
+    //spritesheet->texture = load_image(tableSpritesheet[FLAGS][2], screen); /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< FOR THE TEST FOR THE COLLISIONS in order to see clearly the sprite*/
 
     /* Loads the array 2 dimensions */
     spritesheet->sprite = malloc(2 * sizeof(SDL_Rect*)); // 2 because there are 2 rows in the spritesheet, each row is for one direction
@@ -289,117 +289,81 @@ void free_character(Character *player)
 }
 
 
-/* FAIRE LES FONCTIONS POUR TIRER en fonction de la position du perso                       POUR RECHARGER A FAIRE APRES */
-void player_fire(Character *player, Character *ennemy, Map *map, unsigned int *lastFireTime)
+void player_fire(Character* players[NB_PLAYERS], int numFiringPlayer, Map *map, unsigned int *lastFireTime)
 {
     Bullet *bulletIterator = NULL;
     SDL_Rect positionBullet;
     unsigned int currentTime;
     int testCollisionResult;
+    int vectorX;
 
-    if(player->weapon.firedBullets == NULL) // If list is NULL : if there are currently no fired bullets in the map
+    if(players[numFiringPlayer]->weapon.firedBullets == NULL) // List is NULL if there are currently no fired bullets in the map
     {
         /* If the player is standing, so far we don't handle yet if the player is bending down */
-        if(player->side == RIGHT)
-            player->weapon.firedBullets = list_initialise(player->positionReal.x + 75 , player->positionReal.y + 29, player->side); /* +29 and +75 to put the bullet at the beginning of the barrel of the rifle when he's standing */
+        if(players[numFiringPlayer]->side == RIGHT)
+            players[numFiringPlayer]->weapon.firedBullets = list_initialise(players[numFiringPlayer]->positionReal.x + 75 , players[numFiringPlayer]->positionReal.y + 29, players[numFiringPlayer]->side); /* +29 and +75 to put the bullet at the beginning of the barrel of the rifle when he's standing */
         else // player->side == LEFT
-            player->weapon.firedBullets = list_initialise(player->positionReal.x - 14, player->positionReal.y + 29, player->side);
+            players[numFiringPlayer]->weapon.firedBullets = list_initialise(players[numFiringPlayer]->positionReal.x - 14, players[numFiringPlayer]->positionReal.y + 29, players[numFiringPlayer]->side);
     }
-    else // list 'firedBullets' not empty
+    else // list 'firedBullets' not NULL
     {
         /* MOVES EACH BULLET OF THE LINKED LIST if possible */
-        bulletIterator = player->weapon.firedBullets->first;
+        bulletIterator = players[numFiringPlayer]->weapon.firedBullets->first;
 
         while(bulletIterator != NULL)
         {
-            /* SOIT COLLISION ICI */
-            /*
-            envoyer chaque bullet séparément et envoyer le vector de déplacement
-            */
+            /* Sense of the bullet in function of the side when the player is shooting */
             if(bulletIterator->side == RIGHT)
+                vectorX = players[numFiringPlayer]->weapon.speedBullet;
+            else
+                vectorX = -players[numFiringPlayer]->weapon.speedBullet;
+
+            /* COLLISION TEST */
+            testCollisionResult = bullet_move(map, players, numFiringPlayer, bulletIterator, vectorX);
+
+            if(testCollisionResult >= 0) // Bullet is hitting an ennemy
             {
-                /* COLLISION TEST */
-                testCollisionResult = bullet_move(map, ennemy, bulletIterator, player->weapon.speedBullet);
+                /* The ennemy losts some hit points (= health points) */
+                players[testCollisionResult]->health -= players[numFiringPlayer]->weapon.damage;
+                printf("Ennemi touche %d\n", testCollisionResult);
 
-                if(testCollisionResult == 2) // Bullet is hitting an ennemy
-                {
-                    /* The ennemy losts some hit points (= health points) */
-                    ennemy->health -= player->weapon.damage;
-
-                    /* Take out the bullet of the list */
-                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
-                }
-                else if(testCollisionResult == 0) // Collision detected
-                {
-                    /* Take out the bullet of the list */
-                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
-                }
-
-                /* SOIT COLLISION ICI */
-                /*if(bulletIterator->position.x > WINDOW_WIDTH)
-                {
-                    printf("Suppression balle cote DROIT\n");
-                    list_delete_element(player->weapon.firedBullets, bulletIterator);
-                }
-                else
-                    bulletIterator->position.x += player->weapon.speedBullet;*/
+                /* Takes the bullet out of the list */
+                list_delete_element(players[numFiringPlayer]->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
             }
-            else // side == LEFT
+            else if(testCollisionResult == -1) // Collision detected
             {
-                /* COLLISION TEST */
-                testCollisionResult = bullet_move(map, ennemy, bulletIterator, -player->weapon.speedBullet);
-
-                if(testCollisionResult == 2) // Bullet is hitting an ennemy
-                {
-                    /* The ennemy losts some hit points (= health points) */
-                    ennemy->health -= player->weapon.damage;
-
-                    /* Take out the bullet of the list */
-                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
-                }
-                else if(testCollisionResult == 0) // Collision detected
-                {
-                    /* Take out the bullet of the list */
-                    list_delete_element(player->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting an ennemy
-                }
-
-                /* ET COLLISION ICI */
-                /*if(bulletIterator->position.x < 0)
-                {
-                    printf("Suppression balle cote GAUCHE\n");
-                    list_delete_element(player->weapon.firedBullets, bulletIterator);
-                }
-                else
-                    bulletIterator->position.x -= player->weapon.speedBullet;*/
+                /* Takes the bullet out of the list */
+                list_delete_element(players[numFiringPlayer]->weapon.firedBullets, bulletIterator); // Bullet disappears of the map after hitting a full tile
+                printf("Mur touche ou en dehors de la map\n");
             }
 
-            bulletIterator = bulletIterator->next; // To go in the whole linked list
+            bulletIterator = bulletIterator->next; // To go across the whole linked list
         }
 
         /* Check if there are no bullets on the map */
-        if(player->weapon.firedBullets->first == NULL)
+        if(players[numFiringPlayer]->weapon.firedBullets->first == NULL)
         {
-            player->firedBullet = SDL_FALSE;
+            players[numFiringPlayer]->firedBullet = SDL_FALSE;
         }
 
 
-        /* ADD ONE BULLET TO THE LINKED LIST */
+        /* ADDS ONE BULLET TO THE LINKED LIST if the time between each shot is over the rate of fire, then a new shot can start */
         currentTime = SDL_GetTicks();
-        if(player->state[FIRE] && currentTime > *lastFireTime + player->weapon.firingRate) // If the time between each shot is over the rate of fire, then a new shot can start
+        if(players[numFiringPlayer]->state[FIRE] && currentTime > *lastFireTime + players[numFiringPlayer]->weapon.firingRate)
         {
             positionBullet.w = 10;
             positionBullet.h = 3;
-            positionBullet.y = player->positionReal.y + 29;
+            positionBullet.y = players[numFiringPlayer]->positionReal.y + 29;
 
-            if(player->side == RIGHT)
+            if(players[numFiringPlayer]->side == RIGHT)
             {
-                positionBullet.x = player->positionReal.x + 75;
-                list_append_first(player->weapon.firedBullets, positionBullet, player->side);
+                positionBullet.x = players[numFiringPlayer]->positionReal.x + 75;
+                list_append_first(players[numFiringPlayer]->weapon.firedBullets, positionBullet, players[numFiringPlayer]->side);
             }
             else // side == LEFT
             {
-                positionBullet.x = player->positionReal.x - 14;
-                list_append_first(player->weapon.firedBullets, positionBullet, player->side);
+                positionBullet.x = players[numFiringPlayer]->positionReal.x - 14;
+                list_append_first(players[numFiringPlayer]->weapon.firedBullets, positionBullet, players[numFiringPlayer]->side);
             }
 
             *lastFireTime = currentTime;

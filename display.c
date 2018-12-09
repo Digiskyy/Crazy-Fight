@@ -35,7 +35,7 @@ void createWindowAndScreen(SDL_Window **window, SDL_Renderer **screen)
     }
 
     *screen = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    // Synchronise the render with fresh rate. The fresh rate corresponds to a number of time when the screen is refreshed by second. Thus, the render will be synchronised with it.
+    // SDL_RENDERER_PRESENTVSYNC : Synchronises the render with fresh rate. The fresh rate corresponds to a number of time when the screen is refreshed by second. Thus, the render will be synchronised with it.
     if(*screen == NULL)
     {
         fprintf(stderr, "Error : Creation of SDL_Renderer : %s\n", SDL_GetError());
@@ -127,7 +127,7 @@ SDL_Texture* load_image_transparent(const char* filename, SDL_Renderer* screen, 
 
     transparentColor = SDL_MapRGB(imageTmp->format, red, green, blue);
 
-    if(SDL_SetColorKey(imageTmp, SDL_TRUE, transparentColor)) // Set a transparent color, SDL_TRUE toggles the transparency
+    if(SDL_SetColorKey(imageTmp, SDL_TRUE, transparentColor)) // Sets a transparent color, SDL_TRUE toggles the transparency
     {
         fprintf(stderr, "Error : Set a transparent color in the image \"%s\" : %s", filename, SDL_GetError());
     }
@@ -160,7 +160,7 @@ SDL_Texture* load_text(const char* message, SDL_Renderer* screen, TTF_Font* font
     SDL_Surface *text = NULL;
     SDL_Texture *texture = NULL;
 
-    // Write the text on a SDL surface with a chosen font
+    // Writes the text on a SDL surface with a chosen font
     text = TTF_RenderText_Blended(font, message, color);
     if(text == NULL)
     {

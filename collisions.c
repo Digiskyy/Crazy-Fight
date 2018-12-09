@@ -19,7 +19,7 @@
 #include "collisions.h"
 
 
-#define SGN(X) (((X)==0)?(0):(((X)<0)?(-1):(1))) // To have the sign of the number X
+#define SGN(X) (((X)==0)?(0):(((X)<0)?(-1):(1))) // -1 if X < 0, 1 if X > 0 and 0 if X = 0
 #define ABS(X) ((((X)<0)?(-(X)):(X))) //To have the absolute value of the number X
 
 
@@ -195,14 +195,8 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
 
     if(!collision) // If no collisions
     {
-        //printf("collision : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
-        //printf("collision2 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
-
         player->positionReal.x += vectorX; // Moves the player on the X-axis
         player->positionReal.y += vectorY; // Moves the player on the Y-axis
-
-        //printf("collision3 : player position x = %d, y = %d\n", player->positionReal.x, player->positionReal.y);
-        //printf("collision4 : player position point en bas a droite x = %d, y = %d\n", player->positionReal.x + player->positionReal.w - 1, player->positionReal.y + player->positionReal.h - 1);
 
         /* Update the last good position of the character during the jump */
         if(player->state[JUMP])
@@ -238,7 +232,6 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
         player->positionReal.y = player->positionRealLastJump.y;
     }
 
-
     return 0; // No possible movement
 }
 
@@ -270,61 +263,60 @@ void movement_slim(Map *map, Character *player, int vectorX, int vectorY)
 }
 
 
-int bullet_move(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
+int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
-    int testMovement = movement_test_bullet(map, ennemy, bullet, vectorX);
+    int testMovement = movement_test_bullet(map, players, numFiringPlayer, bullet, vectorX);
 
-    if(testMovement) // If the movement is possible
-        return 1; // Bullet moved
-    else if(testMovement == 2)
-        return 2; // Bullet hit an ennemy
+    if(testMovement == -2) // If the movement is possible
+        return -2; // Bullet moved
 
-    //movement_slim_bullet(map, ennemy, bullet); // Slims the movement to approach the closest position of the tile which caused the collision
+    else if(testMovement >= 0)
+        return testMovement; // Bullet hit an ennemy
 
-    return 0; // No movement
+    return -1; // No movement
 }
 
-int movement_test_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
+int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
-    int collision = collision_bullet(map, ennemy, bullet, vectorX);
+    int collision = collision_bullet(map, players, numFiringPlayer, bullet, vectorX);
 
-    if(!collision) // No collisions
+    if(collision == -2) // No collisions
     {
-        bullet->position.x += vectorX;
-
-        return 1; // No collisions, return 1 whereas collision = 0 because the function movement_test_bullet() moves the bullet so, it is a success, so return 1 like TRUE
+        bullet->position.x += vectorX; // Moves the bullet
+        return -2;
     }
-    else if(collision == 1) // Collision with a full tile or bullet out of the world
+    else if(collision == -1) // Collision with a full tile or bullet out of the world
     {
-        return 0; // Collision detected
+        return -1;
     }
-    else if(collision == 2) // Collision with an ennemy
+    else // Collision with an ennemy
     {
-        return 2; // Collision detected
+        return collision;
     }
 }
 
-int collision_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
+int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
-    int minX, minY, maxX, maxY, tileIndex, i, j;
+    int minX, minY, maxX, maxY, tileIndex, i, j, numHitPlayer;
 
     /* LIMIT OF THE MAP : */
     /*If the bullet goes over the limit of the map */
-    if(bullet->position.x + vectorX < 0 // Left
-       || bullet->position.x + bullet->position.w + vectorX > map->nbTilesMapAbs * map->widthTile) // Right
+    if(bullet->position.x < 0 // Left
+       || bullet->position.x + bullet->position.w > map->nbTilesMapAbs * map->widthTile) // Right
     {
-        return 1; // Out of the map
+        return -1; // Out of the map
     }
 
     /* COLLISION WITH ENNEMY */
-    if(collision_bullet_ennemy(map, ennemy, bullet))
-        return 2; // Collision with an ennemy
+    numHitPlayer = collision_bullet_ennemy(map, players, numFiringPlayer, bullet);
+    if(numHitPlayer != -1)
+        return numHitPlayer; // Collision with an ennemy
 
     /* COLLISION WITH TILE : */
     /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the bullet */
-    minX = (bullet->position.x + vectorX) / map->widthTile;
+    minX = (bullet->position.x) / map->widthTile;
     minY = bullet->position.y / map->heightTile;
-    maxX = (bullet->position.x + bullet->position.w - 1 + vectorX) / map->widthTile;
+    maxX = (bullet->position.x + bullet->position.w - 1) / map->widthTile;
     maxY = (bullet->position.y + bullet->position.h - 1) / map->heightTile;
 
     /* Check the property of the tiles */
@@ -335,23 +327,32 @@ int collision_bullet(Map *map, Character *ennemy, Bullet *bullet, int vectorX)
             tileIndex = map->tabMap[i][j];
 
             if(map->properties[tileIndex].full == 1) // If the tile is define as full
-                return 1; // Founded collision
+                return -1; // Founded collision
         }
     }
 
-    return 0; // No collisions
+    return -2; // No collisions
 }
 
-int collision_bullet_ennemy(Map *map, Character *ennemy, Bullet *bullet)
+int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet)
 {
-    if(bullet->position.x + bullet->position.w < ennemy->positionReal.x // Left compared to the ennemy position
-       || bullet->position.x > ennemy->positionReal.x + ennemy->positionReal.w // Right compared to the ennemy
-       || bullet->position.y + bullet->position.h < ennemy->positionReal.y // Above the ennemy
-       || bullet->position.y > ennemy->positionReal.y + ennemy->positionReal.h) // Under the ennemy (below, beneath, underneath)
+    int numHitEnnemy = -1;
+
+    for(int i = 0; i < NB_PLAYERS; i++)
     {
-        return 0; // No collisions
+        if(i == numFiringPlayer)
+            continue; // Stops the current iteration and starts the next
+
+        if(bullet->position.x + bullet->position.w < players[i]->positionReal.x // On the left compared to the ennemy position
+           || bullet->position.x > players[i]->positionReal.x + players[i]->positionReal.w // On the right compared to the ennemy
+           || bullet->position.y + bullet->position.h < players[i]->positionReal.y // Above the ennemy
+           || bullet->position.y > players[i]->positionReal.y + players[i]->positionReal.h) // Under the ennemy (below, beneath, underneath)
+        {}
+        else // Bullet is hitting the sprite of the ennemy
+            numHitEnnemy = i;
+
     }
 
-    return 1; // Collision with an ennemy, bullet is hitting the sprite of the ennemy
+    return numHitEnnemy;
 }
 

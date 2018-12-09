@@ -53,16 +53,15 @@ Map* load_map(const char* pathLevel)
     do
     {
         fgets(buffer, BUFFER_SIZE, fileLevel);
-        //printf("buffer : %s, strncmp : %d\n", buffer, strncmp(buffer, "#end", 4));
         if(strncmp(buffer, "#tileset", 8) == 0) // I use strncmp instead of strcmp to avoid comparing the character \n because I don't know if it's the same result by using strcmp
         {
             printf("test load_map_tileset\n");
-            load_map_tileset(fileLevel, map); // OK, la fonction load_map_tileset lit correctement le fichier tileProp et affecte les bonnes valeurs aux variables de map.properties et width/heightTile
+            load_map_tileset(fileLevel, map);
         }
         if(strncmp(buffer, "#level", 6) == 0)
         {
             printf("test load_map_level\n");
-            load_map_level(fileLevel, map); // OK, la fonction load_map_level affecte les bonnes valeurs au tableau 'tabMap' de 'Map'd
+            load_map_level(fileLevel, map);
         }
     }while(strstr(buffer, "#end") == NULL);
 
@@ -84,8 +83,6 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
     int i, j, car, numTile = 0;
     char buffer1[BUFFER_SIZE]; // Buffer which allows to store the datas read from the file
     char buffer2[BUFFER_SIZE]; // Buffer which allows to store the datas read from the file
-
-    //printf("1 nom du fichier tileset : %s\n", buffer1); // PLUS DE BOUCLE
 
     fscanf(fileLevelDesign, "%s", buffer1); // filename of the tileset
 
@@ -117,8 +114,6 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
 
     fgets(buffer2, BUFFER_SIZE, fileTileProp);
 
-    //printf("11 nom du fichier tileset : %s\n\tbuffer2 TileProp : %s\n", buffer1, buffer2);
-
     if(strstr(buffer2, "Tile mapping Version 1.0") == NULL)
     {
         fprintf(stderr, "Error : Wrong version for the properties tiles file \"%s\". This program expects the version 1.0\n", buffer1);
@@ -129,13 +124,9 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
 
     fscanf(fileTileProp, "%d %d", &(map->nbRowsTileset), &(map->nbColumnsTileset)); // Retrieve the size of the tileset array
 
-    //printf("13 nom du fichier tileset : %s\n\tnbTilesX : %d, nbTilesY : %d\n", buffer1, map->nbRowsTileset, map->nbColumnsTileset);
-
     map->widthTile = map->tileset->w / map->nbColumnsTileset; // = macro TILESIZE
     map->heightTile = map->tileset->h / map->nbRowsTileset; // = macro TILESIZE
     map->properties = malloc((map->nbRowsTileset) * (map->nbColumnsTileset) * sizeof(TileProperties)); // Allocate memory for an array 1 dimension which stores the properties of each tile
-
-    //printf("14 nom du fichier tileset : %s\n\twidthTile : %d, heightTile : %d\n", buffer1, map->widthTile, map->heightTile);
 
     for(i = 0; i < map->nbRowsTileset; i++)
     {
@@ -146,42 +137,20 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
             map->properties[numTile].rect.x = j * map->widthTile;
             map->properties[numTile].rect.y = i * map->heightTile;
 
-            //printf("15 nom du fichier tileset : %s\n\tnumTile : %d, properties.rect.w : %d, properties.rect.h : %d\n", buffer1, numTile, map->properties[numTile].rect.w, map->properties[numTile].rect.h);
-            //printf("16 nom du fichier tileset : %s\n\tproperties.rect.x : %d, properties.rect.y : %d\n", buffer1, map->properties[numTile].rect.x, map->properties[numTile].rect.y);
-
             car = fgetc(fileTileProp);
-
-            //printf("numTile = %d, car(d, c) = %d, %c\n", numTile, car, car);
 
             if(car == '\n') // Allows to know if the tile is full or void, substracts '0' supplies the value of the number and not the character
             {
-                //printf("cas /n : numTile = %d, car(d, c) = %d, %c\n", numTile, car, car);
-
                 car = fgetc(fileTileProp);
-
-                //printf("cas /n : numTile = %d, car(d, c) = %d, %c\n", numTile, car, car);
             }
 
             car = car - '0';
 
-            //printf(/*"17 nom du fichier tileset : %s\n\t*/"numTile = %d, car = %d\n"/*, buffer1*/, numTile+1, car);
-
-            /*if(car == 0)
-                map->properties[numTile].full = 0; // Tile void
-            else if(car == 1)
-                map->properties[numTile].full = 1; // Tile full
-            else
-                map->properties[numTile].full = 2; // Tile some parts full and some parts void*/
-
             map->properties[numTile].full = car;
-
-            //printf("properties.full : %d, car = %d\n", map->properties[numTile].full, car);
 
             numTile++;
         }
     }
-
-    //printf("18 nom du fichier tileset : %s\n\tproperties[7].full : %d, properties[7].rect.x : %d\n", buffer1, map->properties[7].full, map->properties[7].rect.x);
 
     fclose(fileTileProp);
 }
@@ -197,8 +166,6 @@ void load_map_level(FILE* file, Map* map)
 {
     int i, j, tmp = 0;
     fscanf(file, "%d %d", &(map->nbTilesMapOrd), &(map->nbTilesMapAbs)); // Retrieve the number of lines (nbTilesMapY) and columns (nbTilesMapX)
-
-    //printf("19 nbTilesMapX = %d, nbTilesMapY = %d\n", map->nbTilesMapX, map->nbTilesMapY);
 
     map->tabMap = malloc(map->nbTilesMapOrd * sizeof(int*)); // Memory allocation for a dynamic array
     for(i = 0; i < map->nbTilesMapOrd; i++)
@@ -223,7 +190,7 @@ void load_map_level(FILE* file, Map* map)
         }
     }
 
-    /*for(i = 0; i < map->nbTilesMapX; i++)
+    /*TEST : for(i = 0; i < map->nbTilesMapX; i++)
     {
         for(j = 0; j < map->nbTilesMapY; j++)
         {
@@ -247,11 +214,7 @@ void print_map(Map *map, SDL_Renderer *screen)
     SDL_Texture *tileset = NULL;
     SDL_Rect rectDest;
 
-    //map->tileset == NULL ? printf("2 map->tileset NULL : %x\n", map->tileset) : printf("2 map-> tileset non NULL : %x\n", map->tileset);
-
     tileset = SDL_CreateTextureFromSurface(screen, map->tileset);
-
-    //tileset == NULL ? printf("tileset NULL : %x\n", tileset) : printf("tileset non NULL : %x\n", tileset);
 
     if(tileset == NULL)
     {
@@ -270,13 +233,7 @@ void print_map(Map *map, SDL_Renderer *screen)
             rectDest.x = j * map->widthTile;
             rectDest.y = i * map->heightTile;
 
-            //printf("rectDest.w : %d, rectDest.h : %d, rectDest.x : %d, rectDest.y : %d\n", rectDest.w, rectDest.h, rectDest.x, rectDest.y);
-
-            numTile = map->tabMap[i][j]; // OK
-
-            //printf("21 numTile : %d, map->tabMap[%d][%d] : %d\n", numTile, i, j, map->tabMap[i][j]);
-
-            //printf("map->properties[%d].rect.x : %d, y : %d, w : %d, h : %d\n", numTile, map->properties[numTile].rect.x, map->properties[numTile].rect.y, map->properties[numTile].rect.w, map->properties[numTile].rect.h);
+            numTile = map->tabMap[i][j];
 
             SDL_RenderCopy(screen, tileset, &(map->properties[numTile].rect), &rectDest);
             numTile++;
@@ -306,11 +263,3 @@ void free_map(Map *map)
     free(map->tabMap);
     free(map); // Free the structure map
 }
-
-
-
-
-
-
-
-
