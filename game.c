@@ -5,15 +5,18 @@
  * @brief Handles the game (events and game code)
  */
 
-
+/* Standard headers */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
+
+/* Librairies */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-
+/* Personal headers */
 #include "LinkedList.h"
 #include "map.h"
 #include "character.h"
@@ -29,7 +32,7 @@
 
 /* A FAIRE  :
 - faire en sorte de gérer le tir et la vie
-- faire l'animation de la mort et si il y a du temps mettre la fonctionnalité coup de couteau avec son animation
+- faire l'animation de la mort et s'il y a du temps mettre la fonctionnalité coup de couteau avec son animation
 
 - mettre des packs de soin pour remonter la vie
 - ...
@@ -44,12 +47,15 @@
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
  */
-void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
+int launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
 {
+    int i, endOfGame = -1; // Game is going on
+    int remainingPlayers = NB_PLAYERS;
+
     game_event(map, in, players , lastTime, choice, tableSimilarKeys);
 
-    /* PLAYERS FIRING */
-    for(int i = 0; i < NB_PLAYERS; i++)
+    /* FIRE */
+    for(i = 0; i < NB_PLAYERS; i++)
     {
         if(players[i]->firedBullet)
         {
@@ -57,26 +63,56 @@ void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, unsigned i
         }
     }
 
-    /** FUSIONNER LES 2 BOUCLES FOR (CELLE JUSTE AU DESSUS) */
-    for(int i = 0; i < NB_PLAYERS; i++)
+    /* JUMP AND GRAVITY */
+    for(i = 0; i < NB_PLAYERS; i++)
     {
         if(players[i]->state[JUMP]) // if player is jumping
         {
-            player_jump(map, players[i]);
+            if(player_jump(map, players[i]) == -1)
+            {
+                printf("Player %d is falling down. YOU LOSE ! \n", i);
+                remainingPlayers--;
+                if(remainingPlayers == 1)
+                    endOfGame = -2; // Game ended
+            }
         }
         else // Otherwise, GRAVITY is applied
         {
-            player_move(map, players[i], 0, 5);
+            if(player_move(map, players[i], 0, 5) == -1) // If the player fall down and go over the height of the window
+            {
+                printf("Player %d is falling down. YOU LOSE ! \n", i);
+                remainingPlayers--;
+                if(remainingPlayers == 1)
+                    endOfGame = -2; // Game ended
+            }
+
         }
     }
 
-    /* If the player fall down and go over the height of the window => He lost NOW RESET OF THE POSITION FOR THE TESTS */
+    /* HEALTH AND ENDGAME */
+    for(i = 0; i < NB_PLAYERS; i++)
+    {
+        if(players[i]->health <= 0)
+        {
+            /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Animation de mort player->state[DEATH] =  SDL_TRUE */
+            printf("Player %d is dead. YOU LOSE ! \n", i);
+
+            endOfGame = i; // Game ended
+            break; // Stops the current loop
+        }
+
+        printf("player %d, vie : %d\n", i, players[i]->health);
+    }
+
+    return endOfGame;
+
+    /*  => He lost NOW RESET OF THE POSITION FOR THE TESTS */
     /*if(player1->positionReal.y >= WINDOW_HEIGHT) // SI joueur estMort vrai, alors faire fin de partie
     {
         printf("You lost ! \n"); // Dire quel joueur a perdu
 
-        player1->state[JUMP] = SDL_FALSE;
-        player1->jumpParameters.t = 0;
+        players[i]->state[JUMP] = SDL_FALSE;
+        players[i]->jumpParameters.t = 0;
         //player1->jumpParameters.initialAngle = player1->jumpParameters.pi / 2;
 
         player1->positionReal.y = 652;
@@ -215,28 +251,33 @@ void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS])
  * @param < *player > Structure which stands for the player 1
  * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  */
-void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned int lastTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[NB_PLAYERS][5]) /*Character *player, Character *player2*/ /*unsigned int *lastTime, unsigned int *lastTime2*/
+void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned int lastTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[NB_PLAYERS][5])
 {
-    unsigned int currentTime;/*, currentTime2*/
+    unsigned int currentTime;
 
+    /* QUIT THE GAME */
     if(in->key[SDLK_ESCAPE]) // Escape key down : Quit the game and get back to the menu A FAIRE : SAUVEGARDE LE SCORE DANS UN FICHIER AVANT DE REVENIR AU MENU
     {
         in->key[SDLK_ESCAPE] = SDL_FALSE;
         *choice = 0;
     }
 
-
-    for(int i = 0; i < NB_PLAYERS; i++) //{SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_DOWN, SDLK_p}, {SDLK_d, SDLK_q, SDLK_z, SDLK_s, SDLK_v}
+    for(int i = 0; i < NB_PLAYERS; i++) //tableSimilarKeys = {{SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_DOWN, SDLK_p}, {SDLK_d, SDLK_q, SDLK_z, SDLK_s, SDLK_v}}
     {
-        if(!in->key[tableSimilarKeys[i][0]/*SDLK_RIGHT*/] && !in->key[tableSimilarKeys[i][1]/*SDLK_LEFT*/] && !in->key[tableSimilarKeys[i][3]/*SDLK_DOWN*/] && !in->key[tableSimilarKeys[i][2]/*SDLK_UP*/] && !in->key[tableSimilarKeys[i][4]/*SDLK_p*/]) // There are no down keys which make the character move
+        /* If there are no down keys which make the character move */
+        if(!in->key[tableSimilarKeys[i][0]]             // RIGHT
+           && !in->key[tableSimilarKeys[i][1]]          // LEFT
+           && !in->key[tableSimilarKeys[i][3]]          // DOWN
+           && !in->key[tableSimilarKeys[i][2]]          // UP
+           && !in->key[tableSimilarKeys[i][4]])         // FIRE
         {
-            /* Update the state of the character */
+            /* Updates the state of the character */
             players[i]->state[MOTIONLESS] = SDL_TRUE;
             players[i]->state[MOVE] = SDL_FALSE;
             players[i]->state[BEND_DOWN] = SDL_FALSE;
             players[i]->state[FIRE] = SDL_FALSE;
 
-            /* Reset of the animations in order to restart them from the beginning when they will be run again */
+            /* Resets of the animations in order to restart them from the beginning when they will be run again */
             players[i]->spritesheet[MOVE]->numSprite = 0;
             players[i]->spritesheet[BEND_DOWN]->numSprite = 0;
             players[i]->spritesheet[FIRE]->numSprite = 0;
@@ -467,11 +508,44 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
                     players[i]->spritesheet[JUMP]->numSprite = 0;
                 }
 
-                /* TEST  : Move upward */
+                /* COLLISIONS TESTS : Move upward */
                 //player_move(map, players[i], 0, -players[i]->speed);
             }
         }
-
     }
 }
+
+/** Pour inscire les scores pour seulement 2 personnes dans un fichier */
+void scores_save(const char *pathScoresFile, const int numWinner)
+{
+    char formattedDate[50], winner[10];
+    time_t currentTime;
+    struct tm date;
+
+    FILE *fileScores = fopen(pathScoresFile, "a");
+    if(fileScores == NULL)
+    {
+        fprintf(stderr, "Error : Unable to open the file \"%s\" in order to save the scores\n", pathScoresFile);
+    }
+    else
+    {
+        /* TIME */
+        time(&currentTime); // Retrieves the current time in seconds
+        date = *localtime(&currentTime); // Fills the structure for the date
+        strftime(formattedDate, 50, "%d %B %Y, %X", &date); // Writes the date in the desired format
+
+        /* WRITE IN THE FILE */
+        fprintf(fileScores, "GAME == %s  ==\n\n", formattedDate);
+
+        (numWinner == -1) ? sprintf(&winner, "NOBODY") : sprintf(&winner, "PLAYER %d", numWinner + 1);
+        fprintf(fileScores, "\tWinner : %s\n\n", winner);
+
+        /** ECRIRE LE SCORE DANS LA BONNE FORME POUR SAVOIR SI C'EST 1 - 0 OU 3 - 1 OU 2 - 0, en fonction de si une partie a 3 manches ou pas et si on quitte la partie alors qu'il y a 2 - 1 */
+        fprintf(fileScores, "\tPlayer 1  { SCORE - SCORE }  Player 2\n\n\n");
+
+        fclose(fileScores);
+    }
+}
+
+
 

@@ -19,7 +19,7 @@
  * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  * @param < *lastFireTime > Handles the rate of fire
  */
-void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, unsigned int lastTime[NB_PLAYERS], unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5]);
+int launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, unsigned int lastTime[NB_PLAYERS], unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5]);
 
 /**
  * @brief Runs the proper code in function of the events triggered by the players
@@ -39,6 +39,9 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
  * @param < *player > Represents the player whose sprites will be displayed
  */
 void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS]);
+
+
+void scores_save(const char *pathScoresFile, const int numWinner);
 
 
 #endif // GAME_H_INCLUDED

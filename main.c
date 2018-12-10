@@ -39,10 +39,8 @@ int main(int argc, char* argv[])
     WindowTileset tilesetWindow;
     Map *map = NULL, *mapEditor = NULL;
 
-    //Character *player1 = NULL, *player2 = NULL;
     Character* players[NB_PLAYERS] = {NULL, NULL};
-    /* FAIRE UN TABLEAU POUR LES JOUEURS POUR POUVOIR LES MODIFIER DANS LA BOUCLE FOR DANS LE GAME EVENT, cf main du tp2, pcq actuellement ca modifie a chaque itération les deux  au lieu d'un
-    ET FAIRE UN TABLEAU DE TABLESPRITESHEETPLAYER QUAND LES DEUX SPRITESHEET SERONT FAITS*/
+    /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< FAIRE UN TABLEAU DE TABLESPRITESHEETPLAYER QUAND LES DEUX SPRITESHEET SERONT FAITS */
 
     int tableSimilarKeys[NB_PLAYERS][5] = {{SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_DOWN, SDLK_p}, {SDLK_d, SDLK_q, SDLK_z, SDLK_s, SDLK_v}}; // Tableau qui va permettre la correspondance entre les touches du joueurs 1 (les flèches) et le joueur 2 (z,q,s,d), il y a 2 joueurs et 4 touches
 
@@ -50,21 +48,19 @@ int main(int argc, char* argv[])
     char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" pour charger la map perso "..._map_editor.txt" map de base de l'editeur
 
     // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 3 spritesheets. 100 is the number max. of char in the 3rd string
-    char tableSpritesheetPlayer1[5][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move_TEST.png"}, //"ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"
+    char tableSpritesheetPlayer1[5][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},
                                         {"motionless", "1", "ressources/sprites/navyseal_sprites/navyseal_sprite_motionless.png"},
                                         {"bend down", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_bendDown.png"},
                                         {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"},
-                                        {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire_TEST.png"}};
+                                        {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire.png"}};
+
+    char pathScoresFile[] = "ressources/scores.txt";
 
     Input in;
-    unsigned int /*lastTime = 0, lastTime2 = 0, lastFireTime = 0, lastFireTime2 = 0,*/ timer = 0, timeElapsed = 0; /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ENLEVER LAST TIME ET LASTTIME2*/
+    unsigned int timer = 0, timeElapsed = 0;
     unsigned int lastTime[NB_PLAYERS] = {0}, lastTimeFire[NB_PLAYERS] = {0};
-    int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
-    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
-
-
-    /*  faire un tableau pour mettre les deux joueurs dedans ou commencer par pas faire de tableaux mais tableaux est mieux, tableau de pointeur de Character* */
-
+    int choice = 0, endOfGame, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
+    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE, savedScores = SDL_FALSE;
 
 
 
@@ -89,17 +85,9 @@ int main(int argc, char* argv[])
 
     createWindowAndScreen(&window, &screen);
 
-    //window == NULL ? printf("1 window NULL\n") : printf("1 window non NULL\n");
-
-    //screen == NULL ? printf("2 screen NULL\n") : printf("2 screen non NULL\n");
-
-    //printf("window and screen created\n");
-
     initialise_events(&in);
 
     map = load_map(pathLevelDesignMap);
-
-    //printf("map loaded\n");
 
     /*  ==> Pour l'instant ne pas mettre de scroll (automatique) en hauteur, faire déjà les persos et qu'on puisse jouer à deux avec une arme etc
     car peut-être pas le temps de gérer un scroll automatique + zoom car si un joueur est tout en haut de la map eet lautre tout en bas, il faut dézoomer (compliqué)
@@ -107,14 +95,23 @@ int main(int argc, char* argv[])
     et comment les joueurs pourront viser...
 
     A FAIRE :
-        - gérer les déplacements et les sauts et la gravité et les collisions avec la map un perso puis deux persos en même temps et gérer leurs animations (saut, mort, se baisser ?, ...),
-        - tirer avec l'arme (animation perso et (arme) et gestion des balles) et gestion de la vie des persos
-        - Ecrire un README et également transposer tout le read me dans uouveau choix du menu RULES qui explique le jeu les règes et les différentes touches
+        - Gestion de la vie des persos, de leurs morts (animation de la mort (faire spritesheet) et fin de partie)
+        - Quand un perso meurt, après l'animation de mort et quelques secondes, on remet les positions dans la position d'origine et on affiche le texte "Victoire" en vert ou bleu
+            sur le côté du joueur gagnant et en rouge "Défaite", on attend quelques secondes, on enregistre le score et on relance une manche.
+        - A voir : Au bout de 5 ou 3 manches gagnées, le joueur gagnant gagne la partie. On revient au menu principale
+        - Au début les 2 perso doivent regarder vers le centre de la map, donc tourner les sprites du bon côté
+        - Mettre une icône pour le programme
+        - Gestion d'une partie  : score (l'afficher en jeu ET le sauvegarder dans un fichier avant de quitter), recommencer une partie, faire des BO 5 (à voir)
+        - Gestion du temps :  afficher le temps dans la partie (à voir si pas compliqué) et mettre une limite de temps si les joeurs choisissent
+        - Ecrire un README et également transposer tout le read me dans un nouveau choix du menu RULES qui explique le jeu les règes et les différentes touches
         - Gérer mieux TOUTES les erreurs, savoir quelles sont les erreurs qui obligent de quitter car on ne peut plus continuer
             et quelles sont celles où ils faut juste reporter l'erreur et libérer la mémoire sans quitter le jeu car elles ne sont pas indispensables à la bonne contnuation du jeu
-        - Enlever tous les commentaires inutiles (tous les tests, les mettre dans un fichier texte mais pas dans le code), vérifier toute la doc de chaque fonction, structure et fichier .h et .c,
+        - Ecrire et vérifier toute la doc de chaque fonction, structure et fichier .h et .c
+        - Faire les spritesheets du joueur 2
+        - Vérifier les fuites de mémoires. Il y a une fuite de mémoire dans l'affichage du menu (vu avec le gestionnaire de tâches)
 
         - AMELIORATIONS :
+            * Faire la fonctionnalité pour pouvoir mettre un coup de couteau
             * faire une barre de santé, la mettre juste au-dessus des perso en petit ou alors plus grosse mais fixe en haut de la fenêtre de jeu, la barre doit être vert pour la vie et rouge pour la vie qu'il manque
             * faire en sorte que la taille du sprite soit variable et suive la taille du personnage quand on se baisse pour permettre de passer dans des chemins plus petits (gagne 1 tile),
                 OU pour éviter des balles quand l'autre personnage tire en étant debout (possibilité d'"outplay" l'adversaire)
@@ -128,27 +125,22 @@ int main(int argc, char* argv[])
             * possibilité de construire des murs comme territory wars */
 
 
-    /* BOUCLE PRINCIPALE => Tant que quit est faux */
-        /* BOUCLE MENU => Tant que quit est faux ET choix = 0 */
-            /* GESTION EVENEMENTS */
-            /* AFFICHAGE */
-        /* BOUCLE JEU => Tant que quit est faux ET choix = 1 (appui sur échap,pour l'instant revient au menu (à voir pour mettre en pause)) */
-            /* INITIALISATION si pas initialisé */
-            /* GESTION EVENEMENTS */
-            /* CODE DU JEU */
-            /* AFFICHAGE */
+    /* BOUCLE PRINCIPALE => Tant que quit est faux
+         BOUCLE MENU => Tant que quit est faux ET choix = 0
+             GESTION EVENEMENTS
+             AFFICHAGE
+         BOUCLE JEU => Tant que quit est faux ET choix = 1 (appui sur échap,pour l'instant revient au menu (à voir pour mettre en pause))
+             INITIALISATION si pas initialisé
+             GESTION EVENEMENTS
+             CODE DU JEU
+             AFFICHAGE
 
-        /* BOUCLE EDITEUR DE NIVEAU => Tant que quit est faux ET choix = 2 (appui sur échap, revient au menu (ou petit menu pour demander sauvegarder les changements avant de quitter) à voir) */
-            /* INITIALISATION FENETRE TILESET si pas initialisée */
-            /* GESTION EVENEMENTS */
-            /* CODE EDITEUR */
-            /* AFFICHAGE */
-
-
-
-
-
-    //printf("init_character\n");
+         BOUCLE EDITEUR DE NIVEAU => Tant que quit est faux ET choix = 2 (appui sur échap, revient au menu (ou petit menu pour demander sauvegarder les changements avant de quitter) à voir)
+             INITIALISATION FENETRE TILESET si pas initialisée
+             GESTION EVENEMENTS
+             CODE EDITEUR
+             AFFICHAGE
+    */
 
 
     /* ========== MAIN LOOP ========== */
@@ -186,10 +178,7 @@ int main(int argc, char* argv[])
             /* Initialisation characters */
             if(!gameInitialised)
             {
-                //player1 = init_character(screen, tableSpritesheetPlayer1);
-                //player2 = init_character(screen, tableSpritesheetPlayer1);
-
-                for(int i = 0; i < NB_PLAYERS; i++) //IL FAUT UN TABLEAU POUR LES 2 SPRITESHEETS DE CHAQUE PERSO
+                for(int i = 0; i < NB_PLAYERS; i++) /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< IL FAUT UN TABLEAU POUR LES 2 SPRITESHEETS DE CHAQUE PERSO */
                 {
                     players[i] = init_character(screen, tableSpritesheetPlayer1, i);
                 }
@@ -203,7 +192,43 @@ int main(int argc, char* argv[])
             update_events(&in);
 
             /* Game code (Handle events) */
-            launch_game(map, players, &in, lastTime, lastTimeFire, &choice, tableSimilarKeys); /* , player1, player2, &in, &lastTime, &lastTime2, &lastFireTime, &lastFireTime2, */
+            endOfGame = launch_game(map, players, &in, lastTime, lastTimeFire, &choice, tableSimilarKeys);
+
+            /* End of game */
+            /** END OF GAME DOIT RETOURNER UN INT : -2 si les perso sont tombés et qu'il en reste qu'un seul, -1 si elle continue et si c'est un chiffre supérieur à 0, c'est le numéro du joueur
+                qui a gagné */
+            /* pour être plus générique et s'adapter à tout nombre de joueurs on peut mettre 2 pointeurs sur le numéro du joueur gagant et celui du joueur tué
+                    utile si on veut faire un mode battle royale avec plusieurs joueurs (il doit en rester qu'un)
+                    MAIS doit-on supprimer et libérer la mémoire du joueur quand il est mort ou tombé ==> VOIR COMMENT FAIRE POUR RELANCER UNE PARTIE OU UNE MANCHE */
+            if(endOfGame != -1)
+            {
+                /** cf main en haut : Affichage du texe "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ... */
+
+                if(endOfGame == -2) // One player fell downward
+                {
+
+                }
+                else // One player has won the battle by killing the other one
+                {
+                    if(!savedScores)
+                    {
+                        printf("GAME ENDED\nSaving scores ...\n");
+
+                        /* SAVES THE SCORE */
+                        scores_save(pathScoresFile, endOfGame);
+                        savedScores = SDL_TRUE;
+                    }
+                }
+            }
+
+            if(choice == 0 && endOfGame == -1)
+            {
+                printf("QUIT THE GAME. SAVING SCORES ...\n");
+
+                /* SAVES THE SCORE */
+                scores_save(pathScoresFile, -1);
+                savedScores = SDL_TRUE;
+            }
 
             /* Print the map on the screen */
             SDL_RenderClear(screen);
@@ -219,12 +244,21 @@ int main(int argc, char* argv[])
             if(timeElapsed < 10)
                 SDL_Delay(10 - timeElapsed);
 
-            /* Free the memory */ /* VOIR POURQUOI CA BUG QUAND JE VEUX QUITTER LE JEU */
-            //printf("choice = %d, gameInitialised = %d, player1 = %d\n", choice, gameInitialised, player1);
+            /* Free the memory */ /** <<<<<<<<<<<<<< VOIR POURQUOI CA QUITTE LE PROGRAMME QUAND JE VEUX QUITTER LE JEU */
             /*if(choice == 0 && gameInitialised)
             {
-                free_character(player1);
-                printf("game loop : player1 = %d\n", player1);
+                for(int i = 0; i < NB_PLAYERS; i++)
+                {
+                    if(players[i] != NULL)
+                    {
+                        free_character(players[i]);
+                        players[i] = NULL;
+                    }
+                }
+
+                gameInitialised = SDL_FALSE;
+
+                printf("game loop : player 0 = %d\n", players[0]);
             }*/
         }
 

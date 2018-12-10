@@ -26,7 +26,7 @@
  */
 void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit)
 {
-    set_color_background(screen, 100, 0, 2, 255); // set burgundy color on the background
+    set_color_background(screen, 100, 0, 2, 255); // sets burgundy color on the background
     SDL_RenderCopy(screen, textTitle->texture, NULL, &(textTitle->placement)); // "Crazy Fight"
     SDL_RenderCopy(screen, textGame->texture, NULL, &(textGame->placement)); // "Play"
     SDL_RenderCopy(screen, textEditor->texture, NULL, &(textEditor->placement)); // "Level Editor"
@@ -115,7 +115,7 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     }
     strcpy(textGame->text, messageGame);
     textGame->font = fontMenu;
-    textGame->color.r = 242; textGame->color.g = 238; textGame->color.b = 240; textGame->color.a = 255;
+    textGame->color.r = 242; textGame->color.g = 238; textGame->color.b = 240; textGame->color.a = 255; // Color white
     textGame->texture = load_text(textGame->text, screen, textGame->font, textGame->color, &(textGame->placement.w), &(textGame->placement.h));
     textGame->placement.x = (WINDOW_WIDTH / 2) - (textGame->placement.w / 2);
     textGame->placement.y = (2 * WINDOW_HEIGHT / 5) - (textGame->placement.h / 2);
@@ -129,7 +129,7 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     }
     strcpy(textEditor->text, messageEditor);
     textEditor->font = fontMenu;
-    textEditor->color.r = 242; textEditor->color.g = 238; textEditor->color.b = 240; textEditor->color.a = 255;
+    textEditor->color.r = 242; textEditor->color.g = 238; textEditor->color.b = 240; textEditor->color.a = 255; // Color white
     textEditor->texture = load_text(textEditor->text, screen, textEditor->font, textEditor->color, &(textEditor->placement.w), &(textEditor->placement.h));
     textEditor->placement.x = (WINDOW_WIDTH / 2) - (textEditor->placement.w / 2);
     textEditor->placement.y = (3 * WINDOW_HEIGHT / 5) - (textEditor->placement.h / 2);
@@ -143,7 +143,7 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     }
     strcpy(textQuit->text, messageQuit);
     textQuit->font = fontMenu;
-    textQuit->color.r = 242; textQuit->color.g = 238; textQuit->color.b = 240; textQuit->color.a = 255;
+    textQuit->color.r = 242; textQuit->color.g = 238; textQuit->color.b = 240; textQuit->color.a = 255; // Color white
     textQuit->texture = load_text(textQuit->text, screen, textQuit->font, textQuit->color, &(textQuit->placement.w), &(textQuit->placement.h));
     textQuit->placement.x = (WINDOW_WIDTH / 2) - (textQuit->placement.w / 2);
     textQuit->placement.y = (4 * WINDOW_HEIGHT / 5) - (textQuit->placement.h / 2);
@@ -225,7 +225,7 @@ int events_menu(Input *in, SDL_Renderer *screen, MenuText *textGame, MenuText *t
             && in->mouseY >= textQuit->placement.y
             && in->mouseY < textQuit->placement.y + textQuit->placement.h)
     {
-        textQuit->color.r = 235; textQuit->color.g = 47; textQuit->color.b = 6; textQuit->color.a = 255;
+        textQuit->color.r = 235; textQuit->color.g = 47; textQuit->color.b = 6; textQuit->color.a = 255; // Color red
         textQuit->texture = load_text(textQuit->text, screen, textQuit->font, textQuit->color, &(textQuit->placement.w), &(textQuit->placement.h));
 
         if(in->mouseButtons[SDL_BUTTON_LEFT])

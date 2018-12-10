@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1544316038 source:d:\programmation\sdl\crazy fight\main.c
+1544403892 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -363,7 +363,7 @@
 
 1543764117 d:\programmation\sdl\crazy fight\display.h
 
-1543348924 source:d:\programmation\sdl\crazy fight\display.c
+1544316364 source:d:\programmation\sdl\crazy fight\display.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -372,7 +372,7 @@
 	"constantes.h"
 	"display.h"
 
-1543525927 source:d:\programmation\sdl\crazy fight\map.c
+1544363442 source:d:\programmation\sdl\crazy fight\map.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -385,13 +385,13 @@
 
 1543764074 d:\programmation\sdl\crazy fight\events.h
 
-1543764069 source:d:\programmation\sdl\crazy fight\events.c
+1544466347 source:d:\programmation\sdl\crazy fight\events.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
 	"events.h"
 
-1543760497 source:d:\programmation\sdl\crazy fight\menu.c
+1544362270 source:d:\programmation\sdl\crazy fight\menu.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -415,13 +415,14 @@
 	"constantes.h"
 	"editor.h"
 
-1544292110 d:\programmation\sdl\crazy fight\game.h
+1544398331 d:\programmation\sdl\crazy fight\game.h
 
-1544315831 source:d:\programmation\sdl\crazy fight\game.c
+1544403126 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
 	<math.h>
+	<time.h>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
 	"LinkedList.h"
@@ -432,7 +433,7 @@
 	"game.h"
 	"collisions.h"
 
-1544315907 source:d:\programmation\sdl\crazy fight\collisions.c
+1544327562 source:d:\programmation\sdl\crazy fight\collisions.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -444,7 +445,7 @@
 	"game.h"
 	"collisions.h"
 
-1544315972 source:d:\programmation\sdl\crazy fight\character.c
+1544399782 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -455,7 +456,7 @@
 
 1544314960 d:\programmation\sdl\crazy fight\character.h
 
-1544310775 d:\programmation\sdl\crazy fight\collisions.h
+1544325376 d:\programmation\sdl\crazy fight\collisions.h
 
 1544205093 source:d:\programmation\sdl\crazy fight\linkedlist.c
 	<stdio.h>

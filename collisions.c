@@ -61,11 +61,15 @@ Vérifier par rapport au cahier des charges établit ce qu'il y a à rajouter, ou p
  */
 int player_move(Map *map, Character *player, int vectorX, int vectorY)
 {
-    if(movement_test(map, player, vectorX, vectorY)) // If the movement is possible
+    int movement_testResult = movement_test(map, player, vectorX, vectorY);
+
+    if(movement_testResult == 1) // If the movement is possible
         return 1;
+    else if(movement_testResult == -1) // If the player is falling down out of the limit of the map
+        return -1;
 
     movement_slim(map, player, vectorX, vectorY); // The player approaches to the maximum position the tile, if it's possible
-    return 2;
+    return 1;
 }
 
 /**
@@ -75,109 +79,30 @@ int player_move(Map *map, Character *player, int vectorX, int vectorY)
  * @param < *map > Structure which stands for the map
  * @param < *player > Structure which stands for the player to jump
  */
-void player_jump(Map *map, Character *player)
+int player_jump(Map *map, Character *player)
 {
+    int playerMoveResult;
 
     player->positionRealLastJump.x = player->positionReal.x;
     player->positionRealLastJump.y = player->positionReal.y;
 
 
-    /* Reset of the position of the character at the position where the jump began (needed for the calculation afterward) */
+    /* Resets of the position of the character at the position where the jump began (needed for the calculation afterward) */
     player->positionReal.x = player->positionRealStartJump.x;
     player->positionReal.y = player->positionRealStartJump.y;
-
-    //printf("PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
-
 
     /* Relative positions calculation (position = speed derivative) : the relative displacement */
     player->positionRelative.x = (int)(player->jumpParameters.speedX * player->jumpParameters.t);
     player->positionRelative.y = (int)((player->jumpParameters.speedY * player->jumpParameters.t) - ((player->jumpParameters.g * player->jumpParameters.t * player->jumpParameters.t)/2000));
     // 2000 because in the formula we have to divide by 2 and we multiply by 1000 to have seconds instead of milliseconds
 
-    //printf("\tspeed.X = %f, Y = %f\n", player->jumpParameters.speedX, player->jumpParameters.speedY);
-    /*printf("\tt = %d", player->jumpParameters.t);
-    printf("\nPositionRelative.x = %d, .y = %d\n", player->positionRelative.x, player->positionRelative.y);*/
-
-    /* Collision tests */
-    player_move(map, player, player->positionRelative.x, -(player->positionRelative.y));
-
-    /* Real positions calculation (the coordinate system is the main window) ; we assign the displacement to the position of the character */
-    //player->positionReal.x = player->positionReal.x + player->positionRelative.x;
-    //player->positionReal.y = player->positionReal.y - player->positionRelative.y; // - as the coordinate system in SDL is inverted thus subtraction is needed to move upward the character
+    /* Collisions tests */
+    playerMoveResult = player_move(map, player, player->positionRelative.x, -(player->positionRelative.y));
 
     /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and the more accurate in the curve it will be and as a result, the slower the jump is */
     player->jumpParameters.t += 5;
 
-    //printf("APRES CALCUL : PositionReal.x = %d, .y = %d\n", player->positionReal.x, player->positionReal.y);
-
-}
-
-/**
- * @brief Handles the collisions : Calculates if there is a collision or not between the sprite of the character and all the tiles of the map which are hit by the sprite in function of the tile properties
- *
- * @param < *map > Structure which stands for the map
- * @param < *player > Structure which stands for the player to jump
- * @param < vectorX > Vector which points the distance to move on the X-axis
- * @param < vectorY > Vector which points the distance to move on the Y-axis
- * @return < int > Value which allows to know if there is a collision or not
- */
-int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
-{
-    int minX, minY, maxX, maxY, tileIndex, i, j;
-
-    /* If the player wants to move out of the world */
-    if(player->positionReal.x + vectorX < 0
-       || player->positionReal.x + player->positionReal.w + vectorX > map->nbTilesMapAbs * map->widthTile
-       || player->positionReal.y + vectorY < 0
-       || player->positionReal.y + + player->positionReal.h + vectorY > map->nbTilesMapOrd * map->heightTile)
-    {
-        printf("Limit of the map !\n");
-        return 1; // Out of the world
-    }
-
-    /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the player */
-    minX = (player->positionReal.x + vectorX) / map->widthTile;
-    minY = (player->positionReal.y + vectorY) / map->heightTile;
-    maxX = (player->positionReal.x + player->positionReal.w - 1 + vectorX) / map->widthTile;
-    maxY = (player->positionReal.y + player->positionReal.h - 1 + vectorY) / map->heightTile;
-
-    //printf("\n\nnumTile minX = %d, minY = %d\n", minX, minY);
-    //printf("numTile maxX = %d, maxY = %d\n", maxX, maxY);
-    /*printf("(position X = %d / nbTilesMapAbs = %d) = minX = %d\n", player->positionReal.x, map->widthTile, player->positionReal.x / map->widthTile);
-    printf("(position X + width - 1) = %d / nbTilesMapAbs = %d) = maxX = %d\n", (player->positionReal.x + player->positionReal.w - 1), map->widthTile, (player->positionReal.x + player->positionReal.w - 1) / map->widthTile);
-    printf("(position Y = %d / nbTilesMapOrd = %d) = minY = %d\n", player->positionReal.y, map->heightTile, player->positionReal.y / map->heightTile);
-    printf("(position Y + height - 1) = %d / nbTilesMapOrd = %d) = maxY = %d\n", (player->positionReal.y + player->positionReal.h - 1), map->heightTile, (player->positionReal.y + player->positionReal.h - 1) / map->heightTile);*/
-
-    for(i = minY; i <= maxY; i++)
-    {
-        for(j = minX; j <= maxX; j++)
-        {
-            tileIndex = map->tabMap[i][j];
-
-            /*if(map->properties[tileIndex].full == 1)
-            {
-                printf("\ttile FULL, tileIndex = %d, i = %d, j = %d\n", tileIndex, i, j);
-                printf("\ttile point en haut a gauche x = %d, y = %d\n", j * map->widthTile, i * map->heightTile);
-                printf("\ttile point en bas a droite x = %d, y = %d\n", (j+1) * map->widthTile - 1, (i+1) * map->heightTile - 1);
-            }
-            else if(map->properties[tileIndex].full == 0)
-                printf("\ttile VOID, tileIndex = %d, i = %d, j = %d\n", tileIndex, i, j);
-            else
-            {
-                printf("\ttile OTHER, tileIndex = %d, i = %d, j = %d\n", tileIndex, i, j);
-                printf("\ttile point en haut a gauche x = %d, y = %d\n", j * map->widthTile, i * map->heightTile);
-            }*/
-
-            if(map->properties[tileIndex].full == 1) // If the tile is define as full
-                return 1; // Founded collision
-
-            /*else if(map->properties[tileIndex].full == 2)
-            {
-                return 2; // Special tile
-            } */
-        }
-    }
-    return 0; // No collisions
+    return playerMoveResult;
 }
 
 /**
@@ -198,13 +123,26 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
         player->positionReal.x += vectorX; // Moves the player on the X-axis
         player->positionReal.y += vectorY; // Moves the player on the Y-axis
 
-        /* Update the last good position of the character during the jump */
+        /* Updates the last good position of the character during the jump */
         if(player->state[JUMP])
         {
             player->positionRealLastJump.x = player->positionReal.x;
             player->positionRealLastJump.y = player->positionReal.y;
         }
         return 1;
+    }
+    else if(collision == -1) // If the player is falling down out of the limit of the map
+    {
+        player->positionReal.x += vectorX; // Moves the player on the X-axis
+        player->positionReal.y += vectorY; // Moves the player on the Y-axis
+
+        /* Updates the last good position of the character during the jump */
+        if(player->state[JUMP])
+        {
+            player->positionRealLastJump.x = player->positionReal.x;
+            player->positionRealLastJump.y = player->positionReal.y;
+        }
+        return -1;
     }
     /*else if(collision == 2) // Tile with properties 2 : when the player jump upward, he go through but when he moves down he can't go through
     {
@@ -223,7 +161,7 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
         }
     }*/
 
-    /* Reset of the parameters for the jump */
+    /* Resets the parameters for the jump */
     if(player->state[JUMP])
     {
         player->state[JUMP] = SDL_FALSE;
@@ -232,7 +170,52 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
         player->positionReal.y = player->positionRealLastJump.y;
     }
 
-    return 0; // No possible movement
+    return 0; // No possible movements
+}
+
+/**
+ * @brief Handles the collisions : Calculates if there is a collision or not between the sprite of the character and all the tiles of the map which are hit by the sprite in function of the tile properties
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < *player > Structure which stands for the player to jump
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @param < vectorY > Vector which points the distance to move on the Y-axis
+ * @return < int > Value which allows to know if there is a collision or not
+ */
+int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
+{
+    int minX, minY, maxX, maxY, tileIndex, i, j;
+
+
+    if(player->positionReal.y + player->positionReal.h + vectorY > map->nbTilesMapOrd * map->heightTile) // Down
+        return -1; // Player is falling downward out of the world
+
+    /* If the player wants to move out of the world */
+    if(player->positionReal.x + vectorX < 0 // On the left
+       || player->positionReal.x + player->positionReal.w + vectorX > map->nbTilesMapAbs * map->widthTile // On the right
+       || player->positionReal.y + vectorY < 0) // Up
+    {
+        printf("Limit of the map !\n");
+        return 1; // Out of the world except downward
+    }
+
+    /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the player */
+    minX = (player->positionReal.x + vectorX) / map->widthTile;
+    minY = (player->positionReal.y + vectorY) / map->heightTile;
+    maxX = (player->positionReal.x + player->positionReal.w - 1 + vectorX) / map->widthTile;
+    maxY = (player->positionReal.y + player->positionReal.h - 1 + vectorY) / map->heightTile;
+
+    for(i = minY; i <= maxY; i++)
+    {
+        for(j = minX; j <= maxX; j++)
+        {
+            tileIndex = map->tabMap[i][j];
+
+            if(map->properties[tileIndex].full == 1) // If the tile is define as full
+                return 1; // Founded collision
+        }
+    }
+    return 0; // No collisions
 }
 
 /**
@@ -251,14 +234,14 @@ void movement_slim(Map *map, Character *player, int vectorX, int vectorY)
     for(i = 0; i < ABS(vectorX); i++)
     {
         if(movement_test(map, player, SGN(vectorX), 0))
-            break;
+            break; // Stops the current loop
     }
 
     /* Moves the player with an interval equals to 1 in the Y-axis in order to approach to the maximum the tile which he can't move on  */
     for(i = 0; i < ABS(vectorY); i++)
     {
         if(movement_test(map, player, 0, SGN(vectorY)))
-            break;
+            break; // Stops the current loop
     }
 }
 
@@ -319,7 +302,7 @@ int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlay
     maxX = (bullet->position.x + bullet->position.w - 1) / map->widthTile;
     maxY = (bullet->position.y + bullet->position.h - 1) / map->heightTile;
 
-    /* Check the property of the tiles */
+    /* Checks the property of the tiles */
     for(i = minY; i <= maxY; i++)
     {
         for(j = minX; j <= maxX; j++)

@@ -122,7 +122,7 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
         exit(EXIT_FAILURE);
     }
 
-    fscanf(fileTileProp, "%d %d", &(map->nbRowsTileset), &(map->nbColumnsTileset)); // Retrieve the size of the tileset array
+    fscanf(fileTileProp, "%d %d", &(map->nbRowsTileset), &(map->nbColumnsTileset)); // Retrieves the size of the tileset array
 
     map->widthTile = map->tileset->w / map->nbColumnsTileset; // = macro TILESIZE
     map->heightTile = map->tileset->h / map->nbRowsTileset; // = macro TILESIZE
@@ -165,7 +165,7 @@ void load_map_tileset(FILE* fileLevelDesign, Map* map)
 void load_map_level(FILE* file, Map* map)
 {
     int i, j, tmp = 0;
-    fscanf(file, "%d %d", &(map->nbTilesMapOrd), &(map->nbTilesMapAbs)); // Retrieve the number of lines (nbTilesMapY) and columns (nbTilesMapX)
+    fscanf(file, "%d %d", &(map->nbTilesMapOrd), &(map->nbTilesMapAbs)); // Retrieves the number of lines (nbTilesMapY) and columns (nbTilesMapX)
 
     map->tabMap = malloc(map->nbTilesMapOrd * sizeof(int*)); // Memory allocation for a dynamic array
     for(i = 0; i < map->nbTilesMapOrd; i++)
@@ -190,7 +190,8 @@ void load_map_level(FILE* file, Map* map)
         }
     }
 
-    /*TEST : for(i = 0; i < map->nbTilesMapX; i++)
+    /*TEST PRINT THE MAP :
+    for(i = 0; i < map->nbTilesMapX; i++)
     {
         for(j = 0; j < map->nbTilesMapY; j++)
         {

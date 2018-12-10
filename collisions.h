@@ -10,6 +10,8 @@
  */
 
 
+/* ================================================== PLAYER MOVEMENTS & COLLISIONS ================================================== */
+
 /**
  * @brief Calls the function to move if possible, otherwise it calls the function to move the player the closest possible position
  *
@@ -28,7 +30,7 @@ int player_move(Map *map, Character *player, int vectorX, int vectorY);
  * @param < *map > Structure which stands for the map
  * @param < *player > Structure which stands for the player to jump
  */
-void player_jump(Map *map, Character *player);
+int player_jump(Map *map, Character *player);
 
 /**
  * @brief Handles the movement of the character : Moves if there is no collision
@@ -61,6 +63,9 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY);
  * @param < vectorY > Vector which points the distance to move on the Y-axis
  */
 void movement_slim(Map *map, Character *player, int vectorX, int vectorY);
+
+
+/* ================================================== BULLET MOVEMENTS & COLLISIONS ================================================== */
 
 int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
