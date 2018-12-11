@@ -24,8 +24,6 @@
  */
 void createWindowAndScreen(SDL_Window **window, SDL_Renderer **screen)
 {
-    SDL_RendererInfo infos;
-
     *window = SDL_CreateWindow("Crazy Fight", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if(*window == NULL)
     {

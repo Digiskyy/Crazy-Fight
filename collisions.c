@@ -246,9 +246,9 @@ void movement_slim(Map *map, Character *player, int vectorX, int vectorY)
 }
 
 
-int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
+int bullet_move(Map *map, Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
-    int testMovement = movement_test_bullet(map, players, numFiringPlayer, bullet, vectorX);
+    int testMovement = movement_test_bullet(map, players, arrayKill, numFiringPlayer, bullet, vectorX);
 
     if(testMovement == -2) // If the movement is possible
         return -2; // Bullet moved
@@ -259,9 +259,9 @@ int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, B
     return -1; // No movement
 }
 
-int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
+int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
-    int collision = collision_bullet(map, players, numFiringPlayer, bullet, vectorX);
+    int collision = collision_bullet(map, players, arrayKill, numFiringPlayer, bullet, vectorX);
 
     if(collision == -2) // No collisions
     {
@@ -278,7 +278,7 @@ int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiring
     }
 }
 
-int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
+int collision_bullet(Map *map, Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
     int minX, minY, maxX, maxY, tileIndex, i, j, numHitPlayer;
 
@@ -291,12 +291,12 @@ int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlay
     }
 
     /* COLLISION WITH ENNEMY */
-    numHitPlayer = collision_bullet_ennemy(map, players, numFiringPlayer, bullet);
+    numHitPlayer = collision_bullet_ennemy(map, players, arrayKill, numFiringPlayer, bullet);
     if(numHitPlayer != -1)
         return numHitPlayer; // Collision with an ennemy
 
     /* COLLISION WITH TILE : */
-    /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the bullet */
+    /* To have the positions of the upper left-hand tile and the lower right-hand tile which are hitting the hitbox (sprite) of the bullet */
     minX = (bullet->position.x) / map->widthTile;
     minY = bullet->position.y / map->heightTile;
     maxX = (bullet->position.x + bullet->position.w - 1) / map->widthTile;
@@ -317,7 +317,7 @@ int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlay
     return -2; // No collisions
 }
 
-int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet)
+int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Bullet *bullet)
 {
     int numHitEnnemy = -1;
 
@@ -332,8 +332,11 @@ int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int numFir
            || bullet->position.y > players[i]->positionReal.y + players[i]->positionReal.h) // Under the ennemy (below, beneath, underneath)
         {}
         else // Bullet is hitting the sprite of the ennemy
+        {
             numHitEnnemy = i;
-
+            arrayKill[0] = numHitEnnemy;
+            arrayKill[1] = numFiringPlayer;
+        }
     }
 
     return numHitEnnemy;

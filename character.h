@@ -107,6 +107,13 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
  */
 Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_Renderer *screen);
 
+#ifndef NB_PLAYERS
+#define NB_PLAYERS  2 // Because here apparently, the compiler doesn't know NB_PLAYERS
+
+void reset_player(Character* players[NB_PLAYERS]);
+
+#endif // NB_PLAYERS
+
 /**
  * @brief Free the memory used for a character
  *
@@ -117,12 +124,8 @@ void free_character(Character *player);
 
 typedef struct Map Map; // Because the function player_fire(...) doesn't know the type Map
 
-#ifndef NB_PLAYERS
-#define NB_PLAYERS  2 // Because here apparently, the compiler doesn't know NB_PLAYERS
+void player_fire(Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Map *map, unsigned int *lastFireTime);
 
-void player_fire(Character* players[NB_PLAYERS], int numFiringPlayer, Map *map, unsigned int *lastFireTime);
-
-#endif // NB_PLAYERS
 
 
 #endif // CHARACTER_H_INCLUDED

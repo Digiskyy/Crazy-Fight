@@ -18,7 +18,9 @@
     #define WINDOW_TILESET_WIDTH    288
     #define WINDOW_TILESET_HEIGHT   608
 
-    #define NB_PLAYERS  2
+    /* Game parameters */
+    #define NB_PLAYERS      2
+    #define WINNING_ROUNDS  3
 
     /* For the tableSpritesheet of the characters */
     #define MOVE        0

@@ -2,4 +2,27 @@
 
 
 
+=== GAME - 12 December 2018, 00:28:22 ===
+
+	Winner : PLAYER 2
+
+- Player 1 :: 1 Winning Rounds { Kills : 0 - Deaths : 2 - Suicides : 1}
+- Player 2 :: 3 Winning Rounds { Kills : 2 - Deaths : 0 - Suicides : 1}
+
+
+=== GAME - 12 December 2018, 00:28:53 ===
+
+	Winner : PLAYER 2
+
+- Player 1 :: 1 Winning Rounds { Kills : 0 - Deaths : 2 - Suicides : 1}
+- Player 2 :: 3 Winning Rounds { Kills : 2 - Deaths : 0 - Suicides : 1}
+
+
+=== GAME - 12 December 2018, 00:29:56 ===
+
+	Winner : PLAYER 2
+
+- Player 1 :: 2 Winning Rounds { Kills : 1 - Deaths : 1 - Suicides : 2}
+- Player 2 :: 3 Winning Rounds { Kills : 1 - Deaths : 1 - Suicides : 1}
+
 

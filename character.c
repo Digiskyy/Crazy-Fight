@@ -215,6 +215,33 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
     return spritesheet;
 }
 
+void reset_player(Character* players[NB_PLAYERS])
+{
+    for(int i = 0; i < NB_PLAYERS; i++)
+    {
+        /* Health */
+        players[i]->health = 100;
+
+        /* Side */
+        players[i]->side = (i == 1) ? RIGHT : LEFT;
+
+        /* Jump variable */
+        players[i]->jumpParameters.t = 0;
+
+        /* Resets the state of the character */
+        players[i]->state[MOTIONLESS] = SDL_TRUE; // At the beginning, the character doesn't move
+        players[i]->state[MOVE] = SDL_FALSE;
+        players[i]->state[BEND_DOWN] = SDL_FALSE;
+        players[i]->state[JUMP] = SDL_FALSE;
+        players[i]->state[FIRE] = SDL_FALSE;
+
+        /* Resets the position where the character should be displayed at the beginning */
+        players[i]->positionReal.x = (i == 1) ? 150 : WINDOW_WIDTH - players[i]->positionReal.w - 150; /** <<<<<<<<<<<  A VOIR OU PLACER LES DEUX PERSO EN FONCTION DE LA MAP CREEE ET FAIRE EN SORT QU'IL REGARDE DANS LA BONNE POSITION  */
+        players[i]->positionReal.y = 651;
+    }
+}
+
+
 /**
  * @brief Free the memory used for a character
  *
@@ -289,7 +316,7 @@ void free_character(Character *player)
 }
 
 
-void player_fire(Character* players[NB_PLAYERS], int numFiringPlayer, Map *map, unsigned int *lastFireTime)
+void player_fire(Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Map *map, unsigned int *lastFireTime)
 {
     Bullet *bulletIterator = NULL;
     SDL_Rect positionBullet;
@@ -319,7 +346,7 @@ void player_fire(Character* players[NB_PLAYERS], int numFiringPlayer, Map *map, 
                 vectorX = -players[numFiringPlayer]->weapon.speedBullet;
 
             /* COLLISION TEST */
-            testCollisionResult = bullet_move(map, players, numFiringPlayer, bulletIterator, vectorX);
+            testCollisionResult = bullet_move(map, players, arrayKill, numFiringPlayer, bulletIterator, vectorX);
 
             if(testCollisionResult >= 0) // Bullet is hitting an ennemy
             {
