@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1544570216 source:d:\programmation\sdl\crazy fight\main.c
+1544403892 source:d:\programmation\sdl\crazy fight\main.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -353,7 +353,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1544487398 d:\programmation\sdl\crazy fight\constantes.h
+1544285483 d:\programmation\sdl\crazy fight\constantes.h
 
 1376152742 c:\program files (x86)\codeblocks\sdl-2.0.8\i686-w64-mingw32\include\sdl2\sdl_image.h
 	"SDL.h"
@@ -363,7 +363,7 @@
 
 1543764117 d:\programmation\sdl\crazy fight\display.h
 
-1544479869 source:d:\programmation\sdl\crazy fight\display.c
+1544316364 source:d:\programmation\sdl\crazy fight\display.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -415,9 +415,9 @@
 	"constantes.h"
 	"editor.h"
 
-1544569116 d:\programmation\sdl\crazy fight\game.h
+1544398331 d:\programmation\sdl\crazy fight\game.h
 
-1544570797 source:d:\programmation\sdl\crazy fight\game.c
+1544403126 source:d:\programmation\sdl\crazy fight\game.c
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
@@ -433,7 +433,7 @@
 	"game.h"
 	"collisions.h"
 
-1544485295 source:d:\programmation\sdl\crazy fight\collisions.c
+1544327562 source:d:\programmation\sdl\crazy fight\collisions.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -445,7 +445,7 @@
 	"game.h"
 	"collisions.h"
 
-1544486890 source:d:\programmation\sdl\crazy fight\character.c
+1544399782 source:d:\programmation\sdl\crazy fight\character.c
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -454,9 +454,9 @@
 	"character.h"
 	"events.h"
 
-1544485470 d:\programmation\sdl\crazy fight\character.h
+1544314960 d:\programmation\sdl\crazy fight\character.h
 
-1544484269 d:\programmation\sdl\crazy fight\collisions.h
+1544325376 d:\programmation\sdl\crazy fight\collisions.h
 
 1544205093 source:d:\programmation\sdl\crazy fight\linkedlist.c
 	<stdio.h>
@@ -468,4 +468,127 @@
 1544135415 d:\programmation\sdl\crazy fight\linkedlist.h
 
 1544105227 d:\programmation\sdl\crazy fight\weapon.h
+
+1544721116 source:d:\programmation\sdl\crazy-fight\character.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	"constantes.h"
+	"LinkedList.h"
+	"character.h"
+	"events.h"
+
+1544719972 d:\programmation\sdl\crazy-fight\constantes.h
+
+1544474107 d:\programmation\sdl\crazy-fight\linkedlist.h
+
+1544721098 d:\programmation\sdl\crazy-fight\character.h
+
+1544474107 d:\programmation\sdl\crazy-fight\events.h
+
+1544720582 source:d:\programmation\sdl\crazy-fight\collisions.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	"LinkedList.h"
+	"constantes.h"
+	"character.h"
+	"map.h"
+	"events.h"
+	"game.h"
+	"collisions.h"
+
+1544474107 d:\programmation\sdl\crazy-fight\map.h
+
+1544724879 d:\programmation\sdl\crazy-fight\game.h
+
+1544720594 d:\programmation\sdl\crazy-fight\collisions.h
+
+1544718939 source:d:\programmation\sdl\crazy-fight\display.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	<SDL2/SDL_ttf.h>
+	"constantes.h"
+	"display.h"
+
+1544474107 d:\programmation\sdl\crazy-fight\display.h
+
+1544474107 source:d:\programmation\sdl\crazy-fight\editor.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	"events.h"
+	"map.h"
+	"constantes.h"
+	"editor.h"
+
+1544474107 d:\programmation\sdl\crazy-fight\editor.h
+
+1544474107 source:d:\programmation\sdl\crazy-fight\events.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	"events.h"
+
+1544724925 source:d:\programmation\sdl\crazy-fight\game.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<math.h>
+	<time.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	"LinkedList.h"
+	"map.h"
+	"character.h"
+	"constantes.h"
+	"events.h"
+	"game.h"
+	"collisions.h"
+
+1544474107 source:d:\programmation\sdl\crazy-fight\linkedlist.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	"LinkedList.h"
+
+1544724937 source:d:\programmation\sdl\crazy-fight\main.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_ttf.h>
+	<SDL2/SDL_image.h>
+	"constantes.h"
+	"display.h"
+	"map.h"
+	"events.h"
+	"menu.h"
+	"editor.h"
+	"character.h"
+	"game.h"
+
+1544474107 d:\programmation\sdl\crazy-fight\menu.h
+
+1544474107 source:d:\programmation\sdl\crazy-fight\map.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	<string.h>
+	"map.h"
+	"constantes.h"
+
+1544474107 source:d:\programmation\sdl\crazy-fight\menu.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_ttf.h>
+	"display.h"
+	"constantes.h"
+	"events.h"
+	"menu.h"
 
