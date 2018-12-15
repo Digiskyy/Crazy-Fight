@@ -181,6 +181,47 @@ SDL_Texture* load_text(const char* message, SDL_Renderer* screen, TTF_Font* font
 }
 
 
+void display_text_round(SDL_Renderer* screen, int FLAGS, SDL_Color color, int numKiller, int numKilled)
+{
+    int w, h;
+    SDL_Rect position;
+    TTF_Font* font = NULL;
+    char message[30];
+
+    if(FLAGS == KILL)
+    {
+        sprintf(message, "Player %d has slain player %d", numKiller, numKilled);
+        font = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 50);
+    }
+    else if(FLAGS == FALL)
+    {
+        sprintf(message, "Player %d is dead", numKilled);
+        font = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 50);
+    }
+    else if(FLAGS == END_OF_ROUND)
+    {
+        sprintf(message, "Player %d has won this round !", numKiller);
+        font = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 75);
+    }
+    else
+    {
+        fprintf(stderr, "Error : Wrong flags to display text in game.");
+        exit(EXIT_FAILURE);
+    }
+
+    SDL_Texture *textureText = load_text(message, screen, font, color, &w, &h);
+
+    position.w = w;
+    position.h = h;
+    position.x = (WINDOW_WIDTH / 2) - (w / 2);
+    position.x = (WINDOW_HEIGHT / 4);
+
+    /** EN ATTENDANT D'AVOIR UN CHRONO */
+
+    SDL_RenderCopy(screen, textureText, NULL, &position);
+}
+
+
 /**
  * @brief Set a color to the background, all the renderer will be painted
  *

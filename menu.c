@@ -19,23 +19,6 @@
 
 
 /**
- * @brief Displays the menu on the renderer
- *
- * @param < screen > Renderer that allows to display on the window to which screen belongs
- * @param < MenuText *... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
- */
-void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit)
-{
-    set_color_background(screen, 100, 0, 2, 255); // sets burgundy color on the background
-    SDL_RenderCopy(screen, textTitle->texture, NULL, &(textTitle->placement)); // "Crazy Fight"
-    SDL_RenderCopy(screen, textGame->texture, NULL, &(textGame->placement)); // "Play"
-    SDL_RenderCopy(screen, textEditor->texture, NULL, &(textEditor->placement)); // "Level Editor"
-    SDL_RenderCopy(screen, textQuit->texture, NULL, &(textQuit->placement)); // "Quit"
-}
-
-
-
-/**
  * @brief Main function for the menu. Launch the menu
  *
  * @param  < screen > Renderer that allows to display on the window to which screen belongs
@@ -238,6 +221,20 @@ int events_menu(Input *in, SDL_Renderer *screen, MenuText *textGame, MenuText *t
     return choice;
 }
 
+/**
+ * @brief Displays the menu on the renderer
+ *
+ * @param < screen > Renderer that allows to display on the window to which screen belongs
+ * @param < MenuText *... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
+ */
+void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit)
+{
+    set_color_background(screen, 100, 0, 2, 255); // sets burgundy color on the background
+    SDL_RenderCopy(screen, textTitle->texture, NULL, &(textTitle->placement)); // "Crazy Fight"
+    SDL_RenderCopy(screen, textGame->texture, NULL, &(textGame->placement)); // "Play"
+    SDL_RenderCopy(screen, textEditor->texture, NULL, &(textEditor->placement)); // "Level Editor"
+    SDL_RenderCopy(screen, textQuit->texture, NULL, &(textQuit->placement)); // "Quit"
+}
 
 
 

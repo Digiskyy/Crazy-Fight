@@ -33,4 +33,9 @@
     #define LEFT 1
     #define RIGHT 0
 
+    /* Display the text in game */
+    #define KILL            1
+    #define END_OF_ROUND    2
+    #define FALL            3
+
 #endif // CONSTANTES_H_INCLUDED

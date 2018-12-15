@@ -31,7 +31,6 @@
 
 
 /* A FAIRE  :
-- faire en sorte de gérer le tir et la vie
 - faire l'animation de la mort et s'il y a du temps mettre la fonctionnalité coup de couteau avec son animation
 
 - mettre des packs de soin pour remonter la vie
@@ -51,6 +50,7 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
                 Input *in, unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
 {
     int i, gameState = -1; // Game is going on
+    static int signalToDisplay = 0;
 
     /* EVENTS */
     game_event(map, in, players , lastTime, choice, tableSimilarKeys);
@@ -69,18 +69,22 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
     {
         if(players[i]->state[JUMP]) // if player is jumping
         {
-            if(player_jump(map, players[i]) == -1)
+            if(player_jump(map, players[i]) == -1/* && signalToDisplay % NB_PLAYERS == 0*/) // If a player leaps into the void
             {
                 printf("Player %d is falling down. YOU LOSE ! \n", i);
+                //signalToDisplay++;
                 scores[i][2]++; // +1 suicide
                 alivePlayers[i] = 0;
+
                 remainingPlayers--;
                 if(remainingPlayers == 1)
                 {
                     for(int j = 0; j < NB_PLAYERS; j++)
                     {
                         if(alivePlayers[j] == 1)
-                            winningRounds[j]++;
+                        {
+                             winningRounds[j]++;
+                        }
                     }
                     gameState = -2; // Round ended
                 }
@@ -88,18 +92,22 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
         }
         else // Otherwise, GRAVITY is applied
         {
-            if(player_move(map, players[i], 0, 5) == -1) // If the player fall down and go over the height of the window
+            if(player_move(map, players[i], 0, 5) == -1 /*&& players[i]->positionReal.h >= WINDOW_HEIGHT && signalToDisplay % NB_PLAYERS == 0*/) // If the player falls down and goes over the height of the window
             {
                 printf("Player %d is falling down. YOU LOSE ! \n", i);
+                //signalToDisplay++;
                 scores[i][2]++; // +1 suicide
-                alivePlayers[i] = 0;
+                alivePlayers[i] = 0; // This player is no longer alive
+
                 remainingPlayers--;
                 if(remainingPlayers == 1)
                 {
                     for(int j = 0; j < NB_PLAYERS; j++)
                     {
                         if(alivePlayers[j] == 1)
+                        {
                             winningRounds[j]++;
+                        }
                     }
                     gameState = -2; // Round ended
                 }
@@ -107,26 +115,32 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
         }
     }
 
-    /* HEALTH AND ENDGAME */
+    /* HEALTH AND END OF THE ROUND */
     for(i = 0; i < NB_PLAYERS; i++)
     {
-        if(players[i]->health <= 0)
+        if(players[i]->health == 0 /*&& !signalToDisplay*/)
         {
             /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Animation de mort player->state[DEATH] =  SDL_TRUE */
+
+
             printf("Player %d is dead. YOU LOSE ! \n", i);
+            //signalToDisplay = SDL_TRUE;
 
             /* Fills the scoreboard */
             scores[arrayKill[0]][1]++; // arrayKill[0] is the index of the killed player and the column 1 is for the number of deaths
             scores[arrayKill[1]][0]++; // arrayKill[1] is the index of the killer player and the column 0 is for the number of kills
 
             alivePlayers[i] = 0;
+
             remainingPlayers--;
             if(remainingPlayers == 1)
             {
                 for(int j = 0; j < NB_PLAYERS; j++)
                 {
                     if(alivePlayers[j] == 1)
+                    {
                         winningRounds[j]++; // The remaining player wins the round
+                    }
                 }
             }
 

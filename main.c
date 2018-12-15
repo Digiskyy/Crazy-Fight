@@ -54,6 +54,10 @@ int main(int argc, char* argv[])
                                         {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"},
                                         {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire.png"}};
 
+    SDL_Color colorText; // Color of the text displayed in game
+    SDL_bool endOfGame = SDL_FALSE, endOfRound = SDL_FALSE, resetPlayer = SDL_FALSE;
+    int killOccured = 0; // 0 No kill, 1 kill, 2 suicide
+
     char pathScoresFile[] = "ressources/scores.txt";
     int scores[NB_PLAYERS][3]; // 3 columns : 1 for the kills and 1 for the deaths and 1 for the suicides of each player (suicide means fall out of the limit of the map)
     int arrayKill[2] = {-1, -1}; // 1st row is for the number of the player who has just be killed and the 2nd is for the number his killer
@@ -62,7 +66,7 @@ int main(int argc, char* argv[])
     int remainingPlayers = NB_PLAYERS;
 
     Input in;
-    unsigned int timer = 0, timeElapsed = 0, nbRounds = 0;
+    unsigned int timer = 0, timeElapsed = 0, nbRounds = 0, timeDisplayCurrent = 0, timeDisplayLast = 0;
     unsigned int lastTime[NB_PLAYERS] = {0}, lastTimeFire[NB_PLAYERS] = {0};
     int choice = 0, gameState, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
     SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
@@ -183,6 +187,10 @@ int main(int argc, char* argv[])
             init_array_scores(scores);
             remainingPlayers = NB_PLAYERS;
             wonRounds = 0;
+            killOccured = 0;
+            endOfRound = SDL_FALSE;
+            endOfGame = SDL_FALSE;
+            resetPlayer = SDL_FALSE;
 
             do
             {
@@ -205,36 +213,75 @@ int main(int argc, char* argv[])
                 /* Game code (Handle events) */
                 gameState = launch_game(map, players, arrayKill, scores, winningRounds, alivePlayers, remainingPlayers, &in, lastTime, lastTimeFire, &choice, tableSimilarKeys);
 
-                /* End of game */
-
                 /* Seeks if a player has the needed number of winning rounds */
                 for(int i = 0; i < NB_PLAYERS; i++)
                 {
                     wonRounds = winningRounds[i];
+
                     printf("won round %d : %d\n", i, wonRounds);
+
+                    /** cf main en haut : Affichage du texe "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ...
+                    pour la fin de la partie */
+
                     if(wonRounds == WINNING_ROUNDS)
                         break;
                 }
 
-                if(gameState != -1)
+                /* End of round */
+                if(gameState == -2)
+                    killOccured = 2;
+                else if(gameState >= 0)
+                    killOccured = 1;
+
+                if(resetPlayer)
                 {
-                    /** cf main en haut : Affichage du texe "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ...
-                    pour la fin de la partie pas pour les manches, afficher l'animation de mort quand un joueur est mort sous les balles de l'autre */
-
-                    printf("ROUND ENDED\n\n");
-
                     /* Resets to start again a new round */
                     reset_player(players);
                     remainingPlayers = NB_PLAYERS;
                     init_array_1D(alivePlayers, NB_PLAYERS, 1);
                 }
 
+
+                /* ===== DISPLAY ===== */
+
                 /* Prints the map on the screen */
                 SDL_RenderClear(screen);
                 set_color_background(screen, 85, 180, 255, 255); // Sets color blue in the background
                 print_map(map, screen);
+
                 /* Prints the player on the screen */
                 display_sprite(screen, players);
+
+                /* Prints text at the end of the round */
+                timeDisplayCurrent = SDL_GetTicks();
+                if(killOccured == 2)
+                {
+
+                    colorText.r = 0; colorText.g = 0; colorText.b = 0; colorText.a = 255;
+                    display_text_round(screen, FALL, colorText, arrayKill[0], arrayKill[1]);
+                    /** au bout de 3s mettre endOfRound à vrai */
+                }
+                else if(killOccured == 1)
+                {
+                    colorText.r = 0; colorText.g = 0; colorText.b = 0; colorText.a = 255;
+                    display_text_round(screen, KILL, colorText, arrayKill[0], arrayKill[1]);
+                    /** au bout de 3s mettre endOfRound à vrai */
+                }
+
+                if(endOfRound)
+                {
+                    display_text_round(screen, END_OF_ROUND, colorText, arrayKill[0], arrayKill[1]);
+                    /** au bout de 3s mettre resetPlayer à vrai */
+                }
+
+                /* Prints text at the end of the game */
+                if(wonRounds == WINNING_ROUNDS)
+                {
+                    // Afficher les textes Victoire et Défaite
+                    /** au bout de 3s mettre endOfGame à vrai */
+                    endOfGame = SDL_TRUE; // Faire un chrono des lastTime et currentTime
+                }
+
                 /* Display */
                 SDL_RenderPresent(screen);
 
@@ -243,7 +290,7 @@ int main(int argc, char* argv[])
                 if(timeElapsed < 10)
                     SDL_Delay(10 - timeElapsed);
 
-            }while(wonRounds < WINNING_ROUNDS && choice == 1 && !in.quit);
+            }while(!endOfGame && choice == 1 && !in.quit);
 
             printf("GAME ENDED\nSAVING SCORES...\n");
 

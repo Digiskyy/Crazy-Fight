@@ -59,6 +59,9 @@ SDL_Texture* load_image_transparent(const char* filename, SDL_Renderer* screen, 
  */
 SDL_Texture* load_text(const char* message, SDL_Renderer* screen, TTF_Font* font, SDL_Color color, int* w, int* h);
 
+
+void display_text_round(SDL_Renderer* screen, int FLAGS, SDL_Color color, int numKiller, int numKilled);
+
 /**
  * @brief Set a color to the background, all the renderer will be painted
  *
