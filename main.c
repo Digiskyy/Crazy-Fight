@@ -58,9 +58,9 @@ int main(int argc, char* argv[])
     Scores scores;
     int arrayKill[2] = {-1, -1}; // 1st row is for the index of the killer and 2nd row is for the player who has just be killed
 
-    Text textRound, textKill, textGameWinner, textGameLoser;
+    Text textRound, textKill, textWinner;
     SDL_bool displayTextRound = SDL_FALSE, displayTextDeath = SDL_FALSE, displayTextGame = SDL_FALSE, endOfGame = SDL_FALSE;
-    unsigned int timerDisplay = 0, timeElapsedDisplay = 0;
+    unsigned int timerDisplayRound = 0, timeElapsedDisplayRound = 0, timerDisplayGame = 0, timeElapsedDisplayGame = 0;
 
     Input in;
     unsigned int timer = 0, timeElapsed = 0;
@@ -195,6 +195,9 @@ int main(int argc, char* argv[])
 
             while(!endOfGame && choice == 1 && !in.quit)
             {
+                //printf("1 winnerRound : %d\n", scores.winnerRound);
+                //printf("2 winnerGame : %d\n", scores.winnerGame);
+
                 /* Timer */
                 timer = SDL_GetTicks();
 
@@ -203,17 +206,32 @@ int main(int argc, char* argv[])
                     update_events(&in);
 
                 /* Game code (Handles events) */
-                launch_game(map, players, &in, &scores, arrayKill, lastTime, lastTimeFire, &choice, tableSimilarKeys);
+                if(!displayTextGame)
+                    launch_game(map, players, &in, &scores, arrayKill, lastTime, lastTimeFire, &choice, tableSimilarKeys);
 
-                printf("arrayKill [0] : %d, [1] : %d\n", arrayKill[0], arrayKill[1]); //[0] last player who fired, [1] last player who took some damage
-                printf("winnerRound : %d\n", scores.winnerRound);
+                //printf("arrayKill [0] : %d, [1] : %d\n", arrayKill[0], arrayKill[1]); //[0] last player who fired, [1] last player who took some damage
+                //printf("3 winnerRound : %d\n", scores.winnerRound);
+                //printf("4 winnerGame : %d\n", scores.winnerGame);
+
+                /* Handles the end of the game with display */
+                if(scores.winnerGame != -1 && !displayTextGame)
+                {
+                    /* Triggers the timer */
+                    displayTextGame = SDL_TRUE;
+                    timerDisplayGame = SDL_GetTicks();
+
+                    init_text_end_game(screen, &textWinner, scores.winnerRound);
+
+                    /* Resets the winner */
+                    reset_player(players);
+                }
 
                 /* Handles the end of the round with display */
-                if(scores.winnerRound != -1)
+                if(scores.winnerRound != -1 && !displayTextGame)
                 {
                     /* Triggers the timer */
                     displayTextRound = SDL_TRUE;
-                    timerDisplay = SDL_GetTicks();
+                    timerDisplayRound = SDL_GetTicks();
 
                     init_text_end_round(screen, &textRound, &scores);
 
@@ -223,12 +241,8 @@ int main(int argc, char* argv[])
                     reset_scores(&scores);
                 }
 
-                if(scores.winnerGame != -1)
-                {
-                    endOfGame = SDL_TRUE;
-                }
-
-                /** cf main en haut : Affichage du texte "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ... */
+                //printf("5 winnerRound : %d\n", scores.winnerRound);
+                //printf("6 winnerGame : %d\n", scores.winnerGame);
 
                 /* Prints the map on the screen */
                 SDL_RenderClear(screen);
@@ -239,8 +253,8 @@ int main(int argc, char* argv[])
                 /* Prints text in play */
                 if(displayTextRound) // When a round is finished down
                 {
-                    timeElapsedDisplay = SDL_GetTicks() - timerDisplay;
-                    if(timeElapsedDisplay < 2000) // Display during 2s
+                    timeElapsedDisplayRound = SDL_GetTicks() - timerDisplayRound;
+                    if(timeElapsedDisplayRound < 1000) // Display during 1s
                         display_text_game(screen, &textRound);
                     else
                     {
@@ -248,11 +262,23 @@ int main(int argc, char* argv[])
                         free_text_in_game(&textRound);
                     }
                 }
-                //if(displayTextRound)
-                //if(displayTextGame)
+                if(displayTextGame) // When the game is finished down
+                {
+                    timeElapsedDisplayGame = SDL_GetTicks() - timerDisplayGame;
+                    if(timeElapsedDisplayGame < 2000) // Display during 2s
+                        display_text_game(screen, &textWinner);
+                    else
+                    {
+                        displayTextGame = SDL_FALSE;
+                        free_text_in_game(&textWinner);
+                        endOfGame = SDL_TRUE;
+                    }
+                }
                 /* Display */
                 SDL_RenderPresent(screen);
 
+                //printf("7 winnerRound : %d\n", scores.winnerRound);
+                //printf("8 winnerGame : %d\n", scores.winnerGame);
 
                 /* Fresh rate 10 ms */
                 timeElapsed = SDL_GetTicks() - timer;
@@ -265,6 +291,7 @@ int main(int argc, char* argv[])
             /* Saves the score */
             scores_save(pathScoresFile, &scores);
 
+            endOfGame = SDL_FALSE;
             choice = 0; // Gets back to the menu
 
 

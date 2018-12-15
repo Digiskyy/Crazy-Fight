@@ -539,6 +539,7 @@ void reset_scores(Scores *scores)
     }
     scores->remainingPlayers = NB_PLAYERS;
     scores->winnerRound = -1; // Nobody
+    scores->winnerGame = -1; // Nobody
 }
 
 
@@ -633,11 +634,11 @@ void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
 
     /* INITIALISATION TEXT */
     sprintf(message, "Player %d has won the round !", scores->winnerRound + 1);
-    nbCharText = (int)strlen(message) + 1; /*printf("nb char text : %d\n", nbCharText);*/
+    nbCharText = (int)strlen(message) + 1;
     text->text = malloc(nbCharText * sizeof(char));
     if(text->text == NULL)
     {
-        fprintf(stderr, "Error : Creation of the string when a player kills another one");
+        fprintf(stderr, "Error : Creation of the string when a player wins a round");
         exit(EXIT_FAILURE);
     }
     strcpy(text->text, message);
@@ -646,6 +647,42 @@ void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
     text->texture = load_text(text->text, screen, text->font, text->color, &(text->placement.w), &(text->placement.h));
     text->placement.x = (WINDOW_WIDTH / 2) - (text->placement.w / 2); // In the middle on the X-axis
     text->placement.y = (WINDOW_HEIGHT / 5) - (text->placement.h / 2); // 1/5 from the origin on the Y-axis
+
+    /* Close the font */
+    TTF_CloseFont(fontTextInGame);
+}
+
+
+void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner)
+{
+    TTF_Font *fontTextInGame = NULL;
+    SDL_Color colorTextInGame = {255, 200, 20, 255};
+    char message[50];
+    int nbCharText;
+
+    /* INITIALISATION FONT */
+    fontTextInGame = TTF_OpenFont("ressources/funhouse.ttf", 80);
+    if(fontTextInGame == NULL)
+    {
+        fprintf(stderr, "Error : Loading the font for the text in game : %s", TTF_GetError());
+        exit(EXIT_FAILURE);
+    }
+
+    /* INITIALISATION TEXT */
+    sprintf(message, "Winner : PLAYER %d !!", indexWinner + 1);
+    nbCharText = (int)strlen(message) + 1;
+    text->text = malloc(nbCharText * sizeof(char));
+    if(text->text == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the string for the winner of the game");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(text->text, message);
+    text->font = fontTextInGame;
+    text->color = colorTextInGame;
+    text->texture = load_text(text->text, screen, text->font, text->color, &(text->placement.w), &(text->placement.h));
+    text->placement.x = (WINDOW_WIDTH / 2) - (text->placement.w / 2); // In the middle on the X-axis
+    text->placement.y = (WINDOW_HEIGHT / 2) - (text->placement.h / 2); // In the middle on the Y-axis
 
     /* Close the font */
     TTF_CloseFont(fontTextInGame);

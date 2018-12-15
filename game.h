@@ -66,6 +66,8 @@ typedef struct Text Text;
 
 void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores);
 
+void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner);
+
 void free_text_in_game(Text *text);
 
 void display_text_game(SDL_Renderer *screen, Text *text);
