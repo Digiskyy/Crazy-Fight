@@ -54,6 +54,7 @@ int main(int argc, char* argv[])
                                         {"jump", "5", "ressources/sprites/navyseal_sprites/navyseal_sprite_jump.png"},
                                         {"fire", "4", "ressources/sprites/navyseal_sprites/navyseal_sprite_fire.png"}};
 
+<<<<<<< HEAD
     SDL_Color colorText; // Color of the text displayed in game
     SDL_bool endOfGame = SDL_FALSE, endOfRound = SDL_FALSE, resetPlayer = SDL_FALSE;
     int killOccured = 0; // 0 No kill, 1 kill, 2 suicide
@@ -67,9 +68,17 @@ int main(int argc, char* argv[])
 
     Input in;
     unsigned int timer = 0, timeElapsed = 0, nbRounds = 0, timeDisplayCurrent = 0, timeDisplayLast = 0;
+=======
+    char pathScoresFile[] = "ressources/scores.txt";
+    Scores scores;
+    int arrayKill[2] = {-1, -1}; // 1st row is for the index of the killer and 2nd row is for the player who has just be killed
+
+    Input in;
+    unsigned int timer = 0, timeElapsed = 0;
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
     unsigned int lastTime[NB_PLAYERS] = {0}, lastTimeFire[NB_PLAYERS] = {0};
-    int choice = 0, gameState, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
-    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
+    int choice = 0, endOfGame, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
+    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE, savedScores = SDL_FALSE;
 
 
 
@@ -177,11 +186,14 @@ int main(int argc, char* argv[])
             timeElapsed = SDL_GetTicks() - timer; // Calculates the elapsed time since the beginning of each turn loop
             if(timeElapsed < 20) // If the elapsed time is less than 20 ms,
                 SDL_Delay(20 - timeElapsed); // CPU "waits" for the remaining time to reach 20 ms (it waits in the program but no other stuff)
+
+            //printf("CHOICE LOOP choice = %d, gameInitialised = %d, player1 = %d\n", choice, gameInitialised, player1);
         }
 
         /* ========== GAME LOOP ========== */
         while(choice == 1 && !in.quit)
         {
+<<<<<<< HEAD
             init_array_1D(winningRounds, NB_PLAYERS, 0);
             init_array_1D(alivePlayers, NB_PLAYERS, 1);
             init_array_scores(scores);
@@ -193,24 +205,30 @@ int main(int argc, char* argv[])
             resetPlayer = SDL_FALSE;
 
             do
+=======
+            /* Initialisation characters */
+            if(!gameInitialised)
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             {
-                /* Initialisation characters */
-                if(!gameInitialised)
+                for(int i = 0; i < NB_PLAYERS; i++) /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< IL FAUT UN TABLEAU POUR LES 2 SPRITESHEETS DE CHAQUE PERSO */
                 {
-                    for(int i = 0; i < NB_PLAYERS; i++) /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< IL FAUT UN TABLEAU POUR LES 2 SPRITESHEETS DE CHAQUE PERSO */
-                    {
-                        players[i] = init_character(screen, tableSpritesheetPlayer1, i);
-                    }
-                    gameInitialised = SDL_TRUE;
+                    players[i] = init_character(screen, tableSpritesheetPlayer1, i);
                 }
+                gameInitialised = SDL_TRUE;
+            }
 
+            init_scores(&scores);
+
+            do
+            {
                 /* Timer */
                 timer = SDL_GetTicks();
 
-                /* Updates events */
+                /* Update events */
                 update_events(&in);
 
                 /* Game code (Handle events) */
+<<<<<<< HEAD
                 gameState = launch_game(map, players, arrayKill, scores, winningRounds, alivePlayers, remainingPlayers, &in, lastTime, lastTimeFire, &choice, tableSimilarKeys);
 
                 /* Seeks if a player has the needed number of winning rounds */
@@ -240,13 +258,25 @@ int main(int argc, char* argv[])
                     remainingPlayers = NB_PLAYERS;
                     init_array_1D(alivePlayers, NB_PLAYERS, 1);
                 }
+=======
+                launch_game(map, players, &in, &scores, arrayKill, lastTime, lastTimeFire, &choice, tableSimilarKeys);
+
+                /* Handles the end of the round */
+                if(scores.winnerRound != -1)
+                {
+                    reset_player(players);
+                    reset_scores(&scores);
+                }
+
+                /** cf main en haut : Affichage du texe "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ... */
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
 
 
                 /* ===== DISPLAY ===== */
 
                 /* Prints the map on the screen */
                 SDL_RenderClear(screen);
-                set_color_background(screen, 85, 180, 255, 255); // Sets color blue in the background
+                set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
                 print_map(map, screen);
 
                 /* Prints the player on the screen */
@@ -288,6 +318,7 @@ int main(int argc, char* argv[])
                 /* Fresh rate 10 ms */
                 timeElapsed = SDL_GetTicks() - timer;
                 if(timeElapsed < 10)
+<<<<<<< HEAD
                     SDL_Delay(10 - timeElapsed);
 
             }while(!endOfGame && choice == 1 && !in.quit);
@@ -297,6 +328,16 @@ int main(int argc, char* argv[])
             /* Saves the score */
             scores_save(pathScoresFile, scores, winningRounds);
 
+=======
+                    SDL_Delay(10 - timeElapsed);
+
+            }while(scores.winnerGame == -1 && choice == 1 && !in.quit);
+
+            printf("GAME ENDED\nSAVING SCORES...\n");
+            /* Saves the score */
+            scores_save(pathScoresFile, &scores);
+
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             choice = 0; // Gets back to the menu
 
 

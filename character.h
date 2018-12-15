@@ -78,6 +78,10 @@ typedef struct Character
     JumpParameters  jumpParameters;     /**< Structure needed to calculate the jump */
     Weapon weapon;                      /**< Structure that handles the parameters of the weapon and allows to fire */
     SDL_bool firedBullet;               /**< When the player fires, bulletFired is true as long as there are some bullets on the map (= LinkedList for the bullets is not empty) */
+    unsigned int kills;
+    unsigned int deaths;
+    unsigned int suicides;
+    SDL_bool alive;
 
 
     //int FLAGS; // Pour savoir quel sprite à afficher car on ne peut en afficher qu'un seul. Car on peut faire plusieurs action en même temps genre sauter et se déplacer mais seulment un sprite à la fois
@@ -107,13 +111,6 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
  */
 Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_Renderer *screen);
 
-#ifndef NB_PLAYERS
-#define NB_PLAYERS  2 // Because here apparently, the compiler doesn't know NB_PLAYERS
-
-void reset_player(Character* players[NB_PLAYERS]);
-
-#endif // NB_PLAYERS
-
 /**
  * @brief Free the memory used for a character
  *
@@ -124,8 +121,14 @@ void free_character(Character *player);
 
 typedef struct Map Map; // Because the function player_fire(...) doesn't know the type Map
 
-void player_fire(Character* players[NB_PLAYERS], int arrayKill[2], int numFiringPlayer, Map *map, unsigned int *lastFireTime);
+#ifndef NB_PLAYERS
+#define NB_PLAYERS  2 // Because here apparently, the compiler doesn't know NB_PLAYERS
 
+void player_fire(Character* players[NB_PLAYERS], int arrayKill[2], Map *map, unsigned int *lastFireTime);
+
+void reset_player(Character* players[NB_PLAYERS]);
+
+#endif // NB_PLAYERS
 
 
 #endif // CHARACTER_H_INCLUDED

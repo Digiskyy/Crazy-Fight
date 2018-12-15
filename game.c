@@ -46,13 +46,15 @@
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
  */
-int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int scores[NB_PLAYERS][3], int winningRounds[NB_PLAYERS], int alivePlayers[NB_PLAYERS], int remainingPlayers,
-                Input *in, unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
+void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *scores, int arrayKill[2], unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
 {
+<<<<<<< HEAD
     int i, gameState = -1; // Game is going on
     static int signalToDisplay = 0;
+=======
+    int i;
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
 
-    /* EVENTS */
     game_event(map, in, players , lastTime, choice, tableSimilarKeys);
 
     /* FIRE */
@@ -60,7 +62,8 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
     {
         if(players[i]->firedBullet)
         {
-            player_fire(players, arrayKill, i, map, &(lastFireTime[i]));
+            arrayKill[KILLER] = i;
+            player_fire(players, arrayKill, map, &(lastFireTime[i]));
         }
     }
 
@@ -72,6 +75,7 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
             if(player_jump(map, players[i]) == -1/* && signalToDisplay % NB_PLAYERS == 0*/) // If a player leaps into the void
             {
                 printf("Player %d is falling down. YOU LOSE ! \n", i);
+<<<<<<< HEAD
                 //signalToDisplay++;
                 scores[i][2]++; // +1 suicide
                 alivePlayers[i] = 0;
@@ -88,10 +92,15 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
                     }
                     gameState = -2; // Round ended
                 }
+=======
+                players[i]->alive = SDL_FALSE;
+                players[i]->suicides++;
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             }
         }
         else // Otherwise, GRAVITY is applied
         {
+<<<<<<< HEAD
             if(player_move(map, players[i], 0, 5) == -1 /*&& players[i]->positionReal.h >= WINDOW_HEIGHT && signalToDisplay % NB_PLAYERS == 0*/) // If the player falls down and goes over the height of the window
             {
                 printf("Player %d is falling down. YOU LOSE ! \n", i);
@@ -111,7 +120,15 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
                     }
                     gameState = -2; // Round ended
                 }
+=======
+            if(player_move(map, players[i], 0, 5) == -1) // If the player falls down and goes over the height of the window
+            {
+                printf("Player %d is falling down. YOU LOSE ! \n", i);
+                players[i]->alive = SDL_FALSE;
+                players[i]->suicides++;
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             }
+
         }
     }
 
@@ -121,6 +138,7 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
         if(players[i]->health == 0 /*&& !signalToDisplay*/)
         {
             /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Animation de mort player->state[DEATH] =  SDL_TRUE */
+<<<<<<< HEAD
 
 
             printf("Player %d is dead. YOU LOSE ! \n", i);
@@ -146,13 +164,34 @@ int launch_game(Map* map, Character* players[NB_PLAYERS], int arrayKill[2], int 
 
             gameState = i; // Round ended
 
+=======
+            printf("Player %d is dead. YOU LOSE ! \n", i);
+
+            players[i]->deaths++;
+            players[i]->alive = SDL_FALSE;
+            players[arrayKill[KILLER]]->kills++;
+>>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             break; // Stops the current loop
         }
 
         printf("player %d, vie : %d\n", i, players[i]->health);
     }
 
-    return gameState;
+    /* Update scores */
+    update_scores(scores, players);
+
+    /*  => He lost NOW RESET OF THE POSITION FOR THE TESTS */
+    /*if(player1->positionReal.y >= WINDOW_HEIGHT) // SI joueur estMort vrai, alors faire fin de partie
+    {
+        printf("You lost ! \n"); // Dire quel joueur a perdu
+
+        players[i]->state[JUMP] = SDL_FALSE;
+        players[i]->jumpParameters.t = 0;
+        //player1->jumpParameters.initialAngle = player1->jumpParameters.pi / 2;
+
+        player1->positionReal.y = 652;
+    }*/
+
 }
 
 
@@ -550,13 +589,73 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
     }
 }
 
-/** Pour inscire les scores dans un fichier */
-void scores_save(const char *pathScoresFile, int scores[NB_PLAYERS][3], int winningRounds[NB_PLAYERS])
+void init_scores(Scores *scores)
+{
+    for(int i = 0; i < NB_PLAYERS; i++)
+    {
+        scores->alive[i] = SDL_TRUE;
+        scores->deathsPlayer[i] = 0;
+        scores->killsPlayer[i] = 0;
+        scores->suicidesPlayer[i] = 0;
+        scores->wonRounds[i] = 0;
+    }
+    scores->remainingPlayers = NB_PLAYERS;
+    scores->winnerRound = -1; // Nobody
+    scores->winnerGame = -1; // Nobody
+}
+
+void reset_scores(Scores *scores)
+{
+    for(int i = 0; i < NB_PLAYERS; i++)
+    {
+        scores->alive[i] = SDL_TRUE;
+    }
+    scores->remainingPlayers = NB_PLAYERS;
+    scores->winnerRound = -1; // Nobody
+}
+
+
+void update_scores(Scores *scores, Character* players[NB_PLAYERS])
+{
+    int i;
+    for(i = 0; i < NB_PLAYERS; i++)
+    {
+        if(!players[i]->alive)
+        {
+            scores->alive[i] = SDL_FALSE;
+            scores->remainingPlayers--;
+        }
+
+        /* Updates the kills, deaths and suicides */
+        scores->deathsPlayer[i] = players[i]->deaths;
+        scores->suicidesPlayer[i] = players[i]->suicides;
+        scores->killsPlayer[i] = players[i]->kills;
+    }
+
+    /* To know which player wins the round, if there is currently a winner */
+    if(scores->remainingPlayers == 1)
+    {
+        for(i = 0; i < NB_PLAYERS; i++)
+        {
+            if(players[i]->alive)
+            {
+                scores->wonRounds[i]++;
+                scores->winnerRound = i;
+                if(scores->wonRounds[i] == WINNING_ROUNDS)
+                    scores->winnerGame = i;
+                break;
+            }
+        }
+    }
+}
+
+
+/** Pour inscire les scores pour seulement 2 personnes dans un fichier */
+void scores_save(const char *pathScoresFile, Scores *scores)
 {
     char formattedDate[50], winner[10];
     time_t currentTime;
     struct tm date;
-    int numWinner, tmpMaxWinningRounds = 0, tmpNbRounds = 0; // Allows to knnow the maximum of kills
 
     FILE *fileScores = fopen(pathScoresFile, "a");
     if(fileScores == NULL)
@@ -570,27 +669,19 @@ void scores_save(const char *pathScoresFile, int scores[NB_PLAYERS][3], int winn
         date = *localtime(&currentTime); // Fills the structure for the date
         strftime(formattedDate, 50, "%d %B %Y, %X", &date); // Writes the date in the desired format
 
-        /* WRITE IN THE FILE */
+        /* WRITES IN THE FILE */
         fprintf(fileScores, "=== GAME - %s ===\n\n", formattedDate);
 
-        /* Finds the winner with the most winning round (a winning round comes after kill the other player or the suicide of this one) */
-        for(int i = 0; i < NB_PLAYERS; i++)
-        {
-            tmpNbRounds = winningRounds[i];
-            if(tmpNbRounds >= tmpMaxWinningRounds)
-            {
-                numWinner = i;
-                tmpMaxWinningRounds = tmpNbRounds;
-            }
-        }
-        // If the maximum of winning rounds is reached, then there is a winner, otherwise it's a draw (it means that they didn't finish the game until the end, they left before)
-        (winningRounds[numWinner] == WINNING_ROUNDS) ? sprintf(&winner, "PLAYER %d", numWinner + 1) : sprintf(&winner, "NOBODY");
+        if(scores->winnerGame == -1)
+            sprintf(&winner, "NOBODY");
+        else
+            sprintf(&winner, "PLAYER %d", scores->winnerGame + 1);
+
         fprintf(fileScores, "\tWinner : %s\n\n", winner);
 
-        //fprintf(fileScores, "- Player 1  { %d - %d }  Player 2\n\n\n", scores[0][0], scores[1][0]);
-        for(int i = 0; i < NB_PLAYERS; i++)
+        for(int i =0; i < NB_PLAYERS; i++)
         {
-            fprintf(fileScores, "- Player %d :: %d Winning Rounds { Kills : %d - Deaths : %d - Suicides : %d}\n", i + 1, winningRounds[i], scores[i][0], scores[i][1], scores[i][2]);
+            fprintf(fileScores, "\tPlayer %d :: Winning rounds : %d\n\t\t{ Kills : %d - Deaths : %d - Suicides : %d }\n\n", i+1, scores->wonRounds[i], scores->killsPlayer[i], scores->deathsPlayer[i], scores->suicidesPlayer[i]);
         }
         fprintf(fileScores, "\n\n");
 
@@ -598,23 +689,5 @@ void scores_save(const char *pathScoresFile, int scores[NB_PLAYERS][3], int winn
     }
 }
 
-void init_array_scores(int scores[NB_PLAYERS][3])
-{
-    for(int i = 0; i < NB_PLAYERS; i++)
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            scores[i][j] = 0;
-        }
-    }
-}
-
-void init_array_1D(int array[], const int length, int num)
-{
-    for(int i = 0; i < length; i++)
-    {
-        array[i] = num;
-    }
-}
 
 
