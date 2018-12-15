@@ -12,15 +12,16 @@
 #include <math.h>
 #include <time.h>
 
-/* Librairies */
+/* SDL Librairies */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 /* Personal headers */
+#include "display.h"
 #include "LinkedList.h"
 #include "map.h"
 #include "character.h"
-//#include "display.h"
 #include "constantes.h"
 #include "events.h"
 #include "game.h"
@@ -31,7 +32,6 @@
 
 
 /* A FAIRE  :
-- faire en sorte de gérer le tir et la vie
 - faire l'animation de la mort et s'il y a du temps mettre la fonctionnalité coup de couteau avec son animation
 
 - mettre des packs de soin pour remonter la vie
@@ -600,9 +600,9 @@ void scores_save(const char *pathScoresFile, Scores *scores)
         fprintf(fileScores, "=== GAME - %s ===\n\n", formattedDate);
 
         if(scores->winnerGame == -1)
-            sprintf(&winner, "NOBODY");
+            sprintf(winner, "NOBODY");
         else
-            sprintf(&winner, "PLAYER %d", scores->winnerGame + 1);
+            sprintf(winner, "PLAYER %d", scores->winnerGame + 1);
 
         fprintf(fileScores, "\tWinner : %s\n\n", winner);
 
@@ -616,5 +616,50 @@ void scores_save(const char *pathScoresFile, Scores *scores)
     }
 }
 
+void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
+{
+    TTF_Font *fontTextInGame = NULL;
+    SDL_Color colorTextInGame = {235, 50, 35, 255};
+    char message[50];
+    int nbCharText;
 
+    /* INITIALISATION FONT */
+    fontTextInGame = TTF_OpenFont("ressources/skaterGirlsRock.ttf", 50);
+    if(fontTextInGame == NULL)
+    {
+        fprintf(stderr, "Error : Loading the font for the text in game : %s", TTF_GetError());
+        exit(EXIT_FAILURE);
+    }
+
+    /* INITIALISATION TEXT */
+    sprintf(message, "Player %d has won the round !", scores->winnerRound + 1);
+    nbCharText = (int)strlen(message) + 1; /*printf("nb char text : %d\n", nbCharText);*/
+    text->text = malloc(nbCharText * sizeof(char));
+    if(text->text == NULL)
+    {
+        fprintf(stderr, "Error : Creation of the string when a player kills another one");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(text->text, message);
+    text->font = fontTextInGame;
+    text->color = colorTextInGame;
+    text->texture = load_text(text->text, screen, text->font, text->color, &(text->placement.w), &(text->placement.h));
+    text->placement.x = (WINDOW_WIDTH / 2) - (text->placement.w / 2); // In the middle on the X-axis
+    text->placement.y = (WINDOW_HEIGHT / 5) - (text->placement.h / 2); // 1/5 from the origin on the Y-axis
+
+    /* Close the font */
+    TTF_CloseFont(fontTextInGame);
+}
+
+void free_text_in_game(Text *text)
+{
+    free(text->font);
+    free(text->text);
+    SDL_DestroyTexture(text->texture);
+}
+
+void display_text_game(SDL_Renderer *screen, Text *text)
+{
+    SDL_RenderCopy(screen, text->texture, NULL, &text->placement);
+}
 

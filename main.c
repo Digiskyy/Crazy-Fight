@@ -58,11 +58,15 @@ int main(int argc, char* argv[])
     Scores scores;
     int arrayKill[2] = {-1, -1}; // 1st row is for the index of the killer and 2nd row is for the player who has just be killed
 
+    Text textRound, textKill, textGameWinner, textGameLoser;
+    SDL_bool displayTextRound = SDL_FALSE, displayTextDeath = SDL_FALSE, displayTextGame = SDL_FALSE, endOfGame = SDL_FALSE;
+    unsigned int timerDisplay = 0, timeElapsedDisplay = 0;
+
     Input in;
     unsigned int timer = 0, timeElapsed = 0;
     unsigned int lastTime[NB_PLAYERS] = {0}, lastTimeFire[NB_PLAYERS] = {0};
-    int choice = 0, endOfGame, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
-    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE, savedScores = SDL_FALSE;
+    int choice = 0, numTypeTile = 9; // choice = 0 : we go into the menu loop /\ numTypeTile = 9 since 9 is the tile by default, it is transparent
+    SDL_bool windowTilesetCreated = SDL_FALSE, gameInitialised = SDL_FALSE;
 
 
 
@@ -100,9 +104,9 @@ int main(int argc, char* argv[])
         - Gestion de la vie des persos, de leurs morts (animation de la mort (faire spritesheet) et fin de partie)
         - Quand un perso meurt, après l'animation de mort et quelques secondes, on remet les positions dans la position d'origine et on affiche le texte "Victoire" en vert ou bleu
             sur le côté du joueur gagnant et en rouge "Défaite", on attend quelques secondes, on enregistre le score et on relance une manche.
-        - A voir : Au bout de 5 ou 3 manches gagnées, le joueur gagnant gagne la partie. On revient au menu principale
+        - A voir : Au bout de 5 ou 3 manches gagnées, le joueur gagnant gagne la partie. On revient au menu principal
         - Au début les 2 perso doivent regarder vers le centre de la map, donc tourner les sprites du bon côté
-        - Mettre une icône pour le programme
+        - METTRE UNE ICONE
         - Gestion d'une partie  : score (l'afficher en jeu ET le sauvegarder dans un fichier avant de quitter), recommencer une partie, faire des BO 5 (à voir)
         - Gestion du temps :  afficher le temps dans la partie (à voir si pas compliqué) et mettre une limite de temps si les joeurs choisissent
         - Ecrire un README et également transposer tout le read me dans un nouveau choix du menu RULES qui explique le jeu les règes et les différentes touches
@@ -189,25 +193,42 @@ int main(int argc, char* argv[])
 
             init_scores(&scores);
 
-            do
+            while(!endOfGame && choice == 1 && !in.quit)
             {
                 /* Timer */
                 timer = SDL_GetTicks();
 
-                /* Update events */
-                update_events(&in);
+                /* Events update  */
+                if(!displayTextRound)
+                    update_events(&in);
 
-                /* Game code (Handle events) */
+                /* Game code (Handles events) */
                 launch_game(map, players, &in, &scores, arrayKill, lastTime, lastTimeFire, &choice, tableSimilarKeys);
 
-                /* Handles the end of the round */
+                printf("arrayKill [0] : %d, [1] : %d\n", arrayKill[0], arrayKill[1]); //[0] last player who fired, [1] last player who took some damage
+                printf("winnerRound : %d\n", scores.winnerRound);
+
+                /* Handles the end of the round with display */
                 if(scores.winnerRound != -1)
                 {
+                    /* Triggers the timer */
+                    displayTextRound = SDL_TRUE;
+                    timerDisplay = SDL_GetTicks();
+
+                    init_text_end_round(screen, &textRound, &scores);
+
+                    /* Resets the player, the scores and the events */
+                    initialise_events(&in);
                     reset_player(players);
                     reset_scores(&scores);
                 }
 
-                /** cf main en haut : Affichage du texe "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ... */
+                if(scores.winnerGame != -1)
+                {
+                    endOfGame = SDL_TRUE;
+                }
+
+                /** cf main en haut : Affichage du texte "Victoire" et "Défaite" sur les côtés correspondants aux positions de départ des joueurs ... */
 
                 /* Prints the map on the screen */
                 SDL_RenderClear(screen);
@@ -215,17 +236,32 @@ int main(int argc, char* argv[])
                 print_map(map, screen);
                 /* Prints the player on the screen */
                 display_sprite(screen, players);
+                /* Prints text in play */
+                if(displayTextRound) // When a round is finished down
+                {
+                    timeElapsedDisplay = SDL_GetTicks() - timerDisplay;
+                    if(timeElapsedDisplay < 2000) // Display during 2s
+                        display_text_game(screen, &textRound);
+                    else
+                    {
+                        displayTextRound = SDL_FALSE;
+                        free_text_in_game(&textRound);
+                    }
+                }
+                //if(displayTextRound)
+                //if(displayTextGame)
                 /* Display */
                 SDL_RenderPresent(screen);
+
 
                 /* Fresh rate 10 ms */
                 timeElapsed = SDL_GetTicks() - timer;
                 if(timeElapsed < 10)
                     SDL_Delay(10 - timeElapsed);
-
-            }while(scores.winnerGame == -1 && choice == 1 && !in.quit);
+            }
 
             printf("GAME ENDED\nSAVING SCORES...\n");
+
             /* Saves the score */
             scores_save(pathScoresFile, &scores);
 

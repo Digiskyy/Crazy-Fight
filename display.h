@@ -11,6 +11,22 @@
 
 
 /**
+ * @brief Displays the menu on the renderer
+ *
+ * @param < screen > Renderer that allows to display on the window to which screen belongs
+ * @param < MenuText ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
+ */
+typedef struct Text
+{
+    SDL_Texture *texture;
+    TTF_Font *font;
+    SDL_Color color;
+    SDL_Rect placement;
+    char *text;
+}Text;
+
+
+/**
  * @brief Creates the window container and the renderer linked to it
  *
  * @param < *window > Pointer of pointer on a SDL_Window type object

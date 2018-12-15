@@ -24,7 +24,7 @@
  * @param < screen > Renderer that allows to display on the window to which screen belongs
  * @param < MenuText *... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  */
-void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit)
+void display_menu(SDL_Renderer *screen, Text *textTitle, Text *textGame, Text *textEditor, Text *textQuit)
 {
     set_color_background(screen, 100, 0, 2, 255); // sets burgundy color on the background
     SDL_RenderCopy(screen, textTitle->texture, NULL, &(textTitle->placement)); // "Crazy Fight"
@@ -44,7 +44,7 @@ void display_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame,
  */
 int launch_menu(SDL_Renderer *screen, Input *in)
 {
-    MenuText textTitle, textGame, textEditor, textQuit;
+    Text textTitle, textGame, textEditor, textQuit;
     TTF_Font *fontMenu = NULL;
     int choice = 0;
 
@@ -71,7 +71,7 @@ int launch_menu(SDL_Renderer *screen, Input *in)
  * @param < MenuText ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  * @param < *fontMenu > represents the font used by the elements of the menu except the title
  */
-void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit, TTF_Font *fontMenu)
+void init_menu(SDL_Renderer *screen, Text *textTitle, Text *textGame, Text *textEditor, Text *textQuit, TTF_Font *fontMenu)
 {
     char messageTitle[] = "CRAZY FIGHT";
     char messageGame[] = "Play";
@@ -103,8 +103,8 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
     strcpy(textTitle->text, messageTitle);
     textTitle->color.r = 255; textTitle->color.g = 200; textTitle->color.b = 20; textTitle->color.a = 255; // Yellow  slightly orange
     textTitle->texture = load_text(textTitle->text, screen, textTitle->font, textTitle->color, &(textTitle->placement.w), &(textTitle->placement.h));
-    textTitle->placement.x = (WINDOW_WIDTH / 2) - (textTitle->placement.w / 2); // center on the X-axis, placementTitle.w
-    textTitle->placement.y = (WINDOW_HEIGHT / 6) - (textTitle->placement.h / 2); // 1/5 from the origin on the Y-axis, placementTitle.h
+    textTitle->placement.x = (WINDOW_WIDTH / 2) - (textTitle->placement.w / 2); // center on the X-axis
+    textTitle->placement.y = (WINDOW_HEIGHT / 6) - (textTitle->placement.h / 2); // 1/5 from the origin on the Y-axis
 
     /* Game */
     nbCharGame = (int)strlen(messageGame) + 1; // +1 for the character '\0' at the end of strings, strlen doesn't count it
@@ -156,11 +156,15 @@ void init_menu(SDL_Renderer *screen, MenuText *textTitle, MenuText *textGame, Me
  * @param < MenuText* ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  * @param < *fontMenu > represents the font used by the elements of the menu except the title
  */
-void free_menu(MenuText *textTitle, MenuText *textGame, MenuText *textEditor, MenuText *textQuit, TTF_Font *fontMenu)
+void free_menu(Text *textTitle, Text *textGame, Text *textEditor, Text *textQuit, TTF_Font *fontMenu)
 {
     /* CLOSE THE FONTS */
     TTF_CloseFont(textTitle->font);
     TTF_CloseFont(fontMenu);
+
+    /* FREE THE FONTS */
+    free(textTitle->font);
+    free(fontMenu);
 
     /* FREE THE POINTERS ON THE STRINGS */
     free(textTitle->text);
@@ -184,7 +188,7 @@ void free_menu(MenuText *textTitle, MenuText *textGame, MenuText *textEditor, Me
  * @param < MenuText* ... > Pointers on structures that make up the elements of the menu. There are 4 elements : Title, Game, Level Editor and Quit
  * @return < int > Returns the value of the choice that the player does when he's clicking on an element of the menu
  */
-int events_menu(Input *in, SDL_Renderer *screen, MenuText *textGame, MenuText *textEditor, MenuText *textQuit)
+int events_menu(Input *in, SDL_Renderer *screen, Text *textGame, Text *textEditor, Text *textQuit)
 {
     int choice = 0;
 

@@ -24,8 +24,6 @@ typedef struct Scores
 }Scores;
 
 
-
-
 /**
  * @brief Runs the game code each turn of the game loop
  *
@@ -63,6 +61,14 @@ void reset_scores(Scores *scores); //between each round
 void update_scores(Scores *scores, Character* players[NB_PLAYERS]);
 
 void scores_save(const char *pathScoresFile, Scores *scores);
+
+typedef struct Text Text;
+
+void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores);
+
+void free_text_in_game(Text *text);
+
+void display_text_game(SDL_Renderer *screen, Text *text);
 
 
 #endif // GAME_H_INCLUDED
