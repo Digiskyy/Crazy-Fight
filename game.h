@@ -35,7 +35,7 @@ typedef struct Scores
  * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
  * @param < *lastFireTime > Handles the rate of fire
  */
-int launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *scores, int arrayKill[2], unsigned int lastTime[NB_PLAYERS], unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5]);
+void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *scores, int arrayKill[2], unsigned int lastTime[NB_PLAYERS], unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5]);
 
 /**
  * @brief Runs the proper code in function of the events triggered by the players

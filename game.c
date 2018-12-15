@@ -31,6 +31,7 @@
 
 
 /* A FAIRE  :
+- faire en sorte de gérer le tir et la vie
 - faire l'animation de la mort et s'il y a du temps mettre la fonctionnalité coup de couteau avec son animation
 
 - mettre des packs de soin pour remonter la vie
@@ -48,12 +49,7 @@
  */
 void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *scores, int arrayKill[2], unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
 {
-<<<<<<< HEAD
-    int i, gameState = -1; // Game is going on
-    static int signalToDisplay = 0;
-=======
     int i;
->>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
 
     game_event(map, in, players , lastTime, choice, tableSimilarKeys);
 
@@ -72,105 +68,36 @@ void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *sc
     {
         if(players[i]->state[JUMP]) // if player is jumping
         {
-            if(player_jump(map, players[i]) == -1/* && signalToDisplay % NB_PLAYERS == 0*/) // If a player leaps into the void
+            if(player_jump(map, players[i]) == -1)
             {
                 printf("Player %d is falling down. YOU LOSE ! \n", i);
-<<<<<<< HEAD
-                //signalToDisplay++;
-                scores[i][2]++; // +1 suicide
-                alivePlayers[i] = 0;
-
-                remainingPlayers--;
-                if(remainingPlayers == 1)
-                {
-                    for(int j = 0; j < NB_PLAYERS; j++)
-                    {
-                        if(alivePlayers[j] == 1)
-                        {
-                             winningRounds[j]++;
-                        }
-                    }
-                    gameState = -2; // Round ended
-                }
-=======
                 players[i]->alive = SDL_FALSE;
                 players[i]->suicides++;
->>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             }
         }
         else // Otherwise, GRAVITY is applied
         {
-<<<<<<< HEAD
-            if(player_move(map, players[i], 0, 5) == -1 /*&& players[i]->positionReal.h >= WINDOW_HEIGHT && signalToDisplay % NB_PLAYERS == 0*/) // If the player falls down and goes over the height of the window
-            {
-                printf("Player %d is falling down. YOU LOSE ! \n", i);
-                //signalToDisplay++;
-                scores[i][2]++; // +1 suicide
-                alivePlayers[i] = 0; // This player is no longer alive
-
-                remainingPlayers--;
-                if(remainingPlayers == 1)
-                {
-                    for(int j = 0; j < NB_PLAYERS; j++)
-                    {
-                        if(alivePlayers[j] == 1)
-                        {
-                            winningRounds[j]++;
-                        }
-                    }
-                    gameState = -2; // Round ended
-                }
-=======
             if(player_move(map, players[i], 0, 5) == -1) // If the player falls down and goes over the height of the window
             {
                 printf("Player %d is falling down. YOU LOSE ! \n", i);
                 players[i]->alive = SDL_FALSE;
                 players[i]->suicides++;
->>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             }
 
         }
     }
 
-    /* HEALTH AND END OF THE ROUND */
+    /* HEALTH AND ENDGAME */
     for(i = 0; i < NB_PLAYERS; i++)
     {
-        if(players[i]->health == 0 /*&& !signalToDisplay*/)
+        if(players[i]->health <= 0)
         {
             /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Animation de mort player->state[DEATH] =  SDL_TRUE */
-<<<<<<< HEAD
-
-
-            printf("Player %d is dead. YOU LOSE ! \n", i);
-            //signalToDisplay = SDL_TRUE;
-
-            /* Fills the scoreboard */
-            scores[arrayKill[0]][1]++; // arrayKill[0] is the index of the killed player and the column 1 is for the number of deaths
-            scores[arrayKill[1]][0]++; // arrayKill[1] is the index of the killer player and the column 0 is for the number of kills
-
-            alivePlayers[i] = 0;
-
-            remainingPlayers--;
-            if(remainingPlayers == 1)
-            {
-                for(int j = 0; j < NB_PLAYERS; j++)
-                {
-                    if(alivePlayers[j] == 1)
-                    {
-                        winningRounds[j]++; // The remaining player wins the round
-                    }
-                }
-            }
-
-            gameState = i; // Round ended
-
-=======
             printf("Player %d is dead. YOU LOSE ! \n", i);
 
             players[i]->deaths++;
             players[i]->alive = SDL_FALSE;
             players[arrayKill[KILLER]]->kills++;
->>>>>>> d3ab580b59c2e2b581da25f24552a41f3efad086
             break; // Stops the current loop
         }
 
