@@ -1,48 +1,75 @@
 		********** Colors used in the Crazy Fight game **********
 
+
+
 ===== For the menu =====
 
-Yellow slightly orange : 
+
+
+Yellow slightly orange :
+ 
 	Hexa : 0xFFC814
+
 	RGB : 255 - 200 - 20
 
+
+
 Blue sky :
+
 	Hexa : 0x008Ce8
+
 	RGB : 0 - 140- 232
 
+
+
 Deep Burgundy :
+
 	Hexa : 0x640002
+
 	RGB : 100 - 0 - 2
 
+
+
 White :
+
 	Hexa : 0xF2EEF0
+
 	RGB : 242 - 238- 240
 
+
+
 Red (When mouse collides the text 'Quit') :
+
 	Hexa : ??
+
 	RGB : 235 - 47 - 6
 
-( Blue / Green : == NOT USED ==	)
-( 	Hexa : 0x008080		)
-( 	RGB : 0 - 128- 128 	)
 
+
+( Blue / Green : == NOT USED ==	)
+
+( 	Hexa : 0x008080		)
+
+( 	RGB : 0 - 128- 128 	)
 
 
 ===== In play =====
 
-Red (When someone kills another one OR someone leaps into the void) :
+
+
+Red (When a round is ended) :
+
 	Hexa : ??
-	RGB : 250 - 50 - 35
+
+	RGB : 180 - 20 - 10
 
 
-Yellow (When a round is won) :
-	Hexa : 0x
-	RGB : 0 - 0 - 0
 
-Red (When a game is won) :
-	Hexa : 0x
-	RGB : 0 - 0 - 0
+Yellow (When a game is finished down) : Same than the title in the menu
 
-Green (When a game is lost) :
-	Hexa : 0x
-	RGB : 0 - 0 - 0
+	Hexa : 0xFFC814
+
+	RGB : 255 - 200 - 20
+
+
+

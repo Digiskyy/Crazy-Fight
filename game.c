@@ -620,7 +620,7 @@ void scores_save(const char *pathScoresFile, Scores *scores)
 void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
 {
     TTF_Font *fontTextInGame = NULL;
-    SDL_Color colorTextInGame = {235, 50, 35, 255};
+    SDL_Color colorTextInGame = {180, 20, 10, 255}; // Red color
     char message[50];
     int nbCharText;
 
@@ -656,7 +656,7 @@ void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
 void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner)
 {
     TTF_Font *fontTextInGame = NULL;
-    SDL_Color colorTextInGame = {255, 200, 20, 255};
+    SDL_Color colorTextInGame = {255, 200, 20, 255}; // Yellow slightly orange
     char message[50];
     int nbCharText;
 
