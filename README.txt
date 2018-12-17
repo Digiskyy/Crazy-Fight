@@ -13,6 +13,8 @@ Author : 		Aurélien BLAISE
 Last version date : 	16 december 2018
 Release version : 	1.0
 
+Version	:		Windows
+
 
 
 
