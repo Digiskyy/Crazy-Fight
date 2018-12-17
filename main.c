@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     Character* players[NB_PLAYERS] = {NULL, NULL};
 
     // Table used for the relation between the keys of the 1st player (arrows) and the 2nd player (z,q,s,d)
-    int tableSimilarKeys[NB_PLAYERS][5] = {{SDLK_RIGHT, SDLK_LEFT, SDLK_UP, SDLK_DOWN, SDLK_p}, {SDLK_d, SDLK_q, SDLK_z, SDLK_s, SDLK_v}};
+    int tableSimilarKeys[NB_PLAYERS][5] = {{SDL_SCANCODE_RIGHT, SDL_SCANCODE_LEFT, SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_P}, {SDL_SCANCODE_D, SDL_SCANCODE_A, SDL_SCANCODE_W, SDL_SCANCODE_S, SDL_SCANCODE_V}};
 
     /* Paht of the file for the design of the map in the game and level editor */
     char pathLevelDesignMap[] = "ressources/level_design_map.txt";

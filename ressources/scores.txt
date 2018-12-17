@@ -1,20 +1,48 @@
-		============================== CRAZY FIGHT - SCOREBOARD ==============================
+		============================== SCOREBOARD ==============================
 
 
 
-=== GAME - 16 December 2018, 04:55:52 ===
 
-	Winner : NOBODY
+
+
+
+=== GAME - 13 December 2018, 19:15:45 ===
+
+	Winner : PLAYER 2
 
 	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
+
+	Player 2 :: Winning rounds : 3
 		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
 
-	Player 2 :: Winning rounds : 0
+
+
+=== GAME - 13 December 2018, 19:15:52 ===
+
+	Winner : PLAYER 2
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
+
+	Player 2 :: Winning rounds : 3
 		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
 
 
 
-=== GAME - 16 December 2018, 05:06:32 ===
+=== GAME - 13 December 2018, 20:01:12 ===
+
+	Winner : PLAYER 2
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
+
+	Player 2 :: Winning rounds : 3
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 13 December 2018, 20:11:04 ===
 
 	Winner : PLAYER 2
 
@@ -26,7 +54,19 @@
 
 
 
-=== GAME - 16 December 2018, 05:06:57 ===
+=== GAME - 13 December 2018, 20:11:39 ===
+
+	Winner : PLAYER 2
+
+	Player 1 :: Winning rounds : 2
+		{ Kills : 1 - Deaths : 1 - Suicides : 2 }
+
+	Player 2 :: Winning rounds : 3
+		{ Kills : 1 - Deaths : 1 - Suicides : 1 }
+
+
+
+=== GAME - 14 December 2018, 17:51:47 ===
 
 	Winner : PLAYER 2
 
@@ -38,43 +78,7 @@
 
 
 
-=== GAME - 16 December 2018, 05:17:09 ===
-
-	Winner : NOBODY
-
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-	Player 2 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-
-
-=== GAME - 16 December 2018, 05:17:58 ===
-
-	Winner : PLAYER 2
-
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 3 }
-
-	Player 2 :: Winning rounds : 3
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-
-
-=== GAME - 16 December 2018, 05:22:37 ===
-
-	Winner : PLAYER 2
-
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 3 }
-
-	Player 2 :: Winning rounds : 3
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-
-
-=== GAME - 16 December 2018, 21:31:37 ===
+=== GAME - 14 December 2018, 17:57:50 ===
 
 	Winner : NOBODY
 
@@ -86,51 +90,27 @@
 
 
 
-=== GAME - 16 December 2018, 22:02:50 ===
-
-	Winner : NOBODY
-
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-	Player 2 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-
-
-=== GAME - 16 December 2018, 22:03:11 ===
-
-	Winner : NOBODY
-
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
-
-	Player 2 :: Winning rounds : 1
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
-
-
-
-=== GAME - 16 December 2018, 23:20:49 ===
+=== GAME - 14 December 2018, 18:00:59 ===
 
 	Winner : PLAYER 2
 
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 3 }
+	Player 1 :: Winning rounds : 1
+		{ Kills : 0 - Deaths : 2 - Suicides : 1 }
 
 	Player 2 :: Winning rounds : 3
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+		{ Kills : 3 - Deaths : 1 - Suicides : 0 }
 
 
 
-=== GAME - 17 December 2018, 00:13:48 ===
+=== GAME - 14 December 2018, 18:03:09 ===
 
-	Winner : NOBODY
+	Winner : PLAYER 2
 
-	Player 1 :: Winning rounds : 0
-		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
+	Player 1 :: Winning rounds : 2
+		{ Kills : 2 - Deaths : 3 - Suicides : 0 }
 
-	Player 2 :: Winning rounds : 1
-		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+	Player 2 :: Winning rounds : 3
+		{ Kills : 3 - Deaths : 2 - Suicides : 0 }
 
 
 

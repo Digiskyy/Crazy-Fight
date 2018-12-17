@@ -41,7 +41,7 @@ void launch_editor(Input *in, Map *mapEditor, int *numTypeTile, int *choice)
 {
     int tileX, tileY;
 
-    if(in->focusMouse && in->windowID == 1) // If the mouse is over the main window ID
+    if(in->focusMouse && in->windowID == 2) // If the mouse is over the main window ID
     {
         tileX = in->mouseX / mapEditor->widthTile;
         tileY = in->mouseY / mapEditor->heightTile;

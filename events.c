@@ -33,11 +33,11 @@ void update_events(Input* in)
             break;
 
         case SDL_KEYDOWN :
-            in->key[event.key.keysym.sym] = SDL_TRUE;
+            in->key[event.key.keysym.scancode] = SDL_TRUE;
             break;
 
         case SDL_KEYUP :
-            in->key[event.key.keysym.sym] = SDL_FALSE;
+            in->key[event.key.keysym.scancode] = SDL_FALSE;
             break;
 
         case SDL_MOUSEBUTTONDOWN :

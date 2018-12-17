@@ -2,7 +2,7 @@
  * @author Aurélien BLAISE
  * @date november 2018
  * @version 1.0
- * @brief Define global constants, structures and enumerations
+ * @brief Defines global constants, structures and enumerations
  */
 
 
