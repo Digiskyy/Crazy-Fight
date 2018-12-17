@@ -44,7 +44,8 @@ int player_jump(Map *map, Character *player);
 int movement_test(Map *map, Character *player, int vectorX, int vectorY);
 
 /**
- * @brief Handles the collisions : Calculates if there is a collision or not between the sprite of the character and all the tiles of the map which are hit by the sprite in function of the tile properties
+ * @brief Handles the collisions :
+ *          Calculates if there is a collision or not between the sprite of the character and all the tiles of the map which are hit by the sprite in function of the tile properties
  *
  * @param < *map > Structure which stands for the map
  * @param < *player > Structure which stands for the player to jump
@@ -67,12 +68,52 @@ void movement_slim(Map *map, Character *player, int vectorX, int vectorY);
 
 /* ================================================== BULLET MOVEMENTS & COLLISIONS ================================================== */
 
+/**
+ * @brief Calls the function to move the bullet if possible and return the proper code if there is a collision with an ennemy, a tile or there isn't any collisions
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @return < int > Value which allows to know if there is a collision or not, so if the bullet moved or not
+ */
 int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
+/**
+ * @brief Handles the movement of the bulet : Moves if there is no collision
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @return < int > Value which allows to know if the bullet has moved or not
+ */
 int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
+/**
+ * @brief Handles the collisions :
+ *          Calculates if there is a collision or not between the sprite of the bullet and all the tiles of the map which are hit by this sprite in function of the tile properties
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @return < int > Value which allows to know if there is a collision or not
+ */
 int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX);
 
+/**
+ * @brief Allows to know if there is a collision with an ennemy
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @return < int > Value which points if there is a collision with an ennemy or not
+ */
 int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet);
 
 #endif // COLLISIONS_H_INCLUDED

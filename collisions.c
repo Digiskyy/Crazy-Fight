@@ -23,32 +23,7 @@
 #define ABS(X) ((((X)<0)?(-(X)):(X))) //To have the absolute value of the number X
 
 
-
-/*
-=> Bug ?? : Quand je tombe avec la gravité, je peux appuyer sur les touches, c'est-à-dire que je peux me déplacer (OK) mais je peux aussi faire un saut (OK OU  PAS ??)
-
-=> tester toutes les possibilités possibles de collision en créant des maps et en ajoutant des blocs différents, des escaliers, des trous, des ponts ...
-
-=> gérer les collisions avec tous les sauts (sur place, à droite, à gauche) déjà pour les bloce de propriété 1
-
-=> retester avec le saut toutes les possibilités possibles de collision en créant des maps et en ajoutant des blocs différents, des escaliers, des trous, des ponts ...
-tester toutes les possibilités possibles avec le saut, en tombant dans le vide en tombant dans un trou, en montant sur une plateforme avec prop 1 puis prop 2
-
-=> essayer de trouver un moyen pour faire passer que dans un sens le bonhomme avec les blocs avec une propriété 2 comme les blocs marrons et les ponts
-
-=> Régler les pb de sprite comme les sprites de saut qui ont une hauteur de 87 pixels ou le petit espace qu'on voit entre les chaussures du bonhomme et le tile sur lequel il marche
-(car il y a un pied qui est un pixel plus bas que l'autre donc peut-être il faut mettre tous les pieds au même niveau, à voir en fcontion de chaque sprite)
-
-=> retester avec le saut toutes les possibilités possibles de collision en créant des maps et en ajoutant des blocs différents, des escaliers, des trous, des ponts ...
-tester toutes les possibilités possibles avec le saut, en tombant dans le vide en tombant dans un trou, en montant sur une plateforme avec prop 1 puis prop 2
-
-
-==> Normalement tout devrait fonctionner à ce stade, donc passer autre chose, mise en place du tir (animation et vie)
-puis les 2 joueurs, vérifier que tout fonctionne bien pour les 2 joueurs en même temps,
-puis le design de la fenêtre avec les scores (les écrire également dans un fichier), le temps ...
-Vérifier par rapport au cahier des charges établit ce qu'il y a à rajouter, ou passer aux améliorations écrites dans le main.c si TOUT est ok.
-*/
-
+/* ================================================== PLAYER MOVEMENTS & COLLISIONS ================================================== */
 
 /**
  * @brief Calls the function to move if possible, otherwise it calls the function to move the player the closest possible position
@@ -246,6 +221,18 @@ void movement_slim(Map *map, Character *player, int vectorX, int vectorY)
 }
 
 
+/* ================================================== BULLET MOVEMENTS & COLLISIONS ================================================== */
+
+/**
+ * @brief Calls the function to move the bullet if possible and return the proper code if there is a collision with an ennemy, a tile or there isn't any collisions
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @return < int > Value which allows to know if there is a collision or not, so if the bullet moved or not
+ */
 int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
     int testMovement = movement_test_bullet(map, players, numFiringPlayer, bullet, vectorX);
@@ -259,6 +246,16 @@ int bullet_move(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, B
     return -1; // No movement
 }
 
+/**
+ * @brief Handles the movement of the bulet : Moves if there is no collision
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @return < int > Value which allows to know if the bullet has moved or not
+ */
 int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
     int collision = collision_bullet(map, players, numFiringPlayer, bullet, vectorX);
@@ -278,6 +275,17 @@ int movement_test_bullet(Map *map, Character* players[NB_PLAYERS], int numFiring
     }
 }
 
+/**
+ * @brief Handles the collisions :
+ *          Calculates if there is a collision or not between the sprite of the bullet and all the tiles of the map which are hit by this sprite in function of the tile properties
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @param < vectorX > Vector which points the distance to move on the X-axis
+ * @return < int > Value which allows to know if there is a collision or not
+ */
 int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet, int vectorX)
 {
     int minX, minY, maxX, maxY, tileIndex, i, j, numHitPlayer;
@@ -317,6 +325,15 @@ int collision_bullet(Map *map, Character* players[NB_PLAYERS], int numFiringPlay
     return -2; // No collisions
 }
 
+/**
+ * @brief Allows to know if there is a collision with an ennemy
+ *
+ * @param < *map > Structure which stands for the map
+ * @param < players[] > Contains all the players
+ * @param < numFiringPlayer > Index of the player who fired
+ * @param < *bullet > Structure which stands for the bullet to move
+ * @return < int > Value which points if there is a collision with an ennemy or not
+ */
 int collision_bullet_ennemy(Map *map, Character* players[NB_PLAYERS], int numFiringPlayer, Bullet *bullet)
 {
     int numHitEnnemy = -1;

@@ -2,6 +2,7 @@
 
 
 
+
 ===== For the menu =====
 
 
@@ -51,6 +52,7 @@ Red (When mouse collides the text 'Quit') :
 ( 	Hexa : 0x008080		)
 
 ( 	RGB : 0 - 128- 128 	)
+
 
 
 ===== In play =====

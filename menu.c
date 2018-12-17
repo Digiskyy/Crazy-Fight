@@ -36,7 +36,7 @@ void display_menu(SDL_Renderer *screen, Text *textTitle, Text *textGame, Text *t
 
 
 /**
- * @brief Main function for the menu. Launch the menu
+ * @brief Main function for the menu. Launches the menu
  *
  * @param  < screen > Renderer that allows to display on the window to which screen belongs
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
@@ -181,7 +181,7 @@ void free_menu(Text *textTitle, Text *textGame, Text *textEditor, Text *textQuit
 
 
 /**
- * @brief Handle the events related to the menu
+ * @brief Handles the events related to the menu
  *
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
  * @param  < *screen > Renderer that allows to display on the window to which screen belongs

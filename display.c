@@ -33,7 +33,8 @@ void createWindowAndScreen(SDL_Window **window, SDL_Renderer **screen)
     }
 
     *screen = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    // SDL_RENDERER_PRESENTVSYNC : Synchronises the render with fresh rate. The fresh rate corresponds to a number of time when the screen is refreshed by second. Thus, the render will be synchronised with it.
+    // SDL_RENDERER_PRESENTVSYNC : Synchronises the render with fresh rate.
+    // The fresh rate corresponds to a number of time when the screen is refreshed by second. Thus, the render will be synchronised with it.
     if(*screen == NULL)
     {
         fprintf(stderr, "Error : Creation of SDL_Renderer : %s\n", SDL_GetError());

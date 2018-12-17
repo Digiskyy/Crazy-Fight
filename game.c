@@ -30,24 +30,25 @@
 
 
 
-
-/* A FAIRE  :
-- faire l'animation de la mort et s'il y a du temps mettre la fonctionnalité coup de couteau avec son animation
-
-- mettre des packs de soin pour remonter la vie
-- ...
-
- */
+/* ================================================== HANDLING THE GAME ================================================== */
 
 /**
  * @brief Runs the game code each turn of the game loop
  *
  * @param < *map > Structure which stands for the map
- * @param < *player > Structure which stands for the player 1
+ * @param < players[] > Array which contains all the players
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
- * @param < *lastTime > Handles the change of the sprites of the several animations by saving the last time when the sprite changed
+ * @param < *scores > Structure which retains the score of each player
+ * @param < arrayKill[] > Contains the last player who fired and the last player who got hit by another, it is useful in order to update the scores
+ * @param < lastTime[] > Array which contains the lastTime of each player
+ *                       lastTime handles the change of the sprites of the animations by saving the last time when the sprite changed
+ * @param < lastFireTime[] > Array which contains the lastFireTime of each player
+ *                           lastFireTime handles the speed to fire for each player by retaining the last time they fire
+ * @param < *choice > Handles if the players get back to the menu or if they keep playing
+ * @param < tableSimilarKeys[][] > Table used for the relation between the different keys of each player
  */
-void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *scores, int arrayKill[2], unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[2][5])
+void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *scores, int arrayKill[2], unsigned int lastTime[NB_PLAYERS] , unsigned int lastFireTime[NB_PLAYERS],
+                  int *choice, const int tableSimilarKeys[2][5])
 {
     int i;
 
@@ -92,7 +93,6 @@ void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *sc
     {
         if(players[i]->health <= 0)
         {
-            /** <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Animation de mort player->state[DEATH] =  SDL_TRUE */
             printf("Player %d is dead. YOU LOSE ! \n", i);
 
             players[i]->deaths++;
@@ -107,16 +107,15 @@ void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *sc
     /* Update scores */
     update_scores(scores, players);
 
-    /*  => He lost NOW RESET OF THE POSITION FOR THE TESTS */
+    /* Reset of the position for the tests */
     /*if(player1->positionReal.y >= WINDOW_HEIGHT) // SI joueur estMort vrai, alors faire fin de partie
     {
         printf("You lost ! \n"); // Dire quel joueur a perdu
 
         players[i]->state[JUMP] = SDL_FALSE;
         players[i]->jumpParameters.t = 0;
-        //player1->jumpParameters.initialAngle = player1->jumpParameters.pi / 2;
 
-        player1->positionReal.y = 652;
+        players[i]->positionReal.y = 652;
     }*/
 
 }
@@ -126,7 +125,7 @@ void launch_game(Map* map, Character* players[NB_PLAYERS], Input *in, Scores *sc
  * @brief Displays the sprites on the renderer in function of the state of the player
  *
  * @param < *screen > Represents the renderer on which sprites will be displayed
- * @param < *player > Represents the player whose sprites will be displayed
+ * @param < players[] > Array which contains all the players
  */
 void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS])
 {
@@ -238,7 +237,7 @@ void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS])
             bulletIterator = bulletIterator->next;
         }
 
-        /*if(player->weapon.firedBullets != NULL) //<<<<<<<<<<<  TEST
+        /*if(player->weapon.firedBullets != NULL) //<<<<<<<<<<<  TEST : affiche la liste avec les positions de chaque balle
             list_print(player->weapon.firedBullets);*/
     }
 }
@@ -249,8 +248,11 @@ void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS])
  *
  * @param < *map > Structure which stands for the map
  * @param < *in > Structure which points the states of the keys, buttons and so on related to the events
- * @param < *player > Structure which stands for the player 1
- * @param < *lastTime > Handles the change of the sprites of the animations by saving the last time when the sprite changed
+ * @param < players[] > Array which contains all the players
+ * @param < lastTime[] > Array which contains the lastTime of each player
+ *                       lastTime handles the change of the sprites of the animations by saving the last time when the sprite changed
+ * @param < *choice > Handles if the players get back to the menu or if they keep playing
+ * @param < tableSimilarKeys[][] > Table used for the relation between the different keys of each player
  */
 void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned int lastTime[NB_PLAYERS], int *choice, const int tableSimilarKeys[NB_PLAYERS][5])
 {
@@ -290,7 +292,6 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
                 players[0]->state[BEND_DOWN] = SDL_FALSE;
                 players[0]->state[JUMP] = SDL_FALSE;
                 players[0]->state[FIRE] = SDL_FALSE;
-
 
                 printf("\nRESET POSITION\n");
 
@@ -516,6 +517,14 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
     }
 }
 
+
+/* ================================================== HANDLING SCORES ================================================== */
+
+/**
+ * @brief Initialises the structure Scores before each game
+ *
+ * @param < *scores > Structure which retains the score of each player
+ */
 void init_scores(Scores *scores)
 {
     for(int i = 0; i < NB_PLAYERS; i++)
@@ -531,6 +540,11 @@ void init_scores(Scores *scores)
     scores->winnerGame = -1; // Nobody
 }
 
+/**
+ * @brief Resets the structure Scores before each rounds
+ *
+ * @param < *scores > Structure which retains the score of each player
+ */
 void reset_scores(Scores *scores)
 {
     for(int i = 0; i < NB_PLAYERS; i++)
@@ -542,7 +556,12 @@ void reset_scores(Scores *scores)
     scores->winnerGame = -1; // Nobody
 }
 
-
+/**
+ * @brief Updates the structure Scores
+ *
+ * @param < *scores > Structure which retains the score of each player
+ * @param < players[] > Contains all the players
+ */
 void update_scores(Scores *scores, Character* players[NB_PLAYERS])
 {
     int i;
@@ -577,8 +596,14 @@ void update_scores(Scores *scores, Character* players[NB_PLAYERS])
     }
 }
 
-
 /** Pour inscire les scores pour seulement 2 personnes dans un fichier */
+
+/**
+ * @brief Saves the scores of each player by writing in a formatted text file
+ *
+ * @param < *pathScoresFile > Path of the file where write the scores
+ * @param < *scores > Structure which retains the score of each player
+ */
 void scores_save(const char *pathScoresFile, Scores *scores)
 {
     char formattedDate[50], winner[10];
@@ -617,6 +642,16 @@ void scores_save(const char *pathScoresFile, Scores *scores)
     }
 }
 
+
+/* ================================================== HANDLING TEXT ================================================== */
+
+/**
+ * @brief Initialises the text which have to be displayed at the end of a round
+ *
+ * @param < *screen > Represents the renderer on which the texts will be displayed
+ * @param < *text > Structure which stands for the text with several parameters needed
+ * @param < *scores > Structure which retains the score of each player
+ */
 void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
 {
     TTF_Font *fontTextInGame = NULL;
@@ -652,7 +687,13 @@ void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
     TTF_CloseFont(fontTextInGame);
 }
 
-
+/**
+ * @brief Initialises the text which have to be displayed at the end of a game to state the winner
+ *
+ * @param < *screen > Represents the renderer on which the texts will be displayed
+ * @param < *text > Structure which stands for the text with several parameters needed
+ * @param < indexWinner > Index of the player who has won the current game
+ */
 void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner)
 {
     TTF_Font *fontTextInGame = NULL;
@@ -688,6 +729,11 @@ void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner)
     TTF_CloseFont(fontTextInGame);
 }
 
+/**
+ * @brief Frees the memory used by the structures Text which are displayed in game
+ *
+ * @param < *text > Structure which stands for the text with several parameters needed
+ */
 void free_text_in_game(Text *text)
 {
     free(text->font);
@@ -695,6 +741,12 @@ void free_text_in_game(Text *text)
     SDL_DestroyTexture(text->texture);
 }
 
+/**
+ * @brief Displays the text on the screen
+ *
+ * @param < *screen > Represents the renderer on which the texts will be displayed
+ * @param < *text > Structure which stands for the text with several parameters needed
+ */
 void display_text_game(SDL_Renderer *screen, Text *text)
 {
     SDL_RenderCopy(screen, text->texture, NULL, &text->placement);

@@ -9,7 +9,7 @@
 #ifndef CONSTANTES_H_INCLUDED
 #define CONSTANTES_H_INCLUDED
 
-    /* For the window */
+    /* For the windows */
     #define TILE_SIZE               32 // 32 pixels wide and 32 pixels long
     #define NB_TILES_WIDTH          40
     #define NB_TILES_HEIGHT         30
@@ -18,6 +18,7 @@
     #define WINDOW_TILESET_WIDTH    288
     #define WINDOW_TILESET_HEIGHT   608
 
+    /* For the players */
     #define NB_PLAYERS      2
     #define WINNING_ROUNDS  3
     #define KILLER          0

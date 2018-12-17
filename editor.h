@@ -16,14 +16,14 @@
  */
 typedef struct WindowTileset
 {
-    SDL_Window *window;
-    SDL_Renderer *screen;
-    SDL_Texture *texture;
-    SDL_bool mouseFocus;
-    SDL_bool created;
-    int width;
-    int height;
-    int ID;
+    SDL_Window *window;     /**< Represents the window on which the image of the tileset will be displayed */
+    SDL_Renderer *screen;   /**< Represents the renderer which belongs to the tileset window */
+    SDL_Texture *texture;   /**< Represents the texture to display */
+    SDL_bool mouseFocus;    /**< If the mouse is over the tileset window */
+    SDL_bool created;       /**< If the tileset window is created */
+    int width;              /**< Width of the tileset window */
+    int height;             /**< Height of the tileset window */
+    int ID;                 /**< ID of the tileset window */
 }WindowTileset;
 
 

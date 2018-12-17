@@ -18,18 +18,15 @@
 
 
 /* PRINCIPE DE FONCTIONNEMENT :
-- On charge dans la fenêtre principale une map vierge (map remplie de tuile transparentes => un fichier avec un tableau de 30*40 rempli de 9)
+- On charge dans la fenêtre principale une map vierge (map remplie de tuile transparentes => un fichier avec un tableau de 30*40 rempli de 9) ou une map de base
 - Ouvre une 2ème fenêtre avec l'image du tileset avec les lignes dedans
 - Le clic droit sur une tuile du tileset sélectionne son type (son design)
 - Quand on revient sur la fenêtre principale avec le clic droit, on clique n'importe où sur la map et on peut créer une tuile du type sélectionné
 - Le clic droit efface la tuile sélectionnée (c'est-à-dire on met une tuile blanche car elle sont transparentes donc tile = 9)
 - On peut sauvegarder la map dans un fichier en appuyant sur 's'
 - On ferme la fenêtre avec le tileset et on revient au menu principal en appuyant sur echap
-
-AMELIORATIONS :
-- PROBLEME QUAND ON VEUT QUITTER AVEC LA CROIX ROUGE OU AVEC L'OPTION QUIT DU MENU sauf si on quitte après être rentré dans l'éditeur et l'avoir refermer
-- dessiner un quadrillage qui représente les tiles dans la fenêtre principale ?? Est-ce nécessaire
 */
+
 
 
 /**

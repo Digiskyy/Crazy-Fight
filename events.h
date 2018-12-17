@@ -16,13 +16,14 @@
  */
 typedef struct Input
 {
-    SDL_bool key[SDL_NUM_SCANCODES];
-    SDL_bool mouseButtons[6]; //{SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE, SDL_BUTTON_RIGHT, ...} 6 blocks in the array because the first index starts at 1 and there are 5 supported buttons
-    int mouseX, mouseY, mouseXrel, mouseYrel; // Placement and movement of the mouse
-    SDL_bool quit;
-    Uint32 windowID;
-    SDL_bool windowClosed;
-    SDL_bool focusMouse;
+    SDL_bool key[SDL_NUM_SCANCODES];            /**< Contains each key of the keyboard to know if each one is activated */
+    SDL_bool mouseButtons[6];                   /**< Contains the 5 buttons of the mouse {SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE, SDL_BUTTON_RIGHT, ...}
+                                                        6 blocks in the array because the first index starts at 1 and there are 5 supported buttons */
+    int mouseX, mouseY, mouseXrel, mouseYrel;   /**< Placement and movement of the mouse */
+    SDL_bool quit;                              /**< If 'Quit' event is activated */
+    Uint32 windowID;                            /**< ID of the window which triggered the event */
+    SDL_bool windowClosed;                      /**< If a window has been closed */
+    SDL_bool focusMouse;                        /**< If the mouse is over a window of the program */
 }Input;
 
 
