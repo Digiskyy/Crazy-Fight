@@ -861,7 +861,11 @@
 
 1545092682 d:\programmation\sdl\crazy fight\crazy fight\crazy fight - windows\events.h
 
+<<<<<<< HEAD
 1545103829 source:d:\programmation\sdl\crazy fight\crazy fight\crazy fight - windows\collisions.c
+=======
+1545102600 source:d:\programmation\sdl\crazy fight\crazy fight\crazy fight - windows\collisions.c
+>>>>>>> CollisionTile2
 	<stdlib.h>
 	<stdio.h>
 	<SDL2/SDL.h>
