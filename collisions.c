@@ -62,7 +62,7 @@ int player_jump(Map *map, Character *player)
     player->positionRealLastJump.y = player->positionReal.y;
 
 
-    /* Resets of the position of the character at the position where the jump began (needed for the calculation afterward) */
+    /* Reset of the position of the character at the position where the jump began (needed for the calculation afterward) */
     player->positionReal.x = player->positionRealStartJump.x;
     player->positionReal.y = player->positionRealStartJump.y;
 
@@ -104,7 +104,7 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
             player->positionRealLastJump.x = player->positionReal.x;
             player->positionRealLastJump.y = player->positionReal.y;
         }
-        return 1;
+        return 1; // Movement done
     }
     else if(collision == -1) // If the player is falling down out of the limit of the map
     {
@@ -117,24 +117,39 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
             player->positionRealLastJump.x = player->positionReal.x;
             player->positionRealLastJump.y = player->positionReal.y;
         }
-        return -1;
+        return -1; // Movement done
     }
-    /*else if(collision == 2) // Tile with properties 2 : when the player jump upward, he go through but when he moves down he can't go through
+    else if(collision == 2) // Tile with properties 2 : when the player jump upward, he go through but when he moves down he can't go through
     {
-        if(vectorY >= 0) // If the player moves upward, he can go through
+        if(player->state[JUMP])
         {
-            player->positionReal.x += vectorX; // Moves the player on the X-axis
-            player->positionReal.y += vectorY; // Moves the player on the Y-axis*/
-
-            /* Update the last good position of the character during the jump */
-            /*if(player->state[JUMP])
+            /* Calculation of the real vector Y between the last real position during the jump and the future real position if no collisions represented by the current vector Y added with
+                the position from the start of the jump */
+            if(player->positionRealLastJump.y - (player->positionReal.y + vectorY) >= 0)
             {
-                player->positionRealLastJump.x = player->positionReal.x;
-                player->positionRealLastJump.y = player->positionReal.y;
+                player->positionReal.x += vectorX; // Moves the player on the X-axis
+                player->positionReal.y += vectorY; // Moves the player on the Y-axis
+
+                /* Updates the last good position of the character during the jump */
+                if(player->state[JUMP])
+                {
+                    player->positionRealLastJump.x = player->positionReal.x;
+                    player->positionRealLastJump.y = player->positionReal.y;
+                }
+                return 1; // Movement done
             }
-            return 1;
         }
-    }*/
+        else
+        {
+            if(vectorY <= 0) // If the player moves upward, he can go through
+            {
+                player->positionReal.x += vectorX; // Moves the player on the X-axis
+                player->positionReal.y += vectorY; // Moves the player on the Y-axis
+
+                return 1; // Movement done
+            }
+        }
+    }
 
     /* Resets the parameters for the jump */
     if(player->state[JUMP])
@@ -161,7 +176,6 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
 {
     int minX, minY, maxX, maxY, tileIndex, i, j;
 
-
     if(player->positionReal.y + player->positionReal.h + vectorY > map->nbTilesMapOrd * map->heightTile) // Down
         return -1; // Player is falling downward out of the world
 
@@ -174,7 +188,7 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
         return 1; // Out of the world except downward
     }
 
-    /* To have the positions of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the player */
+    /* To have the indexes of the upper left-hand tile and the lower right-hand tile which hit the hitbox of the player */
     minX = (player->positionReal.x + vectorX) / map->widthTile;
     minY = (player->positionReal.y + vectorY) / map->heightTile;
     maxX = (player->positionReal.x + player->positionReal.w - 1 + vectorX) / map->widthTile;
@@ -190,6 +204,16 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
                 return 1; // Founded collision
         }
     }
+
+    /* For the collisions with the tile of property 2 : Avoid getting blocked in a tile by calculating just the collision with the basis of the sprite, i.e. the feet of the player */
+    for(i = minX; i < maxX; i++)
+    {
+        tileIndex = map->tabMap[maxY][i];
+
+        if(map->properties[tileIndex].full == 2) // If the tile is define as semi-full
+            return 2; // Founded collision
+    }
+
     return 0; // No collisions
 }
 
