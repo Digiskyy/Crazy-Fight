@@ -11,10 +11,10 @@
 
     /* For the windows */
     #define TILE_SIZE               32 // 32 pixels wide and 32 pixels long
-    #define NB_TILES_WIDTH          40
-    #define NB_TILES_HEIGHT         30
-    #define WINDOW_WIDTH            NB_TILES_WIDTH * TILE_SIZE // 1280
-    #define WINDOW_HEIGHT           NB_TILES_HEIGHT * TILE_SIZE // 960
+    #define NB_TILES_WIDTH          32 // 40
+    #define NB_TILES_HEIGHT         24 // 30
+    #define WINDOW_WIDTH            NB_TILES_WIDTH * TILE_SIZE // 1024 - 1280
+    #define WINDOW_HEIGHT           NB_TILES_HEIGHT * TILE_SIZE // 768 - 960
     #define WINDOW_TILESET_WIDTH    288
     #define WINDOW_TILESET_HEIGHT   608
 

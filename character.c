@@ -35,7 +35,7 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     }
     player->health = 100;
     player->speed = 3;
-    player->side = RIGHT;
+    player->side = (numPlayer == 1) ? RIGHT : LEFT;
     player->kills = 0;
     player->deaths = 0;
     player->suicides = 0;
@@ -51,8 +51,8 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     /* Initialises the position where the character should be displayed at the beginning */
     player->positionReal.w =  70;
     player->positionReal.h = 85;
-    player->positionReal.x = (numPlayer == 1) ? 150 : WINDOW_WIDTH - player->positionReal.w - 150; /** <<<<<<<<<<<  A VOIR OU PLACER LES DEUX PERSO EN FONCTION DE LA MAP CREEE ET FAIRE EN SORT QU'IL REGARDE DANS LA BONNE POSITION  */
-    player->positionReal.y = 651;
+    player->positionReal.x = (numPlayer == 1) ? 0 : WINDOW_WIDTH - player->positionReal.w; /** <<<<<<<<<<<  A VOIR OU PLACER LES DEUX PERSO EN FONCTION DE LA MAP CREEE ET FAIRE EN SORT QU'IL REGARDE DANS LA BONNE POSITION  */
+    player->positionReal.y = 50;
 
     /* Initialises the relative position which is used for the jump */
     player->positionRelative.x = 0; // Origin of the relative coordinate system
@@ -178,7 +178,7 @@ Sprite* init_spritesheet(const char (*tableSpritesheet)[3][100], int FLAGS, SDL_
 
     /* Loads the texture */
     spritesheet->texture = load_image_transparent(tableSpritesheet[FLAGS][2], screen, 255, 255, 255); // tableSpritesheet[FLAGS][2] correponds to the path, transparent color is white (255, 255, 255)
-    //spritesheet->texture = load_image(tableSpritesheet[FLAGS][2], screen); /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< FOR THE TEST FOR THE COLLISIONS in order to see clearly the sprite*/
+    //spritesheet->texture = load_image(tableSpritesheet[FLAGS][2], screen); /* << FOR THE TEST FOR THE COLLISIONS in order to see clearly the sprite */
 
     /* Loads the array 2 dimensions */
     spritesheet->sprite = malloc(2 * sizeof(SDL_Rect*)); // 2 because there are 2 rows in the spritesheet, each row is for one direction
@@ -395,7 +395,7 @@ void reset_player(Character* players[NB_PLAYERS])
         players[i]->state[JUMP] = SDL_FALSE;
         players[i]->state[FIRE] = SDL_FALSE;
         /* Resets the position where the character should be displayed at the beginning */
-        players[i]->positionReal.x = (i == 1) ? 150 : WINDOW_WIDTH - players[i]->positionReal.w - 150; /** <<<<<<<<<<<  A VOIR OU PLACER LES DEUX PERSO EN FONCTION DE LA MAP CREEE ET FAIRE EN SORT QU'IL REGARDE DANS LA BONNE POSITION  */
+        players[i]->positionReal.x = (i == 1) ? 150 : WINDOW_WIDTH - players[i]->positionReal.w - 150;
         players[i]->positionReal.y = 651;
 
         players[i]->alive = SDL_TRUE;

@@ -66,7 +66,7 @@ int player_jump(Map *map, Character *player)
     player->positionReal.x = player->positionRealStartJump.x;
     player->positionReal.y = player->positionRealStartJump.y;
 
-    /* Relative positions calculation (position = speed derivative) : the relative displacement */
+    /* Relative positions calculation (position = speed derivative * time) : the relative displacement */
     player->positionRelative.x = (int)(player->jumpParameters.speedX * player->jumpParameters.t);
     player->positionRelative.y = (int)((player->jumpParameters.speedY * player->jumpParameters.t) - ((player->jumpParameters.g * player->jumpParameters.t * player->jumpParameters.t)/2000));
     // 2000 because in the formula we have to divide by 2 and we multiply by 1000 to have seconds instead of milliseconds
@@ -74,7 +74,8 @@ int player_jump(Map *map, Character *player)
     /* Collisions tests */
     playerMoveResult = player_move(map, player, player->positionRelative.x, -(player->positionRelative.y));
 
-    /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and the more accurate in the curve it will be and as a result, the slower the jump is */
+    /* 5ms interval : As if we calculated every 5 ms the position. The smaller 't' is, the more calculated points there are and 
+     *								  the more accurate in the curve it will be and as a result, the slower the jump is */
     player->jumpParameters.t += 5;
 
     return playerMoveResult;
@@ -119,22 +120,26 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
         }
         return -1;
     }
-    /*else if(collision == 2) // Tile with properties 2 : when the player jump upward, he go through but when he moves down he can't go through
+    else if(collision == 2) // Tile with properties 2 : when the player jumps upward, he goes through but when he moves downward,  he can't go through
     {
-        if(vectorY >= 0) // If the player moves upward, he can go through
+	printf("TILE 2 : vector Y : %d, vector X : %d\n", vectorY, vectorX);
+      
+        if(vectorY <= 0) // If the player moves upward, he can go through
         {
+	    printf("TILE 2 : MOVING\n");
+	  
             player->positionReal.x += vectorX; // Moves the player on the X-axis
-            player->positionReal.y += vectorY; // Moves the player on the Y-axis*/
+            player->positionReal.y += vectorY; // Moves the player on the Y-axis
 
-            /* Update the last good position of the character during the jump */
-            /*if(player->state[JUMP])
+            /* Updates the last good position of the character during the jump */
+            if(player->state[JUMP])
             {
                 player->positionRealLastJump.x = player->positionReal.x;
                 player->positionRealLastJump.y = player->positionReal.y;
             }
             return 1;
         }
-    }*/
+    }
 
     /* Resets the parameters for the jump */
     if(player->state[JUMP])
@@ -188,6 +193,8 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
 
             if(map->properties[tileIndex].full == 1) // If the tile is define as full
                 return 1; // Founded collision
+            else if(map->properties[tileIndex].full == 2) // If the tile is define as semi-full
+		return 2;
         }
     }
     return 0; // No collisions

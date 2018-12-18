@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
     int tableSimilarKeys[NB_PLAYERS][5] = {{SDL_SCANCODE_RIGHT, SDL_SCANCODE_LEFT, SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_P}, {SDL_SCANCODE_D, SDL_SCANCODE_A, SDL_SCANCODE_W, SDL_SCANCODE_S, SDL_SCANCODE_V}};
 
     /* Paht of the file for the design of the map in the game and level editor */
-    char pathLevelDesignMap[] = "ressources/level_design_map.txt";
-    char pathLevelDesignEditor[] = "ressources/level_design_map_perso.txt"; //"ressources/level_design_map_perso.txt" to load the personal map "..._map_editor.txt" basic map for the level editor
+    char pathLevelDesignMap[] = "ressources/level_design_map";
+    char pathLevelDesignEditor[] = "ressources/level_design_map_perso"; //"ressources/level_design_map_perso.txt" to load the personal map "..._map_editor.txt" basic map for the level editor
 
     // Table which agreggates the spritesheets, the number of sprites on each rows and their paths. That's why it's a 3D array. For now, there are 5 spritesheets. 100 is the number max. of char in the 3rd string
     char tableSpritesheetPlayer1[5][3][100] = {{"move", "6", "ressources/sprites/navyseal_sprites/navyseal_sprite_move.png"},

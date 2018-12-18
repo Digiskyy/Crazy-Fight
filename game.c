@@ -259,9 +259,9 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
     unsigned int currentTime;
 
     /* QUIT THE GAME */
-    if(in->key[SDLK_ESCAPE]) // Escape key down : Quit the game and get back to the menu A FAIRE : SAUVEGARDE LE SCORE DANS UN FICHIER AVANT DE REVENIR AU MENU
+    if(in->key[SDL_SCANCODE_ESCAPE]) // Escape key down : Quit the game and get back to the menu A FAIRE : SAUVEGARDE LE SCORE DANS UN FICHIER AVANT DE REVENIR AU MENU
     {
-        in->key[SDLK_ESCAPE] = SDL_FALSE;
+        in->key[SDL_SCANCODE_ESCAPE] = SDL_FALSE;
         *choice = 0;
     }
 
@@ -727,6 +727,7 @@ void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner)
 
     /* Close the font */
     TTF_CloseFont(fontTextInGame);
+    fontTextInGame = NULL;
 }
 
 /**
@@ -736,7 +737,6 @@ void init_text_end_game(SDL_Renderer *screen, Text *text, const int indexWinner)
  */
 void free_text_in_game(Text *text)
 {
-    free(text->font);
     free(text->text);
     SDL_DestroyTexture(text->texture);
 }

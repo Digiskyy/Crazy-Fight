@@ -56,16 +56,16 @@ void launch_editor(Input *in, Map *mapEditor, int *numTypeTile, int *choice)
         }
     }
 
-    if(in->key[SDLK_s]) // Click on the 's' key to save
+    if(in->key[SDL_SCANCODE_S]) // Click on the 's' key to save
     {
-        in->key[SDLK_s] = SDL_FALSE;
+        in->key[SDL_SCANCODE_S] = SDL_FALSE;
         save_mapEditor(mapEditor); // Writes on a file which saves the current tabMap
         printf("Sauvegarde de la map ...\n");
     }
 
-    if(in->key[SDLK_ESCAPE]) // Click on the 'escape' key to quit the editor and close the tileset window and get back to the menu
+    if(in->key[SDL_SCANCODE_ESCAPE]) // Click on the 'escape' key to quit the editor and close the tileset window and get back to the menu
     {
-        in->key[SDLK_ESCAPE] = SDL_FALSE;
+        in->key[SDL_SCANCODE_ESCAPE] = SDL_FALSE;
         in->windowClosed = SDL_TRUE;
         *choice = 0; // To create again the window the next time in the editor and exit the editor loop and go into the menu one
     }
@@ -152,7 +152,7 @@ void window_tileset_events(WindowTileset *tileset, Input *in, Map *mapEditor, in
 void save_mapEditor(Map *mapEditor)
 {
     FILE *fileMapPerso = NULL;
-    char pathFilePerso[] = "ressources/level_design_map_perso.txt";
+    char pathFilePerso[] = "ressources/level_design_map_perso";
 
     fileMapPerso = fopen(pathFilePerso, "w+");
     if(fileMapPerso != NULL)
@@ -160,7 +160,7 @@ void save_mapEditor(Map *mapEditor)
         fputs("Tile mapping Version 1.0\n", fileMapPerso);
         fputs("#tileset\n", fileMapPerso);
         fputs("ressources/tileset.png\n", fileMapPerso);
-        fputs("ressources/tileset_array_properties.txt\n", fileMapPerso);
+        fputs("ressources/tileset_array_properties\n", fileMapPerso);
         fputs("#level\n", fileMapPerso);
         fprintf(fileMapPerso, "%d %d\n", mapEditor->nbTilesMapOrd, mapEditor->nbTilesMapAbs);
 

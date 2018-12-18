@@ -162,10 +162,6 @@ void free_menu(Text *textTitle, Text *textGame, Text *textEditor, Text *textQuit
     TTF_CloseFont(textTitle->font);
     TTF_CloseFont(fontMenu);
 
-    /* FREE THE FONTS */
-    free(textTitle->font);
-    free(fontMenu);
-
     /* FREE THE POINTERS ON THE STRINGS */
     free(textTitle->text);
     free(textGame->text);
