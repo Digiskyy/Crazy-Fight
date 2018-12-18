@@ -134,3 +134,15 @@
 
 
 
+=== GAME - 18 December 2018, 00:24:31 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
