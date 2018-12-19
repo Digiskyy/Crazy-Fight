@@ -74,9 +74,9 @@ int launch_menu(SDL_Renderer *screen, Input *in)
 void init_menu(SDL_Renderer *screen, Text *textTitle, Text *textGame, Text *textEditor, Text *textQuit, TTF_Font *fontMenu)
 {
     char messageTitle[] = "CRAZY FIGHT";
-    char messageGame[] = "Play";
-    char messageEditor[] = "Level Editor";
-    char messageQuit[] = "Quit";
+    char messageGame[] = "Jouer";
+    char messageEditor[] = "Editeur de Niveau";
+    char messageQuit[] = "Quitter";
     int nbCharTitle, nbCharGame, nbCharEditor, nbCharQuit;
 
     /* Fonts */

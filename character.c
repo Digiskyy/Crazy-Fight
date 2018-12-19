@@ -28,6 +28,8 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     Character* player = NULL;
     static int counterPlayer = 0; // Counts the nb of players which are initialised, needed to display the health bars at the proper locations
 
+    counterPlayer++;
+    
     player = malloc(sizeof(Character));
     if(player == NULL)
     {
@@ -71,7 +73,7 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     {
         player->healthBar[i].w = 200;
         player->healthBar[i].h = 10;
-        if(counterPlayer == 2)
+        if(counterPlayer % 2 == 0)
         {
             player->healthBar[i].x = 50;
             player->healthBar[i].y = WINDOW_HEIGHT - 50;
