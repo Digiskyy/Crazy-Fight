@@ -518,6 +518,28 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
 }
 
 
+/* ================================================== HEALTH POINTS BAR ================================================== */
+
+void display_health_bar(SDL_Renderer *screen, Character* players[NB_PLAYERS])
+{
+    int lengthGreenBar;
+
+    for(int i = 0; i < NB_PLAYERS; i++)
+    {
+        SDL_SetRenderDrawColor(screen, 255, 0, 0, 255); // Red color
+        SDL_RenderFillRect(screen, &players[i]->healthBar[0]);
+        //SDL_RenderPresent(screen);
+
+        SDL_SetRenderDrawColor(screen, 0, 255, 0, 255); // Green color
+        lengthGreenBar = players[i]->health * 2;
+        players[i]->healthBar[1].w = lengthGreenBar;
+        SDL_RenderFillRect(screen, &players[i]->healthBar[1]);
+        //SDL_RenderPresent(screen);
+    }
+
+}
+
+
 /* ================================================== HANDLING SCORES ================================================== */
 
 /**
@@ -681,7 +703,7 @@ void init_text_end_round(SDL_Renderer *screen, Text *text, Scores *scores)
     text->color = colorTextInGame;
     text->texture = load_text(text->text, screen, text->font, text->color, &(text->placement.w), &(text->placement.h));
     text->placement.x = (WINDOW_WIDTH / 2) - (text->placement.w / 2); // In the middle on the X-axis
-    text->placement.y = (WINDOW_HEIGHT / 5) - (text->placement.h / 2); // 1/5 from the origin on the Y-axis
+    text->placement.y = (WINDOW_HEIGHT / 8) - (text->placement.h / 2); // 1/5 from the origin on the Y-axis
 
     /* Close the font */
     TTF_CloseFont(fontTextInGame);

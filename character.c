@@ -26,6 +26,7 @@
 Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100], int numPlayer) // array in 3 dimensions
 {
     Character* player = NULL;
+    static int counterPlayer = 0; // Counts the nb of players which are initialised, needed to display the health bars at the proper locations
 
     player = malloc(sizeof(Character));
     if(player == NULL)
@@ -51,8 +52,8 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     /* Initialises the position where the character should be displayed at the beginning */
     player->positionReal.w =  70;
     player->positionReal.h = 85;
-    player->positionReal.x = (numPlayer == 1) ? 0 : WINDOW_WIDTH - player->positionReal.w; /** <<<<<<<<<<<  A VOIR OU PLACER LES DEUX PERSO EN FONCTION DE LA MAP CREEE ET FAIRE EN SORT QU'IL REGARDE DANS LA BONNE POSITION  */
-    player->positionReal.y = 50;
+    player->positionReal.x = (numPlayer == 1) ? 0 : WINDOW_WIDTH - player->positionReal.w;
+    player->positionReal.y = 450; // 450 to spawn at the bottom, 50 to spawn near the top
 
     /* Initialises the relative position which is used for the jump */
     player->positionRelative.x = 0; // Origin of the relative coordinate system
@@ -61,9 +62,26 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     /* Initialises the parameters of the jump */
     player->jumpParameters.g = 9.81; // Gravitational constant
     player->jumpParameters.pi = 3.14; // Value of the constant PI
-    player->jumpParameters.initialSpeed = 1.5;
+    player->jumpParameters.initialSpeed = 1.4; // 1.5 before bigger jump
     player->jumpParameters.initialAngle = player->jumpParameters.pi / 2; // In C, angles are in radians for the formulas which use them. Here, the standard angle is 90°, namely PI/2 radians.
     player->jumpParameters.t = 0; // t represents the time
+
+    /* Initialises the health points bar */
+    for(int i = 0; i < 2; i++)
+    {
+        player->healthBar[i].w = 200;
+        player->healthBar[i].h = 10;
+        if(counterPlayer == 2)
+        {
+            player->healthBar[i].x = 50;
+            player->healthBar[i].y = WINDOW_HEIGHT - 50;
+        }
+        else // For the 2nd player
+        {
+            player->healthBar[i].x = WINDOW_WIDTH - player->healthBar[i].w - 50;
+            player->healthBar[i].y = WINDOW_HEIGHT - 50;
+        }
+    }
 
 
     /* WEAPON */
@@ -395,8 +413,8 @@ void reset_player(Character* players[NB_PLAYERS])
         players[i]->state[JUMP] = SDL_FALSE;
         players[i]->state[FIRE] = SDL_FALSE;
         /* Resets the position where the character should be displayed at the beginning */
-        players[i]->positionReal.x = (i == 1) ? 150 : WINDOW_WIDTH - players[i]->positionReal.w - 150;
-        players[i]->positionReal.y = 651;
+        players[i]->positionReal.x = (i == 1) ? 0 : WINDOW_WIDTH - players[i]->positionReal.w;
+        players[i]->positionReal.y = 450;
 
         players[i]->alive = SDL_TRUE;
     }

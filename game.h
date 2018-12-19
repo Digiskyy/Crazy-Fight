@@ -68,6 +68,14 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
  */
 void display_sprite(SDL_Renderer *screen, Character* players[NB_PLAYERS]);
 
+/**
+ * @brief Displays the health bars showing the remaining health points of each player
+ *
+ * @param < *screen > Represents the renderer on which sprites will be displayed
+ * @param < players[] > Array which contains all the players
+ */
+void display_health_bar(SDL_Renderer *screen, Character* players[NB_PLAYERS]);
+
 
 /* ================================================== HANDLING SCORES ================================================== */
 

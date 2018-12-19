@@ -105,7 +105,7 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
             player->positionRealLastJump.x = player->positionReal.x;
             player->positionRealLastJump.y = player->positionReal.y;
         }
-        return 1;
+        return 1; // Movement done
     }
     else if(collision == -1) // If the player is falling down out of the limit of the map
     {
@@ -118,27 +118,38 @@ int movement_test(Map *map, Character *player, int vectorX, int vectorY)
             player->positionRealLastJump.x = player->positionReal.x;
             player->positionRealLastJump.y = player->positionReal.y;
         }
-        return -1;
+        return -1; // Movement done
     }
     else if(collision == 2) // Tile with properties 2 : when the player jumps upward, he goes through but when he moves downward,  he can't go through
     {
-	printf("TILE 2 : vector Y : %d, vector X : %d\n", vectorY, vectorX);
-      
-        if(vectorY <= 0) // If the player moves upward, he can go through
-        {
-	    printf("TILE 2 : MOVING\n");
-	  
-            player->positionReal.x += vectorX; // Moves the player on the X-axis
-            player->positionReal.y += vectorY; // Moves the player on the Y-axis
-
-            /* Updates the last good position of the character during the jump */
-            if(player->state[JUMP])
+	if(player->state[JUMP])
+	{
+	    /* Calculation of the real vector Y between the last real position during the jump and the future real position if no collisions represented by the current vector Y added with
+                the position from the start of the jump */
+            if(player->positionRealLastJump.y - (player->positionReal.y + vectorY) >= 0)
             {
-                player->positionRealLastJump.x = player->positionReal.x;
-                player->positionRealLastJump.y = player->positionReal.y;
-            }
-            return 1;
-        }
+                player->positionReal.x += vectorX; // Moves the player on the X-axis
+                player->positionReal.y += vectorY; // Moves the player on the Y-axis
+
+                /* Updates the last good position of the character during the jump */
+                if(player->state[JUMP])
+                {
+                    player->positionRealLastJump.x = player->positionReal.x;
+                    player->positionRealLastJump.y = player->positionReal.y;
+                }
+                return 1; // Movement done
+	    }
+	}
+	else
+	{
+	    if(vectorY <= 0) // If the player moves upward, he can go through
+	    {
+		player->positionReal.x += vectorX; // Moves the player on the X-axis
+		player->positionReal.y += vectorY; // Moves the player on the Y-axis
+
+		return 1; // Movement done
+	    }
+	}
     }
 
     /* Resets the parameters for the jump */
@@ -193,10 +204,18 @@ int collisionMap(Map *map, Character *player, int vectorX, int vectorY)
 
             if(map->properties[tileIndex].full == 1) // If the tile is define as full
                 return 1; // Founded collision
-            else if(map->properties[tileIndex].full == 2) // If the tile is define as semi-full
-		return 2;
         }
     }
+    
+    /* For the collisions with the tile of property 2 : Avoid getting blocked in a tile by calculating just the collision with the basis of the sprite, i.e. the feet of the player */
+    for(i = minX; i < maxX; i++)
+    {
+        tileIndex = map->tabMap[maxY][i];
+
+        if(map->properties[tileIndex].full == 2) // If the tile is define as semi-full
+            return 2; // Founded collision
+    }
+    
     return 0; // No collisions
 }
 

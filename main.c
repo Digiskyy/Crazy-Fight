@@ -218,8 +218,10 @@ int main(int argc, char* argv[])
                 SDL_RenderClear(screen);
                 set_color_background(screen, 85, 180, 255, 255); // Setting color blue in the background
                 print_map(map, screen);
+
                 /* Prints the player on the screen */
                 display_sprite(screen, players);
+
                 /* Prints text in play */
                 if(displayTextRound) // When a round is finished down
                 {
@@ -244,8 +246,13 @@ int main(int argc, char* argv[])
                         endOfGame = SDL_TRUE;
                     }
                 }
+
+                /* Display the health bars */
+                display_health_bar(screen, players);
+
                 /* Display */
                 SDL_RenderPresent(screen);
+
 
                 /* Fresh rate 10 ms */
                 timeElapsed = SDL_GetTicks() - timer;
