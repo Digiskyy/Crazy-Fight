@@ -78,15 +78,11 @@ typedef struct Character
     JumpParameters  jumpParameters;     /**< Structure needed to calculate the jump */
     Weapon weapon;                      /**< Structure that handles the parameters of the weapon and allows to fire */
     SDL_bool firedBullet;               /**< When the player fires, bulletFired is true as long as there are some bullets on the map (= LinkedList for the bullets is not empty) */
-    unsigned int kills;
-    unsigned int deaths;
-    unsigned int suicides;
-    SDL_bool alive;
-
-
-    //int FLAGS; // Pour savoir quel sprite à afficher car on ne peut en afficher qu'un seul. Car on peut faire plusieurs action en même temps genre sauter et se déplacer mais seulment un sprite à la fois
-
-    /* handle jump, attack, displacement during jumping, attack during bending down, attack during jumping ... */
+    unsigned int kills;                 /**< Number of kills of the player */
+    unsigned int deaths;                /**< Number of deaths of the player */
+    unsigned int suicides;              /**< Number of suicides of the player */
+    SDL_bool alive;                     /**< If the player is alive */
+    SDL_Rect healthBar[2];              /**< To display a bar which show the remaining health points */
 }Character;
 
 

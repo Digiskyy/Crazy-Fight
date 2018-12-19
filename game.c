@@ -518,6 +518,28 @@ void game_event(Map* map, Input *in, Character* players[NB_PLAYERS], unsigned in
 }
 
 
+/* ================================================== HEALTH POINTS BAR ================================================== */
+
+void display_health_bar(SDL_Renderer *screen, Character* players[NB_PLAYERS])
+{
+    int lengthGreenBar;
+
+    for(int i = 0; i < NB_PLAYERS; i++)
+    {
+        SDL_SetRenderDrawColor(screen, 255, 0, 0, 255); // Red color
+        SDL_RenderFillRect(screen, &players[i]->healthBar[0]);
+        //SDL_RenderPresent(screen);
+
+        SDL_SetRenderDrawColor(screen, 0, 255, 0, 255); // Green color
+        lengthGreenBar = players[i]->health * 2;
+        players[i]->healthBar[1].w = lengthGreenBar;
+        SDL_RenderFillRect(screen, &players[i]->healthBar[1]);
+        //SDL_RenderPresent(screen);
+    }
+
+}
+
+
 /* ================================================== HANDLING SCORES ================================================== */
 
 /**

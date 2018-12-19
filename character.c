@@ -26,6 +26,9 @@
 Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3][100], int numPlayer) // array in 3 dimensions
 {
     Character* player = NULL;
+    static int counterPlayer = 0; // Counts the nb of players which are initialised, needed to display the health bars at the proper location
+
+    counterPlayer++;
 
     player = malloc(sizeof(Character));
     if(player == NULL)
@@ -61,9 +64,26 @@ Character* init_character(SDL_Renderer *screen, const char (*tableSpritesheet)[3
     /* Initialises the parameters of the jump */
     player->jumpParameters.g = 9.81; // Gravitational constant
     player->jumpParameters.pi = 3.14; // Value of the constant PI
-    player->jumpParameters.initialSpeed = 1.5;
+    player->jumpParameters.initialSpeed = 1.4;
     player->jumpParameters.initialAngle = player->jumpParameters.pi / 2; // In C, angles are in radians for the formulas which use them. Here, the standard angle is 90°, namely PI/2 radians.
     player->jumpParameters.t = 0; // t represents the time
+
+    /* Initialises the health points bar */
+    for(int i = 0; i < 2; i++)
+    {
+        player->healthBar[i].w = 200;
+        player->healthBar[i].h = 10;
+        if(counterPlayer == 2)
+        {
+            player->healthBar[i].x = 50;
+            player->healthBar[i].y = WINDOW_HEIGHT - 50;
+        }
+        else // For the 2nd player
+        {
+            player->healthBar[i].x = WINDOW_WIDTH - player->healthBar[i].w - 50;
+            player->healthBar[i].y = WINDOW_HEIGHT - 50;
+        }
+    }
 
 
     /* WEAPON */

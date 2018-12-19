@@ -13,3 +13,219 @@
 
 
 
+=== GAME - 18 December 2018, 23:55:33 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
+
+	Player 2 :: Winning rounds : 1
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 18 December 2018, 23:59:14 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 18 December 2018, 23:59:58 ===
+
+	Winner : PLAYER 2
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 3 }
+
+	Player 2 :: Winning rounds : 3
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:31:40 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 1 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 1
+		{ Kills : 1 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:32:43 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:33:27 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:34:44 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 1
+		{ Kills : 1 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 1 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:35:03 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:35:47 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 1 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 1
+		{ Kills : 1 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:36:54 ===
+
+	Winner : PLAYER 2
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 2 - Suicides : 1 }
+
+	Player 2 :: Winning rounds : 3
+		{ Kills : 2 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:43:33 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:43:58 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:44:31 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:45:01 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:45:23 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:47:05 ===
+
+	Winner : PLAYER 1
+
+	Player 1 :: Winning rounds : 3
+		{ Kills : 3 - Deaths : 1 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 1
+		{ Kills : 1 - Deaths : 3 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 01:49:56 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 1
+		{ Kills : 1 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 1 - Suicides : 0 }
+
+
+
+=== GAME - 19 December 2018, 02:02:22 ===
+
+	Winner : NOBODY
+
+	Player 1 :: Winning rounds : 1
+		{ Kills : 0 - Deaths : 0 - Suicides : 0 }
+
+	Player 2 :: Winning rounds : 0
+		{ Kills : 0 - Deaths : 0 - Suicides : 1 }
+
+
+
